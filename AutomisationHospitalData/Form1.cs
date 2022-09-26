@@ -1,18 +1,13 @@
-﻿using System;
+﻿using CommunityToolkit.HighPerformance;
+using Microsoft.Office.Interop.Excel;
+using System;
+using System.CodeDom;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel;
-using System.Reflection;
-using Microsoft.Office.Interop.Excel;
-using CommunityToolkit;
-using CommunityToolkit.HighPerformance;
-using System.Diagnostics;
 
 namespace AutomisationHospitalData
 {
@@ -67,7 +62,7 @@ namespace AutomisationHospitalData
             worksheetMerged.get_Range("A1", "V1").VerticalAlignment =
             Excel.XlVAlign.xlVAlignCenter;
         }
-        private void button1_Click(object sender, System.EventArgs e)
+        private void hørkramButton_Click(object sender, System.EventArgs e)
         {
 
             Excel._Workbook workbookHørkram;
@@ -84,111 +79,81 @@ namespace AutomisationHospitalData
                 int rowCountHørkram = rangeHørkram.Rows.Count;
                 int colCountHørkram = rangeHørkram.Columns.Count;
 
-                // Creates an array of object lists for every column in the Hørkram worksheet
-                // Amount of columns is an array it should remain constant
-                // Length of columns is a list to allows for deletion of irrelevant entries
-                List<Object>[] arrayHørkram = new List<Object>[14];
+                DateTime dateHørkram = DateTime.Parse(infosheetHørkram.Cells[5, 2].Text);
 
-                // Iterates over every column in the Hørkram worksheet
-                for (int i = 0; i < 14; i++)
+                // Creates a list of object arrays for every row in the Hørkram worksheet.
+                // Amount of rows as a list to allow for deletion of irrelevant entries.
+                Object[,] arrayHørkram = rangeHørkram.get_Value();
+
+                List<String[]> listHørkram = new List<String[]>();
+
+                for (int row = 0; row < rowCountHørkram; row++)
                 {
-                    // Initialises the list for that column's values
-                    arrayHørkram[i] = new List<Object>();
-
-                    //Adds every cell in that column to the list
-                    foreach(Object cell in (rangeHørkram.Value as object[,]).GetColumn(i))
+                    listHørkram.Add(new string[14]);
+                    for (int col = 0; col < colCountHørkram; col++)
+                    {
+                        try
                         {
-                            arrayHørkram[i].Add(cell);
+                            listHørkram[row].SetValue(arrayHørkram[row + 1, col + 1].ToString(), col);
                         }
+                        catch (NullReferenceException)
+                        {
+                            listHørkram[row].SetValue("", col);
+                        }
+                    }
                 }
 
                 // Deletion of irrelevant entries
+                listHørkram.RemoveRange(0, 2); // Header entries in row 1 and 2
+                listHørkram.RemoveAll(s => s[4].Contains("Non food") // Entries for non-food items
+                || s[4].Contains("Hjælpevarenumre")
+                || s[4].Contains("Engangsmateriale")
+                || s[4].Contains("storkøkkentilbehør"));
+
+                rangeMerged = worksheetMerged.get_Range("A2", "M" + listHørkram.Count + 1);
+
+                object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
+                
+                for (int row = 0; row<listHørkram.Count; row++)
+                {
+                    arrayMerged[row + 1, 1] = dateHørkram.Year;
+                    arrayMerged[row + 1, 2] = (dateHørkram.Month)/ 3 + 1;
+                    arrayMerged[row + 1, 3] = listHørkram[row].GetValue(1);
+                    arrayMerged[row + 1, 4] = listHørkram[row].GetValue(4);
+                    arrayMerged[row + 1, 5] = "Hørkram";
+                    arrayMerged[row + 1, 6] = listHørkram[row].GetValue(5);
+                    if(listHørkram[row].GetValue(6) as String == "J")
+                    {
+                        arrayMerged[row + 1, 7] = "Øko";
+                    }
+                    if (listHørkram[row].GetValue(6) as String == "N")
+                    {
+                        arrayMerged[row + 1, 7] = "Konv";
+                    }
+                    arrayMerged[row + 1, 8] = listHørkram[row].GetValue(3);
+                    arrayMerged[row + 1, 9] = float.Parse(listHørkram[row].GetValue(10) as String)/ float.Parse(listHørkram[row].GetValue(9) as String);
+                    arrayMerged[row + 1, 10] = listHørkram[row].GetValue(10);
+                    arrayMerged[row + 1, 11] = listHørkram[row].GetValue(11);
+                    arrayMerged[row + 1, 12] = listHørkram[row].GetValue(13);
+                    arrayMerged[row + 1, 13] = listHørkram[row].GetValue(7);
+                }
+
+                rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                rangeMerged = worksheetMerged.UsedRange;
+
+                //Format the cells.
+                worksheetMerged.get_Range("A2", "V" + (listHørkram.Count)).Font.Name = "Calibri";
+                worksheetMerged.get_Range("A2", "V" + (listHørkram.Count)).Font.Size = 11;
+
+                //AutoFit columns A:V.
+                rangeMerged = worksheetMerged.get_Range("A1", "M1");
+                rangeMerged.EntireColumn.AutoFit();
 
 
-                // Copies the "Resource" value from the Hørkram worksheet to the merged worksheet
-                //rangeMerged = worksheetMerged.get_Range("F2 : F" + (rowCountHørkram - 1));
-                //rangeMerged.Value2 = arrayHørkram[5].ToArray();
-
-
-                /*
-               //Sets the "Leverandør" value to Hørkram
-               worksheetMerged.get_Range("E2", "E" + (rowCountHørkram - 1)).Value2 = "Hørkram";
-               //Sets the "År" value to the year
-               worksheetMerged.get_Range("A2", "A" + (rowCountHørkram - 1)).Value2 = DateTime.Parse(infosheetHørkram.Cells[5, 2].Text).Year;
-
-               //Sets the "Kvartal" value to the quarter
-               worksheetMerged.get_Range("B2", "B" + (rowCountHørkram - 1)).Value2 = (DateTime.Parse(infosheetHørkram.Cells[5, 2].Text).Month)/3+1;
-
-               // Copies the "Hospital" value from the Hørkram worksheet to the merged worksheet
-               Excel.Range hospitalsHørkram = worksheetHørkram.get_Range("B3 : B" + (rowCountHørkram));
-               rangeMerged = worksheetMerged.get_Range("C2 : C" + (rowCountHørkram - 1));
-               hospitalsHørkram.Copy(rangeMerged);
-
-               // Imports the "Øko." value from the Hørkram worksheet as an array
-               Excel.Range ecologyHørkram = worksheetHørkram.get_Range("G3 : G" + (rowCountHørkram));
-
-               object[,] ecologyHørkramData = ecologyHørkram.Value as object[,];
-
-               // Rephrases the ecology array to fit the terminology of the merged file
-               for (int i = 1; i < ecologyHørkramData.Length+1; i++)
-               {
-                   if (ecologyHørkramData[i,1] as String== "J")
-                   {
-                       ecologyHørkramData[i, 1] = "Øko";
-                   }
-                   if (ecologyHørkramData[i, 1] as String == "N")
-                   {
-                       ecologyHørkramData[i, 1] = "Konv";
-                   }
-               }
-
-               // Inserts the ecology array into the merged file
-               rangeMerged = worksheetMerged.get_Range("G2 : G" + (rowCountHørkram - 1));
-               rangeMerged.Value = ecologyHørkramData;
-
-               // Copies the "Resource category" value from the Hørkram worksheet to the merged worksheet
-               rangeHørkram = worksheetHørkram.get_Range("E3 : E" + (rowCountHørkram));
-               rangeMerged = worksheetMerged.get_Range("D2 : D" + (rowCountHørkram - 1));
-               rangeHørkram.Copy(rangeMerged);
-
-               // Copies the "Resource" value from the Hørkram worksheet to the merged worksheet
-               rangeHørkram = worksheetHørkram.get_Range("F3 : F" + (rowCountHørkram));
-               rangeMerged = worksheetMerged.get_Range("F2 : F" + (rowCountHørkram - 1));
-               rangeHørkram.Copy(rangeMerged);
-
-               // Copies the "Product" value from the Hørkram worksheet to the merged worksheet
-               rangeHørkram = worksheetHørkram.get_Range("D3 : D" + (rowCountHørkram));
-               rangeMerged = worksheetMerged.get_Range("H2 : H" + (rowCountHørkram - 1));
-               rangeHørkram.Copy(rangeMerged);
-
-               // Copies the "Country of origin" value from the Hørkram worksheet to the merged worksheet
-               rangeHørkram = worksheetHørkram.get_Range("H3 : H" + (rowCountHørkram));
-               rangeMerged = worksheetMerged.get_Range("M2 : M" + (rowCountHørkram - 1));
-               rangeHørkram.Copy(rangeMerged);
-
-               // Copies the "Total weight" value from the Hørkram worksheet to the merged worksheet
-               rangeHørkram = worksheetHørkram.get_Range("M3 : M" + (rowCountHørkram));
-               rangeMerged = worksheetMerged.get_Range("K2 : K" + (rowCountHørkram - 1));
-               rangeHørkram.Copy(rangeMerged);
-
-               // Copies the "Price pr. weight" value from the Hørkram worksheet to the merged worksheet
-               rangeHørkram = worksheetHørkram.get_Range("N3 : N" + (rowCountHørkram));
-               rangeMerged = worksheetMerged.get_Range("L2 : L" + (rowCountHørkram - 1));
-               rangeHørkram.Copy(rangeMerged);
-
-               //Format the cells .
-               worksheetMerged.get_Range("A2", "V" + (rowCountHørkram - 1)).Font.Name = "Calibri";
-               worksheetMerged.get_Range("A2", "V" + (rowCountHørkram - 1)).Font.Size = 11;
-
-               //AutoFit columns A:V.
-               rangeMerged = worksheetMerged.get_Range("A1", "D1");
-               rangeMerged.EntireColumn.AutoFit();
-
-
-               //Make sure Excel is visible and give the user control
-               //of Microsoft Excel's lifetime.
-               excelProgram.Visible = true;
-               excelProgram.UserControl = true; */
+                //Make sure Excel is visible and give the user control
+                //of Microsoft Excel's lifetime.
+                excelProgram.Visible = true;
+                excelProgram.UserControl = true;
             }
             catch (Exception theException)
             {
@@ -201,6 +166,18 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
+        public void MRCO(Object comObject) // Based on code from breezetree.com/blog/
+        {
+            if (comObject != null)
+            {
+                Marshal.ReleaseComObject(comObject);
+                comObject = null;
+            }
+        }
 
+        private void hørkramTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
