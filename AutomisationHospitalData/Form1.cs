@@ -62,6 +62,199 @@ namespace AutomisationHospitalData
             worksheetMerged.get_Range("A1", "V1").VerticalAlignment =
             Excel.XlVAlign.xlVAlignCenter;
         }
+        private void acTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void acButton_Click(object sender, System.EventArgs e)
+        {
+
+            Excel._Workbook workbookAC;
+            Excel._Worksheet worksheetAC;
+            Excel._Worksheet infosheetAC;
+            Excel.Range rangeAC;
+
+            try
+            {
+
+            }
+            catch (Exception theException)
+            {
+                String errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = String.Concat(errorMessage, theException.Message);
+                errorMessage = String.Concat(errorMessage, " Line: ");
+                errorMessage = String.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void bcTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void bcButton_Click(object sender, System.EventArgs e)
+        {
+
+            Excel._Workbook workbookBC;
+            Excel._Worksheet worksheetBC;
+            Excel._Worksheet infosheetBC;
+            Excel.Range rangeBC;
+
+            try
+            {
+
+            }
+            catch (Exception theException)
+            {
+                String errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = String.Concat(errorMessage, theException.Message);
+                errorMessage = String.Concat(errorMessage, " Line: ");
+                errorMessage = String.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void bcpbageriTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void bcpbageriButton_Click(object sender, System.EventArgs e)
+        {
+
+            Excel._Workbook workbookBCP;
+            Excel._Worksheet worksheetBCP;
+            Excel._Worksheet infosheetBCP;
+            Excel.Range rangeBCP;
+
+            try
+            {
+
+            }
+            catch (Exception theException)
+            {
+                String errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = String.Concat(errorMessage, theException.Message);
+                errorMessage = String.Concat(errorMessage, " Line: ");
+                errorMessage = String.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void dagrofaTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void dagrofaButton_Click(object sender, System.EventArgs e)
+        {
+
+            Excel._Workbook workbookDagrofa;
+            Excel._Worksheet worksheetDagrofa;
+            Excel._Worksheet infosheetDagrofa;
+            Excel.Range rangeDagrofa;
+
+            try
+            {
+
+            }
+            catch (Exception theException)
+            {
+                String errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = String.Concat(errorMessage, theException.Message);
+                errorMessage = String.Concat(errorMessage, " Line: ");
+                errorMessage = String.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void emmerysTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void emmerysButton_Click(object sender, System.EventArgs e)
+        {
+
+            Excel._Workbook workbookEmmerys;
+            Excel._Worksheet worksheetEmmerys;
+            Excel._Worksheet infosheetEmmerys;
+            Excel.Range rangeEmmerys;
+
+            try
+            {
+
+            }
+            catch (Exception theException)
+            {
+                String errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = String.Concat(errorMessage, theException.Message);
+                errorMessage = String.Concat(errorMessage, " Line: ");
+                errorMessage = String.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void frisksnitTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void frisksnitButton_Click(object sender, System.EventArgs e)
+        {
+
+            Excel._Workbook workbookFrisksnit;
+            Excel._Worksheet worksheetFrisksnit;
+            Excel._Worksheet infosheetFrisksnit;
+            Excel.Range rangeFrisksnit;
+
+            try
+            {
+
+            }
+            catch (Exception theException)
+            {
+                String errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = String.Concat(errorMessage, theException.Message);
+                errorMessage = String.Concat(errorMessage, " Line: ");
+                errorMessage = String.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void grøntgrossistenTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void grøntgrossistenButton_Click(object sender, System.EventArgs e)
+        {
+
+            Excel._Workbook workbookGrøntGrossisten;
+            Excel._Worksheet worksheetGrøntGrossisten;
+            Excel._Worksheet infosheetGrøntGrossisten;
+            Excel.Range rangeGrøntGrossisten;
+
+            try
+            {
+
+            }
+            catch (Exception theException)
+            {
+                String errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = String.Concat(errorMessage, theException.Message);
+                errorMessage = String.Concat(errorMessage, " Line: ");
+                errorMessage = String.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void hørkramTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
         private void hørkramButton_Click(object sender, System.EventArgs e)
         {
 
@@ -79,31 +272,34 @@ namespace AutomisationHospitalData
                 int rowCountHørkram = rangeHørkram.Rows.Count;
                 int colCountHørkram = rangeHørkram.Columns.Count;
 
+                // Imports the date from the Hørkram worksheet
                 DateTime dateHørkram = DateTime.Parse(infosheetHørkram.Cells[5, 2].Text);
 
-                // Creates a list of object arrays for every row in the Hørkram worksheet.
-                // Amount of rows as a list to allow for deletion of irrelevant entries.
+                // Imports the cell data from the Hørkram sheet as an array of Objects
                 Object[,] arrayHørkram = rangeHørkram.get_Value();
 
+                // Creates a List of String arrays for every row in the Hørkram worksheet.
+                // Amount of rows as a List to allow for deletion of irrelevant entries.
                 List<String[]> listHørkram = new List<String[]>();
 
+                // For every row in the imported Hørkram Object array, copy its value to the corresponding String in the List of String arrays
                 for (int row = 0; row < rowCountHørkram; row++)
                 {
                     listHørkram.Add(new string[14]);
                     for (int col = 0; col < colCountHørkram; col++)
                     {
-                        try
+                        try // "Try" because the cell's value can be Null
                         {
                             listHørkram[row].SetValue(arrayHørkram[row + 1, col + 1].ToString(), col);
                         }
-                        catch (NullReferenceException)
+                        catch (NullReferenceException) // "Catch" in case the cell's value is Null
                         {
                             listHørkram[row].SetValue("", col);
                         }
                     }
                 }
 
-                // Deletion of irrelevant entries
+                // Deletion of irrelevant entries from the List of String arrays
                 listHørkram.RemoveRange(0, 2); // Header entries in row 1 and 2
                 listHørkram.RemoveAll(s => s[4].Contains("Non food") // Entries for non-food items
                 || s[4].Contains("Hjælpevarenumre")
@@ -175,9 +371,5 @@ namespace AutomisationHospitalData
             }
         }
 
-        private void hørkramTextbox_TextChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }
