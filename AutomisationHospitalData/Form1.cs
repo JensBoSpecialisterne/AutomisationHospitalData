@@ -1,18 +1,14 @@
-﻿using System;
+﻿using CommunityToolkit.HighPerformance;
+using Microsoft.Office.Interop.Excel;
+using System;
+using System.CodeDom;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Globalization;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel;
-using System.Reflection;
-using Microsoft.Office.Interop.Excel;
-using CommunityToolkit;
-using CommunityToolkit.HighPerformance;
-using System.Diagnostics;
 
 namespace AutomisationHospitalData
 {
@@ -22,6 +18,10 @@ namespace AutomisationHospitalData
         Excel._Workbook workbookMerged;
         Excel._Worksheet worksheetMerged;
         Excel.Range rangeMerged;
+
+        string pathBC = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\BC.xlsx";
+        string pathHørkram = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\Hørkram.xlsx";
+
         public Form1()
         {
             InitializeComponent();
@@ -67,128 +67,28 @@ namespace AutomisationHospitalData
             worksheetMerged.get_Range("A1", "V1").VerticalAlignment =
             Excel.XlVAlign.xlVAlignCenter;
         }
-        private void button1_Click(object sender, System.EventArgs e)
+        private void createNewExcelTextbox_TextChanged(object sender, EventArgs e)
         {
 
-            Excel._Workbook workbookHørkram;
-            Excel._Worksheet worksheetHørkram;
-            Excel._Worksheet infosheetHørkram;
-            Excel.Range rangeHørkram;
+        }
+        private void createNewExcelButton_Click(object sender, System.EventArgs e)
+        {
+        }
+        private void acTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void acButton_Click(object sender, System.EventArgs e)
+        {
+
+            Excel._Workbook workbookAC;
+            Excel._Worksheet worksheetAC;
+            Excel._Worksheet infosheetAC;
+            Excel.Range rangeAC;
 
             try
             {
-                workbookHørkram = excelProgram.Workbooks.Open(@"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\Hørkram.xlsx");
-                worksheetHørkram = workbookHørkram.Sheets[2];
-                infosheetHørkram = workbookHørkram.Sheets[1];
-                rangeHørkram = worksheetHørkram.UsedRange;
-                int rowCountHørkram = rangeHørkram.Rows.Count;
-                int colCountHørkram = rangeHørkram.Columns.Count;
 
-                // Creates an array of object lists for every column in the Hørkram worksheet
-                // Amount of columns is an array it should remain constant
-                // Length of columns is a list to allows for deletion of irrelevant entries
-                List<Object>[] arrayHørkram = new List<Object>[14];
-
-                // Iterates over every column in the Hørkram worksheet
-                for (int i = 0; i < 14; i++)
-                {
-                    // Initialises the list for that column's values
-                    arrayHørkram[i] = new List<Object>();
-
-                    //Adds every cell in that column to the list
-                    foreach(Object cell in (rangeHørkram.Value as object[,]).GetColumn(i))
-                        {
-                            arrayHørkram[i].Add(cell);
-                        }
-                }
-
-                // Deletion of irrelevant entries
-
-
-                // Copies the "Resource" value from the Hørkram worksheet to the merged worksheet
-                //rangeMerged = worksheetMerged.get_Range("F2 : F" + (rowCountHørkram - 1));
-                //rangeMerged.Value2 = arrayHørkram[5].ToArray();
-
-
-                /*
-               //Sets the "Leverandør" value to Hørkram
-               worksheetMerged.get_Range("E2", "E" + (rowCountHørkram - 1)).Value2 = "Hørkram";
-               //Sets the "År" value to the year
-               worksheetMerged.get_Range("A2", "A" + (rowCountHørkram - 1)).Value2 = DateTime.Parse(infosheetHørkram.Cells[5, 2].Text).Year;
-
-               //Sets the "Kvartal" value to the quarter
-               worksheetMerged.get_Range("B2", "B" + (rowCountHørkram - 1)).Value2 = (DateTime.Parse(infosheetHørkram.Cells[5, 2].Text).Month)/3+1;
-
-               // Copies the "Hospital" value from the Hørkram worksheet to the merged worksheet
-               Excel.Range hospitalsHørkram = worksheetHørkram.get_Range("B3 : B" + (rowCountHørkram));
-               rangeMerged = worksheetMerged.get_Range("C2 : C" + (rowCountHørkram - 1));
-               hospitalsHørkram.Copy(rangeMerged);
-
-               // Imports the "Øko." value from the Hørkram worksheet as an array
-               Excel.Range ecologyHørkram = worksheetHørkram.get_Range("G3 : G" + (rowCountHørkram));
-
-               object[,] ecologyHørkramData = ecologyHørkram.Value as object[,];
-
-               // Rephrases the ecology array to fit the terminology of the merged file
-               for (int i = 1; i < ecologyHørkramData.Length+1; i++)
-               {
-                   if (ecologyHørkramData[i,1] as String== "J")
-                   {
-                       ecologyHørkramData[i, 1] = "Øko";
-                   }
-                   if (ecologyHørkramData[i, 1] as String == "N")
-                   {
-                       ecologyHørkramData[i, 1] = "Konv";
-                   }
-               }
-
-               // Inserts the ecology array into the merged file
-               rangeMerged = worksheetMerged.get_Range("G2 : G" + (rowCountHørkram - 1));
-               rangeMerged.Value = ecologyHørkramData;
-
-               // Copies the "Resource category" value from the Hørkram worksheet to the merged worksheet
-               rangeHørkram = worksheetHørkram.get_Range("E3 : E" + (rowCountHørkram));
-               rangeMerged = worksheetMerged.get_Range("D2 : D" + (rowCountHørkram - 1));
-               rangeHørkram.Copy(rangeMerged);
-
-               // Copies the "Resource" value from the Hørkram worksheet to the merged worksheet
-               rangeHørkram = worksheetHørkram.get_Range("F3 : F" + (rowCountHørkram));
-               rangeMerged = worksheetMerged.get_Range("F2 : F" + (rowCountHørkram - 1));
-               rangeHørkram.Copy(rangeMerged);
-
-               // Copies the "Product" value from the Hørkram worksheet to the merged worksheet
-               rangeHørkram = worksheetHørkram.get_Range("D3 : D" + (rowCountHørkram));
-               rangeMerged = worksheetMerged.get_Range("H2 : H" + (rowCountHørkram - 1));
-               rangeHørkram.Copy(rangeMerged);
-
-               // Copies the "Country of origin" value from the Hørkram worksheet to the merged worksheet
-               rangeHørkram = worksheetHørkram.get_Range("H3 : H" + (rowCountHørkram));
-               rangeMerged = worksheetMerged.get_Range("M2 : M" + (rowCountHørkram - 1));
-               rangeHørkram.Copy(rangeMerged);
-
-               // Copies the "Total weight" value from the Hørkram worksheet to the merged worksheet
-               rangeHørkram = worksheetHørkram.get_Range("M3 : M" + (rowCountHørkram));
-               rangeMerged = worksheetMerged.get_Range("K2 : K" + (rowCountHørkram - 1));
-               rangeHørkram.Copy(rangeMerged);
-
-               // Copies the "Price pr. weight" value from the Hørkram worksheet to the merged worksheet
-               rangeHørkram = worksheetHørkram.get_Range("N3 : N" + (rowCountHørkram));
-               rangeMerged = worksheetMerged.get_Range("L2 : L" + (rowCountHørkram - 1));
-               rangeHørkram.Copy(rangeMerged);
-
-               //Format the cells .
-               worksheetMerged.get_Range("A2", "V" + (rowCountHørkram - 1)).Font.Name = "Calibri";
-               worksheetMerged.get_Range("A2", "V" + (rowCountHørkram - 1)).Font.Size = 11;
-
-               //AutoFit columns A:V.
-               rangeMerged = worksheetMerged.get_Range("A1", "D1");
-               rangeMerged.EntireColumn.AutoFit();
-
-
-               //Make sure Excel is visible and give the user control
-               //of Microsoft Excel's lifetime.
-               excelProgram.Visible = true;
-               excelProgram.UserControl = true; */
             }
             catch (Exception theException)
             {
@@ -199,6 +99,477 @@ namespace AutomisationHospitalData
                 errorMessage = String.Concat(errorMessage, theException.Source);
 
                 MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void bcTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void bcButton_Click(object sender, System.EventArgs e)
+        {
+
+            Excel._Workbook workbookBC;
+            Excel._Worksheet worksheetBC;
+            Excel._Worksheet infosheetBC;
+            Excel.Range rangeBC;
+
+            try
+            {
+                workbookBC = excelProgram.Workbooks.Open(pathBC);
+                worksheetBC = workbookBC.Sheets[1];
+                infosheetBC = workbookBC.Sheets[2];
+                rangeBC = worksheetBC.UsedRange;
+
+                int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
+
+                int rowCountBC = rangeBC.Rows.Count;
+                int colCountBC = rangeBC.Columns.Count;
+
+                // Imports the date from the BC worksheet
+                DateTime dateBC = new DateTime(2021,04,01);
+                //DateTime dateBC = DateTime.Parse(infosheetBC.Cells[5, 2].Text);
+
+                // Imports the cell data from the Hørkram sheet as an array of Objects
+                Object[,] arrayBC= rangeBC.get_Value();
+
+                // Creates a List of String arrays for every rowOld in the BC worksheet.
+                // Amount of rows as a List to allow for deletion of irrelevant entries.
+                List<List<String>> listBC = new List<List<String>>();
+
+                int rowOld = 5;
+                int rowNew = 0;
+
+                while (rowOld < rowCountBC - 7)
+                {
+                    Boolean hospitalEnd = false;
+                    Boolean categoryEnd = false;
+                    Boolean skipping = false;
+
+                    string currentHospital = arrayBC[rowOld + 1,2].ToString();
+                    rowOld++;
+                    rowOld++;
+                    string currentCategory = arrayBC[rowOld + 1, 2].ToString();
+                    rowOld++;
+                    rowOld++;
+
+                    while (!hospitalEnd)
+                    {
+                        while (!categoryEnd)
+                        {
+                            if (float.Parse(arrayBC[rowOld + 1, 7].ToString()) > 0)
+                            //if (!(arrayBC[rowOld + 1, 6] == null))
+                            {
+                                listBC.Add(new List<String>());
+                                listBC[rowNew].Add("" + dateBC.Year); // 0 år
+                                listBC[rowNew].Add("" + (dateBC.Month) / 3 + 1); // 1 Kvartal
+                                listBC[rowNew].Add(currentHospital); // 2 Hospital
+                                listBC[rowNew].Add(currentCategory); // 3 Råvarekategori
+                                listBC[rowNew].Add("BC"); // 4 Leverandør
+                                try 
+                                {
+                                    listBC[rowNew].Add(arrayBC[rowOld + 1, 19].ToString()); // 5 Råvare
+                                }
+                                catch
+                                {
+                                    listBC[rowNew].Add("");
+                                }
+                                try // "Try" to check whether this cell is empty
+                                {
+                                    arrayBC[rowOld + 1, 9].ToString();
+                                    listBC[rowNew].Add("Øko"); // 6 Øko
+                                }
+                                catch (NullReferenceException) // "Catch" in case the cell is empty
+                                {
+                                    listBC[rowNew].Add("Konv."); // 6 Konv.
+                                }
+                                listBC[rowNew].Add(arrayBC[rowOld + 1, 2].ToString()); // 7 Varianter/por
+                                listBC[rowNew].Add(arrayBC[rowOld + 1, 8].ToString()); // 8 Pris pr enhed
+                                listBC[rowNew].Add(arrayBC[rowOld + 1, 7].ToString()); // 9 Pris i alt
+                                try // "Try" because this cell is empty if non-ecological
+                                {
+                                    listBC[rowNew].Add(arrayBC[rowOld + 1, 9].ToString()); // 10 Kilo
+                                }
+                                catch (NullReferenceException) // "Catch" in case the cell is empty
+                                {
+                                    try // "Try" because this cell is empty if it's "withheld"
+                                    {
+                                        listBC[rowNew].Add(arrayBC[rowOld + 1, 10].ToString()); // 10 Kilo
+                                    }
+                                    catch (NullReferenceException) // "Catch" in case the cell is empty
+                                    {
+                                        listBC[rowNew].Add(arrayBC[rowOld + 1, 11].ToString()); // 10 Kilo
+                                    }
+                                }
+                                float kiloBC = float.Parse(listBC[rowNew][10]);
+                                float priceBC = float.Parse(listBC[rowNew][9]);
+                                float kilopriceBC = priceBC / kiloBC;
+                                listBC[rowNew].Add("" + kilopriceBC); // 11 Kilopris
+                                try // "Try" to check whether this cell is empty
+                                {
+                                    listBC[rowNew].Add(arrayBC[rowOld + 1, 17].ToString()); // 12 Oprindelse
+                                }
+                                catch (NullReferenceException) // "Catch" in case the cell is empty
+                                {
+                                    try // "Try" to check whether this cell is empty
+                                    {
+                                        listBC[rowNew].Add(arrayBC[rowOld + 1, 18].ToString()); // 12 Oprindelse
+                                    }
+                                    catch (NullReferenceException) // "Catch" in case the cell is empty
+                                    {
+                                        listBC[rowNew].Add("Not supplied"); // 12 Oprindelse
+                                    }
+                                }
+                                rowNew++;
+                            }
+                            rowOld++;
+
+                            try // "Try" to check if this cell is empty
+                            {
+                                arrayBC[rowOld + 1, 2].ToString(); 
+                            }
+                            catch (NullReferenceException) // "Catch" in case the cell is empty
+                            {
+                                categoryEnd = true;
+                            }
+                        }
+                        rowOld++;
+
+                        try {
+                            currentCategory = arrayBC[rowOld + 1, 2].ToString();
+                            int categoryNumber = int.Parse(currentCategory.Split(' ')[0]);
+                            categoryEnd = false;
+
+                            if (categoryNumber > 88)
+                            {
+                                hospitalEnd = true;
+                            }
+                            else
+                            {
+                                rowOld++;
+                                rowOld++;
+                            }
+                        }
+                        catch
+                        {
+                            hospitalEnd = true;
+                        }
+                    }
+                    skipping = true;
+                    while(skipping)
+                    {
+                        rowOld++;
+                        try 
+                        {
+                            if (arrayBC[rowOld+1,2].ToString().Contains("Total beløb"))
+                            {
+                                skipping = false;
+                                rowOld++;
+                                rowOld++;
+                                rowOld++;
+                            }
+                        }
+                        catch (NullReferenceException) // "Catch" in case the cell is empty
+                        {
+                        }
+                    }
+                }
+
+                rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (listBC.Count + usedRowsMerged));
+                object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
+
+                for (int row = 0; row < listBC.Count; row++)
+                {
+                    for (int column = 0; column < 13; column++)
+                    {
+                        arrayMerged[row + 1, column + 1] = listBC[row][column];
+                    }
+                }
+
+                rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                rangeMerged = worksheetMerged.UsedRange;
+
+                //Format the cells.
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (listBC.Count + usedRowsMerged)).Font.Name = "Calibri";
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (listBC.Count + usedRowsMerged)).Font.Size = 11;
+
+                //AutoFit columns A:V.
+                rangeMerged = worksheetMerged.get_Range("A1", "M1");
+                rangeMerged.EntireColumn.AutoFit();
+
+
+                //Make sure Excel is visible and give the user control
+                //of Microsoft Excel's lifetime.
+                excelProgram.Visible = true;
+                excelProgram.UserControl = true;
+
+            }
+            catch (Exception theException)
+            {
+                String errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = String.Concat(errorMessage, theException.Message);
+                errorMessage = String.Concat(errorMessage, " Line: ");
+                errorMessage = String.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void cbpbageriTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void cbpbageriButton_Click(object sender, System.EventArgs e)
+        {
+
+            Excel._Workbook workbookCBP;
+            Excel._Worksheet worksheetCBP;
+            Excel._Worksheet infosheetCBP;
+            Excel.Range rangeCBP;
+
+            try
+            {
+
+            }
+            catch (Exception theException)
+            {
+                String errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = String.Concat(errorMessage, theException.Message);
+                errorMessage = String.Concat(errorMessage, " Line: ");
+                errorMessage = String.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void dagrofaTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void dagrofaButton_Click(object sender, System.EventArgs e)
+        {
+
+            Excel._Workbook workbookDagrofa;
+            Excel._Worksheet worksheetDagrofa;
+            Excel._Worksheet infosheetDagrofa;
+            Excel.Range rangeDagrofa;
+
+            try
+            {
+
+            }
+            catch (Exception theException)
+            {
+                String errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = String.Concat(errorMessage, theException.Message);
+                errorMessage = String.Concat(errorMessage, " Line: ");
+                errorMessage = String.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void emmerysTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void emmerysButton_Click(object sender, System.EventArgs e)
+        {
+
+            Excel._Workbook workbookEmmerys;
+            Excel._Worksheet worksheetEmmerys;
+            Excel._Worksheet infosheetEmmerys;
+            Excel.Range rangeEmmerys;
+
+            try
+            {
+
+            }
+            catch (Exception theException)
+            {
+                String errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = String.Concat(errorMessage, theException.Message);
+                errorMessage = String.Concat(errorMessage, " Line: ");
+                errorMessage = String.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void frisksnitTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void frisksnitButton_Click(object sender, System.EventArgs e)
+        {
+
+            Excel._Workbook workbookFrisksnit;
+            Excel._Worksheet worksheetFrisksnit;
+            Excel._Worksheet infosheetFrisksnit;
+            Excel.Range rangeFrisksnit;
+
+            try
+            {
+
+            }
+            catch (Exception theException)
+            {
+                String errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = String.Concat(errorMessage, theException.Message);
+                errorMessage = String.Concat(errorMessage, " Line: ");
+                errorMessage = String.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void grøntgrossistenTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void grøntgrossistenButton_Click(object sender, System.EventArgs e)
+        {
+
+            Excel._Workbook workbookGrøntGrossisten;
+            Excel._Worksheet worksheetGrøntGrossisten;
+            Excel._Worksheet infosheetGrøntGrossisten;
+            Excel.Range rangeGrøntGrossisten;
+
+            try
+            {
+
+            }
+            catch (Exception theException)
+            {
+                String errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = String.Concat(errorMessage, theException.Message);
+                errorMessage = String.Concat(errorMessage, " Line: ");
+                errorMessage = String.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void hørkramTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void hørkramButton_Click(object sender, System.EventArgs e)
+        {
+
+            Excel._Workbook workbookHørkram;
+            Excel._Worksheet worksheetHørkram;
+            Excel._Worksheet infosheetHørkram;
+            Excel.Range rangeHørkram;
+
+            try
+            {
+                workbookHørkram = excelProgram.Workbooks.Open(pathHørkram);
+                worksheetHørkram = workbookHørkram.Sheets[2];
+                infosheetHørkram = workbookHørkram.Sheets[1];
+                rangeHørkram = worksheetHørkram.UsedRange;
+
+                int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
+
+                int rowCountHørkram = rangeHørkram.Rows.Count;
+                int colCountHørkram = rangeHørkram.Columns.Count;
+
+                // Imports the date from the Hørkram worksheet
+                DateTime dateHørkram = DateTime.Parse(infosheetHørkram.Cells[5, 2].Text);
+
+                // Imports the cell data from the Hørkram sheet as an array of Objects
+                Object[,] arrayHørkram = rangeHørkram.get_Value();
+
+                // Creates a List of String arrays for every rowOld in the Hørkram worksheet.
+                // Amount of rows as a List to allow for deletion of irrelevant entries.
+                List<String[]> listHørkram = new List<String[]>();
+
+                // For every row in the imported Hørkram Object array, copy its value to the corresponding String in the List of String arrays
+                for (int row = 0; row < rowCountHørkram; row++)
+                {
+                    listHørkram.Add(new string[14]);
+                    for (int col = 0; col < colCountHørkram; col++)
+                    {
+                        try // "Try" because the cell's value can be Null
+                        {
+                            listHørkram[row].SetValue(arrayHørkram[row + 1, col + 1].ToString(), col);
+                        }
+                        catch (NullReferenceException) // "Catch" in case the cell's value is Null
+                        {
+                            listHørkram[row].SetValue("", col);
+                        }
+                    }
+                }
+
+                // Deletion of irrelevant entries from the List of String arrays
+                listHørkram.RemoveRange(0, 2); // Header entries in rowOld 1 and 2
+                listHørkram.RemoveAll(s => s[4].Contains("Non food") // Entries for non-food items
+                || s[4].Contains("Hjælpevarenumre")
+                || s[4].Contains("Engangsmateriale")
+                || s[4].Contains("storkøkkentilbehør"));
+
+                rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listHørkram.Count));
+
+                object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
+                
+                // Sets the values in the Hørkram Object Array
+                for (int row = 0; row<listHørkram.Count; row++)
+                {
+                    arrayMerged[row + 1, 1] = dateHørkram.Year; // År
+                    arrayMerged[row + 1, 2] = (dateHørkram.Month)/ 3 + 1; // Kvartal
+                    arrayMerged[row + 1, 3] = listHørkram[row].GetValue(1); // Hospital
+                    arrayMerged[row + 1, 4] = listHørkram[row].GetValue(4); // Råvarekategori
+                    arrayMerged[row + 1, 5] = "Hørkram"; // Leverandør
+                    arrayMerged[row + 1, 6] = listHørkram[row].GetValue(5); // Råvare
+                    if(listHørkram[row].GetValue(6) as String == "J") // konv/øko
+                    {
+                        arrayMerged[row + 1, 7] = "Øko";
+                    }
+                    if (listHørkram[row].GetValue(6) as String == "N")
+                    {
+                        arrayMerged[row + 1, 7] = "Konv";
+                    }
+                    arrayMerged[row + 1, 8] = listHørkram[row].GetValue(3); // Varianter/opr
+                    arrayMerged[row + 1, 9] = float.Parse(listHørkram[row].GetValue(10) as String)/ float.Parse(listHørkram[row].GetValue(9) as String); // Pris pr enhed
+                    arrayMerged[row + 1, 10] = listHørkram[row].GetValue(10); // Pris i alt
+                    arrayMerged[row + 1, 11] = listHørkram[row].GetValue(11); // Kg
+                    arrayMerged[row + 1, 12] = listHørkram[row].GetValue(13); // Kilopris
+                    arrayMerged[row + 1, 13] = listHørkram[row].GetValue(7); // Oprindelse
+                }
+
+                rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                rangeMerged = worksheetMerged.UsedRange;
+
+                //Format the cells.
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listHørkram.Count)).Font.Name = "Calibri";
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listHørkram.Count)).Font.Size = 11;
+
+                //AutoFit columns A:V.
+                rangeMerged = worksheetMerged.get_Range("A1", "M1");
+                rangeMerged.EntireColumn.AutoFit();
+
+
+                //Make sure Excel is visible and give the user control
+                //of Microsoft Excel's lifetime.
+                excelProgram.Visible = true;
+                excelProgram.UserControl = true;
+            }
+            catch (Exception theException)
+            {
+                String errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = String.Concat(errorMessage, theException.Message);
+                errorMessage = String.Concat(errorMessage, " Line: ");
+                errorMessage = String.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        public void MRCO(Object comObject) // Based on code from breezetree.com/blog/
+        {
+            if (comObject != null)
+            {
+                Marshal.ReleaseComObject(comObject);
+                comObject = null;
             }
         }
 
