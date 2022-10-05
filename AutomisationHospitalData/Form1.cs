@@ -18,6 +18,10 @@ namespace AutomisationHospitalData
         Excel._Workbook workbookMerged;
         Excel._Worksheet worksheetMerged;
         Excel.Range rangeMerged;
+
+        string pathBC = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\BC.xlsx";
+        string pathHørkram = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\Hørkram.xlsx";
+
         public Form1()
         {
             InitializeComponent();
@@ -111,10 +115,13 @@ namespace AutomisationHospitalData
 
             try
             {
-                workbookBC = excelProgram.Workbooks.Open(@"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\BC.xlsx");
+                workbookBC = excelProgram.Workbooks.Open(pathBC);
                 worksheetBC = workbookBC.Sheets[1];
                 infosheetBC = workbookBC.Sheets[2];
                 rangeBC = worksheetBC.UsedRange;
+
+                int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
+
                 int rowCountBC = rangeBC.Rows.Count;
                 int colCountBC = rangeBC.Columns.Count;
 
@@ -267,8 +274,33 @@ namespace AutomisationHospitalData
                     }
                 }
 
-                rangeMerged = worksheetMerged.get_Range("A2", "M" + listBC.Count + 1);
+                rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (listBC.Count + usedRowsMerged));
                 object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
+
+                for (int row = 0; row < listBC.Count; row++)
+                {
+                    for (int column = 0; column < 13; column++)
+                    {
+                        arrayMerged[row + 1, column + 1] = listBC[row][column];
+                    }
+                }
+
+                rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                rangeMerged = worksheetMerged.UsedRange;
+
+                //Format the cells.
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (listBC.Count + usedRowsMerged)).Font.Name = "Calibri";
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (listBC.Count + usedRowsMerged)).Font.Size = 11;
+
+                //AutoFit columns A:V.
+                rangeMerged = worksheetMerged.get_Range("A1", "M1");
+                rangeMerged.EntireColumn.AutoFit();
+
+
+                //Make sure Excel is visible and give the user control
+                //of Microsoft Excel's lifetime.
+                excelProgram.Visible = true;
+                excelProgram.UserControl = true;
 
             }
             catch (Exception theException)
@@ -431,10 +463,13 @@ namespace AutomisationHospitalData
 
             try
             {
-                workbookHørkram = excelProgram.Workbooks.Open(@"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\Hørkram.xlsx");
+                workbookHørkram = excelProgram.Workbooks.Open(pathHørkram);
                 worksheetHørkram = workbookHørkram.Sheets[2];
                 infosheetHørkram = workbookHørkram.Sheets[1];
                 rangeHørkram = worksheetHørkram.UsedRange;
+
+                int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
+
                 int rowCountHørkram = rangeHørkram.Rows.Count;
                 int colCountHørkram = rangeHørkram.Columns.Count;
 
@@ -472,7 +507,7 @@ namespace AutomisationHospitalData
                 || s[4].Contains("Engangsmateriale")
                 || s[4].Contains("storkøkkentilbehør"));
 
-                rangeMerged = worksheetMerged.get_Range("A2", "M" + listHørkram.Count + 1);
+                rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listHørkram.Count));
 
                 object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
                 
@@ -505,8 +540,8 @@ namespace AutomisationHospitalData
                 rangeMerged = worksheetMerged.UsedRange;
 
                 //Format the cells.
-                worksheetMerged.get_Range("A2", "V" + (listHørkram.Count)).Font.Name = "Calibri";
-                worksheetMerged.get_Range("A2", "V" + (listHørkram.Count)).Font.Size = 11;
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listHørkram.Count)).Font.Name = "Calibri";
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listHørkram.Count)).Font.Size = 11;
 
                 //AutoFit columns A:V.
                 rangeMerged = worksheetMerged.get_Range("A1", "M1");
