@@ -4,6 +4,7 @@ using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -62,6 +63,13 @@ namespace AutomisationHospitalData
             worksheetMerged.get_Range("A1", "V1").VerticalAlignment =
             Excel.XlVAlign.xlVAlignCenter;
         }
+        private void createNewExcelTextbox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void createNewExcelButton_Click(object sender, System.EventArgs e)
+        {
+        }
         private void acTextbox_TextChanged(object sender, EventArgs e)
         {
 
@@ -103,6 +111,164 @@ namespace AutomisationHospitalData
 
             try
             {
+                workbookBC = excelProgram.Workbooks.Open(@"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\BC.xlsx");
+                worksheetBC = workbookBC.Sheets[1];
+                infosheetBC = workbookBC.Sheets[2];
+                rangeBC = worksheetBC.UsedRange;
+                int rowCountBC = rangeBC.Rows.Count;
+                int colCountBC = rangeBC.Columns.Count;
+
+                // Imports the date from the BC worksheet
+                DateTime dateBC = new DateTime(2021,04,01);
+                //DateTime dateBC = DateTime.Parse(infosheetBC.Cells[5, 2].Text);
+
+                // Imports the cell data from the Hørkram sheet as an array of Objects
+                Object[,] arrayBC= rangeBC.get_Value();
+
+                // Creates a List of String arrays for every rowOld in the BC worksheet.
+                // Amount of rows as a List to allow for deletion of irrelevant entries.
+                List<List<String>> listBC = new List<List<String>>();
+
+                int rowOld = 5;
+                int rowNew = 0;
+
+                while (rowOld < rowCountBC - 7)
+                {
+                    Boolean hospitalEnd = false;
+                    Boolean categoryEnd = false;
+                    Boolean skipping = false;
+
+                    string currentHospital = arrayBC[rowOld + 1,2].ToString();
+                    rowOld++;
+                    rowOld++;
+                    string currentCategory = arrayBC[rowOld + 1, 2].ToString();
+                    rowOld++;
+                    rowOld++;
+
+                    while (!hospitalEnd)
+                    {
+                        while (!categoryEnd)
+                        {
+                            if (float.Parse(arrayBC[rowOld + 1, 7].ToString()) > 0)
+                            //if (!(arrayBC[rowOld + 1, 6] == null))
+                            {
+                                listBC.Add(new List<String>());
+                                listBC[rowNew].Add("" + dateBC.Year); // 0 år
+                                listBC[rowNew].Add("" + (dateBC.Month) / 3 + 1); // 1 Kvartal
+                                listBC[rowNew].Add(currentHospital); // 2 Hospital
+                                listBC[rowNew].Add(currentCategory); // 3 Råvarekategori
+                                listBC[rowNew].Add("BC"); // 4 Leverandør
+                                try 
+                                {
+                                    listBC[rowNew].Add(arrayBC[rowOld + 1, 19].ToString()); // 5 Råvare
+                                }
+                                catch
+                                {
+                                    listBC[rowNew].Add("");
+                                }
+                                try // "Try" to check whether this cell is empty
+                                {
+                                    arrayBC[rowOld + 1, 9].ToString();
+                                    listBC[rowNew].Add("Øko"); // 6 Øko
+                                }
+                                catch (NullReferenceException) // "Catch" in case the cell is empty
+                                {
+                                    listBC[rowNew].Add("Konv."); // 6 Konv.
+                                }
+                                listBC[rowNew].Add(arrayBC[rowOld + 1, 2].ToString()); // 7 Varianter/por
+                                listBC[rowNew].Add(arrayBC[rowOld + 1, 8].ToString()); // 8 Pris pr enhed
+                                listBC[rowNew].Add(arrayBC[rowOld + 1, 7].ToString()); // 9 Pris i alt
+                                try // "Try" because this cell is empty if non-ecological
+                                {
+                                    listBC[rowNew].Add(arrayBC[rowOld + 1, 9].ToString()); // 10 Kilo
+                                }
+                                catch (NullReferenceException) // "Catch" in case the cell is empty
+                                {
+                                    try // "Try" because this cell is empty if it's "withheld"
+                                    {
+                                        listBC[rowNew].Add(arrayBC[rowOld + 1, 10].ToString()); // 10 Kilo
+                                    }
+                                    catch (NullReferenceException) // "Catch" in case the cell is empty
+                                    {
+                                        listBC[rowNew].Add(arrayBC[rowOld + 1, 11].ToString()); // 10 Kilo
+                                    }
+                                }
+                                float kiloBC = float.Parse(listBC[rowNew][10]);
+                                float priceBC = float.Parse(listBC[rowNew][9]);
+                                float kilopriceBC = priceBC / kiloBC;
+                                listBC[rowNew].Add("" + kilopriceBC); // 11 Kilopris
+                                try // "Try" to check whether this cell is empty
+                                {
+                                    listBC[rowNew].Add(arrayBC[rowOld + 1, 17].ToString()); // 12 Oprindelse
+                                }
+                                catch (NullReferenceException) // "Catch" in case the cell is empty
+                                {
+                                    try // "Try" to check whether this cell is empty
+                                    {
+                                        listBC[rowNew].Add(arrayBC[rowOld + 1, 18].ToString()); // 12 Oprindelse
+                                    }
+                                    catch (NullReferenceException) // "Catch" in case the cell is empty
+                                    {
+                                        listBC[rowNew].Add("Not supplied"); // 12 Oprindelse
+                                    }
+                                }
+                                rowNew++;
+                            }
+                            rowOld++;
+
+                            try // "Try" to check if this cell is empty
+                            {
+                                arrayBC[rowOld + 1, 2].ToString(); 
+                            }
+                            catch (NullReferenceException) // "Catch" in case the cell is empty
+                            {
+                                categoryEnd = true;
+                            }
+                        }
+                        rowOld++;
+
+                        try {
+                            currentCategory = arrayBC[rowOld + 1, 2].ToString();
+                            int categoryNumber = int.Parse(currentCategory.Split(' ')[0]);
+                            categoryEnd = false;
+
+                            if (categoryNumber > 88)
+                            {
+                                hospitalEnd = true;
+                            }
+                            else
+                            {
+                                rowOld++;
+                                rowOld++;
+                            }
+                        }
+                        catch
+                        {
+                            hospitalEnd = true;
+                        }
+                    }
+                    skipping = true;
+                    while(skipping)
+                    {
+                        rowOld++;
+                        try 
+                        {
+                            if (arrayBC[rowOld+1,2].ToString().Contains("Total beløb"))
+                            {
+                                skipping = false;
+                                rowOld++;
+                                rowOld++;
+                                rowOld++;
+                            }
+                        }
+                        catch (NullReferenceException) // "Catch" in case the cell is empty
+                        {
+                        }
+                    }
+                }
+
+                rangeMerged = worksheetMerged.get_Range("A2", "M" + listBC.Count + 1);
+                object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
 
             }
             catch (Exception theException)
@@ -116,17 +282,17 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
-        private void bcpbageriTextbox_TextChanged(object sender, EventArgs e)
+        private void cbpbageriTextbox_TextChanged(object sender, EventArgs e)
         {
 
         }
-        private void bcpbageriButton_Click(object sender, System.EventArgs e)
+        private void cbpbageriButton_Click(object sender, System.EventArgs e)
         {
 
-            Excel._Workbook workbookBCP;
-            Excel._Worksheet worksheetBCP;
-            Excel._Worksheet infosheetBCP;
-            Excel.Range rangeBCP;
+            Excel._Workbook workbookCBP;
+            Excel._Worksheet worksheetCBP;
+            Excel._Worksheet infosheetCBP;
+            Excel.Range rangeCBP;
 
             try
             {
@@ -278,7 +444,7 @@ namespace AutomisationHospitalData
                 // Imports the cell data from the Hørkram sheet as an array of Objects
                 Object[,] arrayHørkram = rangeHørkram.get_Value();
 
-                // Creates a List of String arrays for every row in the Hørkram worksheet.
+                // Creates a List of String arrays for every rowOld in the Hørkram worksheet.
                 // Amount of rows as a List to allow for deletion of irrelevant entries.
                 List<String[]> listHørkram = new List<String[]>();
 
@@ -300,7 +466,7 @@ namespace AutomisationHospitalData
                 }
 
                 // Deletion of irrelevant entries from the List of String arrays
-                listHørkram.RemoveRange(0, 2); // Header entries in row 1 and 2
+                listHørkram.RemoveRange(0, 2); // Header entries in rowOld 1 and 2
                 listHørkram.RemoveAll(s => s[4].Contains("Non food") // Entries for non-food items
                 || s[4].Contains("Hjælpevarenumre")
                 || s[4].Contains("Engangsmateriale")
@@ -310,15 +476,16 @@ namespace AutomisationHospitalData
 
                 object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
                 
+                // Sets the values in the Hørkram Object Array
                 for (int row = 0; row<listHørkram.Count; row++)
                 {
-                    arrayMerged[row + 1, 1] = dateHørkram.Year;
-                    arrayMerged[row + 1, 2] = (dateHørkram.Month)/ 3 + 1;
-                    arrayMerged[row + 1, 3] = listHørkram[row].GetValue(1);
-                    arrayMerged[row + 1, 4] = listHørkram[row].GetValue(4);
-                    arrayMerged[row + 1, 5] = "Hørkram";
-                    arrayMerged[row + 1, 6] = listHørkram[row].GetValue(5);
-                    if(listHørkram[row].GetValue(6) as String == "J")
+                    arrayMerged[row + 1, 1] = dateHørkram.Year; // År
+                    arrayMerged[row + 1, 2] = (dateHørkram.Month)/ 3 + 1; // Kvartal
+                    arrayMerged[row + 1, 3] = listHørkram[row].GetValue(1); // Hospital
+                    arrayMerged[row + 1, 4] = listHørkram[row].GetValue(4); // Råvarekategori
+                    arrayMerged[row + 1, 5] = "Hørkram"; // Leverandør
+                    arrayMerged[row + 1, 6] = listHørkram[row].GetValue(5); // Råvare
+                    if(listHørkram[row].GetValue(6) as String == "J") // konv/øko
                     {
                         arrayMerged[row + 1, 7] = "Øko";
                     }
@@ -326,12 +493,12 @@ namespace AutomisationHospitalData
                     {
                         arrayMerged[row + 1, 7] = "Konv";
                     }
-                    arrayMerged[row + 1, 8] = listHørkram[row].GetValue(3);
-                    arrayMerged[row + 1, 9] = float.Parse(listHørkram[row].GetValue(10) as String)/ float.Parse(listHørkram[row].GetValue(9) as String);
-                    arrayMerged[row + 1, 10] = listHørkram[row].GetValue(10);
-                    arrayMerged[row + 1, 11] = listHørkram[row].GetValue(11);
-                    arrayMerged[row + 1, 12] = listHørkram[row].GetValue(13);
-                    arrayMerged[row + 1, 13] = listHørkram[row].GetValue(7);
+                    arrayMerged[row + 1, 8] = listHørkram[row].GetValue(3); // Varianter/opr
+                    arrayMerged[row + 1, 9] = float.Parse(listHørkram[row].GetValue(10) as String)/ float.Parse(listHørkram[row].GetValue(9) as String); // Pris pr enhed
+                    arrayMerged[row + 1, 10] = listHørkram[row].GetValue(10); // Pris i alt
+                    arrayMerged[row + 1, 11] = listHørkram[row].GetValue(11); // Kg
+                    arrayMerged[row + 1, 12] = listHørkram[row].GetValue(13); // Kilopris
+                    arrayMerged[row + 1, 13] = listHørkram[row].GetValue(7); // Oprindelse
                 }
 
                 rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
