@@ -19,7 +19,16 @@ namespace AutomisationHospitalData
         Excel._Worksheet worksheetMerged;
         Excel.Range rangeMerged;
 
+        // paths for companies supplying folders of excel sheets
+        string pathAC = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\AC";
+        string pathDagrofa = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\Dagrofa";
+        string pathFrisknit = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\Frisksnit";
+
+        // paths for companies supplying individual excel sheets
         string pathBC = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\BC.xlsx";
+        string pathCBP = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\CBP bageri.xlsx";
+        string pathEmmerys = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\Emmerys 01-04-2021..30-06-2021.xlsx";
+        string pathGrøntGrossisten = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\Grønt Grossisten.xlsx";
         string pathHørkram = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\Hørkram.xlsx";
 
         public Form1()
@@ -103,7 +112,7 @@ namespace AutomisationHospitalData
         }
         private void bcTextbox_TextChanged(object sender, EventArgs e)
         {
-
+            pathBC = bcTextbox.Text;
         }
         private void bcButton_Click(object sender, System.EventArgs e)
         {
@@ -451,7 +460,7 @@ namespace AutomisationHospitalData
         }
         private void hørkramTextbox_TextChanged(object sender, EventArgs e)
         {
-
+            pathHørkram = hørkramTextbox.Text;
         }
         private void hørkramButton_Click(object sender, System.EventArgs e)
         {

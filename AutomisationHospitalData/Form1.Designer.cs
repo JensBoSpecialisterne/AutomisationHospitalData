@@ -48,14 +48,6 @@
             this.createNewExcelButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // hørkramTextbox
-            // 
-            this.hørkramTextbox.Location = new System.Drawing.Point(12, 245);
-            this.hørkramTextbox.Name = "hørkramTextbox";
-            this.hørkramTextbox.Size = new System.Drawing.Size(100, 20);
-            this.hørkramTextbox.TabIndex = 15;
-            this.hørkramTextbox.TextChanged += new System.EventHandler(this.hørkramTextbox_TextChanged);
-            // 
             // hørkramButton
             // 
             this.hørkramButton.Location = new System.Drawing.Point(118, 243);
@@ -192,6 +184,14 @@
             this.grøntgrossistenButton.UseVisualStyleBackColor = true;
             this.grøntgrossistenButton.Click += new System.EventHandler(this.grøntgrossistenButton_Click);
             // 
+            // hørkramTextbox
+            // 
+            this.hørkramTextbox.Location = new System.Drawing.Point(12, 245);
+            this.hørkramTextbox.Name = "hørkramTextbox";
+            this.hørkramTextbox.Size = new System.Drawing.Size(100, 20);
+            this.hørkramTextbox.TabIndex = 15;
+            this.hørkramTextbox.TextChanged += new System.EventHandler(this.hørkramTextbox_TextChanged);
+            // 
             // createNewExcelTextbox
             // 
             this.createNewExcelTextbox.Location = new System.Drawing.Point(12, 12);
@@ -233,7 +233,7 @@
             this.Controls.Add(this.emmerysTextbox);
             this.Controls.Add(this.dagrofaTextbox);
             this.Controls.Add(this.hørkramButton);
-            this.Name = "CleanExcel";
+            this.Name = "Form1";
             this.Text = "Rens Excel-ark";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
