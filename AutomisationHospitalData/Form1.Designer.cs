@@ -46,11 +46,12 @@
             this.hørkramTextbox = new System.Windows.Forms.TextBox();
             this.createNewExcelTextbox = new System.Windows.Forms.TextBox();
             this.createNewExcelButton = new System.Windows.Forms.Button();
+            this.buttonShutdown = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // hørkramButton
             // 
-            this.hørkramButton.Location = new System.Drawing.Point(118, 243);
+            this.hørkramButton.Location = new System.Drawing.Point(370, 245);
             this.hørkramButton.Name = "hørkramButton";
             this.hørkramButton.Size = new System.Drawing.Size(97, 23);
             this.hørkramButton.TabIndex = 0;
@@ -62,7 +63,7 @@
             // 
             this.dagrofaTextbox.Location = new System.Drawing.Point(12, 141);
             this.dagrofaTextbox.Name = "dagrofaTextbox";
-            this.dagrofaTextbox.Size = new System.Drawing.Size(100, 20);
+            this.dagrofaTextbox.Size = new System.Drawing.Size(352, 20);
             this.dagrofaTextbox.TabIndex = 1;
             this.dagrofaTextbox.TextChanged += new System.EventHandler(this.dagrofaTextbox_TextChanged);
             // 
@@ -70,13 +71,13 @@
             // 
             this.emmerysTextbox.Location = new System.Drawing.Point(12, 167);
             this.emmerysTextbox.Name = "emmerysTextbox";
-            this.emmerysTextbox.Size = new System.Drawing.Size(100, 20);
+            this.emmerysTextbox.Size = new System.Drawing.Size(352, 20);
             this.emmerysTextbox.TabIndex = 2;
             this.emmerysTextbox.TextChanged += new System.EventHandler(this.emmerysTextbox_TextChanged);
             // 
             // acButton
             // 
-            this.acButton.Location = new System.Drawing.Point(118, 61);
+            this.acButton.Location = new System.Drawing.Point(370, 63);
             this.acButton.Name = "acButton";
             this.acButton.Size = new System.Drawing.Size(97, 23);
             this.acButton.TabIndex = 3;
@@ -86,7 +87,7 @@
             // 
             // dagrofaButton
             // 
-            this.dagrofaButton.Location = new System.Drawing.Point(118, 139);
+            this.dagrofaButton.Location = new System.Drawing.Point(370, 141);
             this.dagrofaButton.Name = "dagrofaButton";
             this.dagrofaButton.Size = new System.Drawing.Size(97, 23);
             this.dagrofaButton.TabIndex = 4;
@@ -98,7 +99,7 @@
             // 
             this.cbpbageriTextbox.Location = new System.Drawing.Point(12, 115);
             this.cbpbageriTextbox.Name = "cbpbageriTextbox";
-            this.cbpbageriTextbox.Size = new System.Drawing.Size(100, 20);
+            this.cbpbageriTextbox.Size = new System.Drawing.Size(352, 20);
             this.cbpbageriTextbox.TabIndex = 5;
             this.cbpbageriTextbox.TextChanged += new System.EventHandler(this.cbpbageriTextbox_TextChanged);
             // 
@@ -106,7 +107,7 @@
             // 
             this.bcTextbox.Location = new System.Drawing.Point(12, 89);
             this.bcTextbox.Name = "bcTextbox";
-            this.bcTextbox.Size = new System.Drawing.Size(100, 20);
+            this.bcTextbox.Size = new System.Drawing.Size(352, 20);
             this.bcTextbox.TabIndex = 6;
             this.bcTextbox.TextChanged += new System.EventHandler(this.bcTextbox_TextChanged);
             // 
@@ -114,13 +115,13 @@
             // 
             this.acTextbox.Location = new System.Drawing.Point(12, 63);
             this.acTextbox.Name = "acTextbox";
-            this.acTextbox.Size = new System.Drawing.Size(100, 20);
+            this.acTextbox.Size = new System.Drawing.Size(352, 20);
             this.acTextbox.TabIndex = 7;
             this.acTextbox.TextChanged += new System.EventHandler(this.acTextbox_TextChanged);
             // 
             // bcButton
             // 
-            this.bcButton.Location = new System.Drawing.Point(118, 87);
+            this.bcButton.Location = new System.Drawing.Point(370, 89);
             this.bcButton.Name = "bcButton";
             this.bcButton.Size = new System.Drawing.Size(97, 23);
             this.bcButton.TabIndex = 8;
@@ -130,7 +131,7 @@
             // 
             // cbpbageriButton
             // 
-            this.cbpbageriButton.Location = new System.Drawing.Point(118, 113);
+            this.cbpbageriButton.Location = new System.Drawing.Point(370, 115);
             this.cbpbageriButton.Name = "cbpbageriButton";
             this.cbpbageriButton.Size = new System.Drawing.Size(97, 23);
             this.cbpbageriButton.TabIndex = 9;
@@ -140,7 +141,7 @@
             // 
             // emmerysButton
             // 
-            this.emmerysButton.Location = new System.Drawing.Point(118, 165);
+            this.emmerysButton.Location = new System.Drawing.Point(370, 167);
             this.emmerysButton.Name = "emmerysButton";
             this.emmerysButton.Size = new System.Drawing.Size(97, 23);
             this.emmerysButton.TabIndex = 10;
@@ -150,7 +151,7 @@
             // 
             // frisksnitButton
             // 
-            this.frisksnitButton.Location = new System.Drawing.Point(118, 191);
+            this.frisksnitButton.Location = new System.Drawing.Point(370, 193);
             this.frisksnitButton.Name = "frisksnitButton";
             this.frisksnitButton.Size = new System.Drawing.Size(97, 23);
             this.frisksnitButton.TabIndex = 11;
@@ -162,7 +163,7 @@
             // 
             this.frisksnitTextbox.Location = new System.Drawing.Point(12, 193);
             this.frisksnitTextbox.Name = "frisksnitTextbox";
-            this.frisksnitTextbox.Size = new System.Drawing.Size(100, 20);
+            this.frisksnitTextbox.Size = new System.Drawing.Size(352, 20);
             this.frisksnitTextbox.TabIndex = 12;
             this.frisksnitTextbox.TextChanged += new System.EventHandler(this.frisksnitTextbox_TextChanged);
             // 
@@ -170,13 +171,13 @@
             // 
             this.grøntgrossistenTextbox.Location = new System.Drawing.Point(12, 219);
             this.grøntgrossistenTextbox.Name = "grøntgrossistenTextbox";
-            this.grøntgrossistenTextbox.Size = new System.Drawing.Size(100, 20);
+            this.grøntgrossistenTextbox.Size = new System.Drawing.Size(352, 20);
             this.grøntgrossistenTextbox.TabIndex = 13;
             this.grøntgrossistenTextbox.TextChanged += new System.EventHandler(this.grøntgrossistenTextbox_TextChanged);
             // 
             // grøntgrossistenButton
             // 
-            this.grøntgrossistenButton.Location = new System.Drawing.Point(118, 217);
+            this.grøntgrossistenButton.Location = new System.Drawing.Point(370, 219);
             this.grøntgrossistenButton.Name = "grøntgrossistenButton";
             this.grøntgrossistenButton.Size = new System.Drawing.Size(97, 23);
             this.grøntgrossistenButton.TabIndex = 14;
@@ -188,7 +189,7 @@
             // 
             this.hørkramTextbox.Location = new System.Drawing.Point(12, 245);
             this.hørkramTextbox.Name = "hørkramTextbox";
-            this.hørkramTextbox.Size = new System.Drawing.Size(100, 20);
+            this.hørkramTextbox.Size = new System.Drawing.Size(352, 20);
             this.hørkramTextbox.TabIndex = 15;
             this.hørkramTextbox.TextChanged += new System.EventHandler(this.hørkramTextbox_TextChanged);
             // 
@@ -196,13 +197,13 @@
             // 
             this.createNewExcelTextbox.Location = new System.Drawing.Point(12, 12);
             this.createNewExcelTextbox.Name = "createNewExcelTextbox";
-            this.createNewExcelTextbox.Size = new System.Drawing.Size(100, 20);
+            this.createNewExcelTextbox.Size = new System.Drawing.Size(352, 20);
             this.createNewExcelTextbox.TabIndex = 16;
             this.createNewExcelTextbox.TextChanged += new System.EventHandler(this.createNewExcelTextbox_TextChanged);
             // 
             // createNewExcelButton
             // 
-            this.createNewExcelButton.Location = new System.Drawing.Point(118, 10);
+            this.createNewExcelButton.Location = new System.Drawing.Point(370, 12);
             this.createNewExcelButton.Name = "createNewExcelButton";
             this.createNewExcelButton.Size = new System.Drawing.Size(97, 23);
             this.createNewExcelButton.TabIndex = 17;
@@ -210,11 +211,22 @@
             this.createNewExcelButton.UseVisualStyleBackColor = true;
             this.createNewExcelButton.Click += new System.EventHandler(this.createNewExcelButton_Click);
             // 
+            // buttonShutdown
+            // 
+            this.buttonShutdown.Location = new System.Drawing.Point(194, 309);
+            this.buttonShutdown.Name = "buttonShutdown";
+            this.buttonShutdown.Size = new System.Drawing.Size(97, 23);
+            this.buttonShutdown.TabIndex = 18;
+            this.buttonShutdown.Text = "Luk program";
+            this.buttonShutdown.UseVisualStyleBackColor = true;
+            this.buttonShutdown.Click += new System.EventHandler(this.buttonShutdown_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(506, 577);
+            this.Controls.Add(this.buttonShutdown);
             this.Controls.Add(this.createNewExcelButton);
             this.Controls.Add(this.createNewExcelTextbox);
             this.Controls.Add(this.hørkramTextbox);
@@ -261,6 +273,7 @@
         private System.Windows.Forms.TextBox hørkramTextbox;
         private System.Windows.Forms.TextBox createNewExcelTextbox;
         private System.Windows.Forms.Button createNewExcelButton;
+        private System.Windows.Forms.Button buttonShutdown;
     }
 }
 

@@ -585,6 +585,13 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
+        private void buttonShutdown_Click(object sender, EventArgs e)
+        {
+            MRCO(excelProgram);
+            MRCO(workbookMerged);
+            MRCO(worksheetMerged);
+            MRCO(rangeMerged);
+        }
         public void MRCO(Object comObject) // Based on code from breezetree.com/blog/
         {
             if (comObject != null)
@@ -593,5 +600,6 @@ namespace AutomisationHospitalData
                 comObject = null;
             }
         }
+
     }
 }
