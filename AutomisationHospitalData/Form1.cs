@@ -311,6 +311,12 @@ namespace AutomisationHospitalData
                 excelProgram.Visible = true;
                 excelProgram.UserControl = true;
 
+                // Releasing the Excel interop objects
+                MRCO(workbookBC);
+                MRCO(worksheetBC);
+                MRCO(infosheetBC);
+                MRCO(rangeBC);
+
             }
             catch (Exception theException)
             {
@@ -561,6 +567,12 @@ namespace AutomisationHospitalData
                 //of Microsoft Excel's lifetime.
                 excelProgram.Visible = true;
                 excelProgram.UserControl = true;
+
+                // Releasing the Excel interop objects
+                MRCO(workbookHørkram);
+                MRCO(worksheetHørkram);
+                MRCO(infosheetHørkram);
+                MRCO(rangeHørkram);
             }
             catch (Exception theException)
             {
@@ -581,6 +593,5 @@ namespace AutomisationHospitalData
                 comObject = null;
             }
         }
-
     }
 }
