@@ -25,6 +25,15 @@ namespace AutomisationHospitalData
         List<String> pathDagrofa = new List<String>();
         List<String> pathFrisksnit = new List<String>();
 
+        private OpenFileDialog openACPathDialog = new OpenFileDialog();
+        private OpenFileDialog openBCPathDialog = new OpenFileDialog();
+        private OpenFileDialog openCBPBageriPathDialog = new OpenFileDialog();
+        private OpenFileDialog openDagrofaPathDialog = new OpenFileDialog();
+        private OpenFileDialog openEmmerysPathDialog = new OpenFileDialog();
+        private OpenFileDialog openFrisksnitPathDialog = new OpenFileDialog();
+        private OpenFileDialog openGrøntGrossistenPathDialog = new OpenFileDialog();
+        private OpenFileDialog openHørkramPathDialog = new OpenFileDialog();
+
         // paths for companies supplying individual excel sheets
         string pathBC = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\BC.xlsx";
         string pathCBP = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\CBP bageri.xlsx";
@@ -468,6 +477,10 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
+        private void buttonCBPBageriPath_Click(object sender, EventArgs e)
+        {
+
+        }
         private void cbpbageriButton_Click(object sender, System.EventArgs e)
         {
 
@@ -490,6 +503,10 @@ namespace AutomisationHospitalData
 
                 MessageBox.Show(errorMessage, "Error");
             }
+        }
+        private void buttonDagrofaPath_Click(object sender, EventArgs e)
+        {
+
         }
         private void dagrofaButton_Click(object sender, System.EventArgs e)
         {
@@ -514,6 +531,10 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
+        private void buttonEmmerysPath_Click(object sender, EventArgs e)
+        {
+
+        }
         private void emmerysButton_Click(object sender, System.EventArgs e)
         {
 
@@ -537,6 +558,10 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
+        private void buttonFriskSnitPath_Click(object sender, EventArgs e)
+        {
+
+        }
         private void frisksnitButton_Click(object sender, System.EventArgs e)
         {
 
@@ -558,6 +583,15 @@ namespace AutomisationHospitalData
                 errorMessage = String.Concat(errorMessage, theException.Source);
 
                 MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void buttonGrøntGrossistenPath_Click(object sender, EventArgs e)
+        {
+            this.openGrøntGrossistenPathDialog.Title = "Select Grønt Grossisten file";
+            if (openGrøntGrossistenPathDialog.ShowDialog() == DialogResult.OK)
+            {
+                pathGrøntGrossisten = openGrøntGrossistenPathDialog.FileName;
+                buttonGrøntGrossistenPath.Text = openGrøntGrossistenPathDialog.FileName;
             }
         }
         private void grøntgrossistenButton_Click(object sender, System.EventArgs e)
@@ -726,48 +760,12 @@ namespace AutomisationHospitalData
                 comObject = null;
             }
         }
-
-        private OpenFileDialog openACPathDialog = new OpenFileDialog();
-        private OpenFileDialog openBCPathDialog = new OpenFileDialog();
-        private OpenFileDialog openGrøntGrossistenPathDialog = new OpenFileDialog();
-        private OpenFileDialog openHørkramPathDialog = new OpenFileDialog();
-
         private void Form1_FormClosing(Object sender, FormClosingEventArgs e)
         {
             MRCO(excelProgram);
             MRCO(workbookMerged);
             MRCO(worksheetMerged);
             MRCO(rangeMerged);
-        }
-
-        private void buttonCBPBageriPath_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void buttonDagrofaPath_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void buttonEmmerysPath_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void buttonFriskSnitPath_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void buttonGrøntGrossistenPath_Click(object sender, EventArgs e)
-        {
-            this.openGrøntGrossistenPathDialog.Title = "Select Grønt Grossisten file";
-            if (openGrøntGrossistenPathDialog.ShowDialog() == DialogResult.OK)
-            {
-                pathGrøntGrossisten = openGrøntGrossistenPathDialog.FileName;
-                buttonGrøntGrossistenPath.Text = openGrøntGrossistenPathDialog.FileName;
-            }
         }
     }
 }
