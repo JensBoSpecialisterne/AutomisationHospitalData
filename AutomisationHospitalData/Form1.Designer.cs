@@ -29,24 +29,23 @@
         private void InitializeComponent()
         {
             this.hørkramButton = new System.Windows.Forms.Button();
-            this.dagrofaTextbox = new System.Windows.Forms.TextBox();
-            this.emmerysTextbox = new System.Windows.Forms.TextBox();
             this.acButton = new System.Windows.Forms.Button();
             this.dagrofaButton = new System.Windows.Forms.Button();
-            this.cbpbageriTextbox = new System.Windows.Forms.TextBox();
-            this.bcTextbox = new System.Windows.Forms.TextBox();
-            this.acTextbox = new System.Windows.Forms.TextBox();
             this.bcButton = new System.Windows.Forms.Button();
             this.cbpbageriButton = new System.Windows.Forms.Button();
             this.emmerysButton = new System.Windows.Forms.Button();
             this.frisksnitButton = new System.Windows.Forms.Button();
-            this.frisksnitTextbox = new System.Windows.Forms.TextBox();
-            this.grøntgrossistenTextbox = new System.Windows.Forms.TextBox();
             this.grøntgrossistenButton = new System.Windows.Forms.Button();
-            this.hørkramTextbox = new System.Windows.Forms.TextBox();
             this.createNewExcelTextbox = new System.Windows.Forms.TextBox();
             this.createNewExcelButton = new System.Windows.Forms.Button();
-            this.buttonShutdown = new System.Windows.Forms.Button();
+            this.buttonBCPath = new System.Windows.Forms.Button();
+            this.buttonHørkramPath = new System.Windows.Forms.Button();
+            this.buttonGrøntGrossistenPath = new System.Windows.Forms.Button();
+            this.buttonFriskSnitPath = new System.Windows.Forms.Button();
+            this.buttonEmmerysPath = new System.Windows.Forms.Button();
+            this.buttonDagrofaPath = new System.Windows.Forms.Button();
+            this.buttonCBPBageriPath = new System.Windows.Forms.Button();
+            this.buttonACPath = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // hørkramButton
@@ -58,22 +57,6 @@
             this.hørkramButton.Text = "Hørkram";
             this.hørkramButton.UseVisualStyleBackColor = true;
             this.hørkramButton.Click += new System.EventHandler(this.hørkramButton_Click);
-            // 
-            // dagrofaTextbox
-            // 
-            this.dagrofaTextbox.Location = new System.Drawing.Point(12, 141);
-            this.dagrofaTextbox.Name = "dagrofaTextbox";
-            this.dagrofaTextbox.Size = new System.Drawing.Size(352, 20);
-            this.dagrofaTextbox.TabIndex = 1;
-            this.dagrofaTextbox.TextChanged += new System.EventHandler(this.dagrofaTextbox_TextChanged);
-            // 
-            // emmerysTextbox
-            // 
-            this.emmerysTextbox.Location = new System.Drawing.Point(12, 167);
-            this.emmerysTextbox.Name = "emmerysTextbox";
-            this.emmerysTextbox.Size = new System.Drawing.Size(352, 20);
-            this.emmerysTextbox.TabIndex = 2;
-            this.emmerysTextbox.TextChanged += new System.EventHandler(this.emmerysTextbox_TextChanged);
             // 
             // acButton
             // 
@@ -94,30 +77,6 @@
             this.dagrofaButton.Text = "Dagrofa";
             this.dagrofaButton.UseVisualStyleBackColor = true;
             this.dagrofaButton.Click += new System.EventHandler(this.dagrofaButton_Click);
-            // 
-            // cbpbageriTextbox
-            // 
-            this.cbpbageriTextbox.Location = new System.Drawing.Point(12, 115);
-            this.cbpbageriTextbox.Name = "cbpbageriTextbox";
-            this.cbpbageriTextbox.Size = new System.Drawing.Size(352, 20);
-            this.cbpbageriTextbox.TabIndex = 5;
-            this.cbpbageriTextbox.TextChanged += new System.EventHandler(this.cbpbageriTextbox_TextChanged);
-            // 
-            // bcTextbox
-            // 
-            this.bcTextbox.Location = new System.Drawing.Point(12, 89);
-            this.bcTextbox.Name = "bcTextbox";
-            this.bcTextbox.Size = new System.Drawing.Size(352, 20);
-            this.bcTextbox.TabIndex = 6;
-            this.bcTextbox.TextChanged += new System.EventHandler(this.bcTextbox_TextChanged);
-            // 
-            // acTextbox
-            // 
-            this.acTextbox.Location = new System.Drawing.Point(12, 63);
-            this.acTextbox.Name = "acTextbox";
-            this.acTextbox.Size = new System.Drawing.Size(352, 20);
-            this.acTextbox.TabIndex = 7;
-            this.acTextbox.TextChanged += new System.EventHandler(this.acTextbox_TextChanged);
             // 
             // bcButton
             // 
@@ -159,22 +118,6 @@
             this.frisksnitButton.UseVisualStyleBackColor = true;
             this.frisksnitButton.Click += new System.EventHandler(this.frisksnitButton_Click);
             // 
-            // frisksnitTextbox
-            // 
-            this.frisksnitTextbox.Location = new System.Drawing.Point(12, 193);
-            this.frisksnitTextbox.Name = "frisksnitTextbox";
-            this.frisksnitTextbox.Size = new System.Drawing.Size(352, 20);
-            this.frisksnitTextbox.TabIndex = 12;
-            this.frisksnitTextbox.TextChanged += new System.EventHandler(this.frisksnitTextbox_TextChanged);
-            // 
-            // grøntgrossistenTextbox
-            // 
-            this.grøntgrossistenTextbox.Location = new System.Drawing.Point(12, 219);
-            this.grøntgrossistenTextbox.Name = "grøntgrossistenTextbox";
-            this.grøntgrossistenTextbox.Size = new System.Drawing.Size(352, 20);
-            this.grøntgrossistenTextbox.TabIndex = 13;
-            this.grøntgrossistenTextbox.TextChanged += new System.EventHandler(this.grøntgrossistenTextbox_TextChanged);
-            // 
             // grøntgrossistenButton
             // 
             this.grøntgrossistenButton.Location = new System.Drawing.Point(370, 219);
@@ -184,14 +127,6 @@
             this.grøntgrossistenButton.Text = "Grønt Grossisten";
             this.grøntgrossistenButton.UseVisualStyleBackColor = true;
             this.grøntgrossistenButton.Click += new System.EventHandler(this.grøntgrossistenButton_Click);
-            // 
-            // hørkramTextbox
-            // 
-            this.hørkramTextbox.Location = new System.Drawing.Point(12, 245);
-            this.hørkramTextbox.Name = "hørkramTextbox";
-            this.hørkramTextbox.Size = new System.Drawing.Size(352, 20);
-            this.hørkramTextbox.TabIndex = 15;
-            this.hørkramTextbox.TextChanged += new System.EventHandler(this.hørkramTextbox_TextChanged);
             // 
             // createNewExcelTextbox
             // 
@@ -211,39 +146,108 @@
             this.createNewExcelButton.UseVisualStyleBackColor = true;
             this.createNewExcelButton.Click += new System.EventHandler(this.createNewExcelButton_Click);
             // 
-            // buttonShutdown
+            // buttonBCPath
             // 
-            this.buttonShutdown.Location = new System.Drawing.Point(194, 309);
-            this.buttonShutdown.Name = "buttonShutdown";
-            this.buttonShutdown.Size = new System.Drawing.Size(97, 23);
-            this.buttonShutdown.TabIndex = 18;
-            this.buttonShutdown.Text = "Luk program";
-            this.buttonShutdown.UseVisualStyleBackColor = true;
-            this.buttonShutdown.Click += new System.EventHandler(this.buttonShutdown_Click);
+            this.buttonBCPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.buttonBCPath.Location = new System.Drawing.Point(12, 89);
+            this.buttonBCPath.Name = "buttonBCPath";
+            this.buttonBCPath.Size = new System.Drawing.Size(351, 23);
+            this.buttonBCPath.TabIndex = 19;
+            this.buttonBCPath.UseVisualStyleBackColor = false;
+            this.buttonBCPath.Click += new System.EventHandler(this.buttonBCPath_Click);
+            // 
+            // buttonHørkramPath
+            // 
+            this.buttonHørkramPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.buttonHørkramPath.Location = new System.Drawing.Point(12, 245);
+            this.buttonHørkramPath.Name = "buttonHørkramPath";
+            this.buttonHørkramPath.Size = new System.Drawing.Size(351, 23);
+            this.buttonHørkramPath.TabIndex = 20;
+            this.buttonHørkramPath.UseVisualStyleBackColor = false;
+            this.buttonHørkramPath.Click += new System.EventHandler(this.buttonHørkramPath_Click);
+            // 
+            // buttonGrøntGrossistenPath
+            // 
+            this.buttonGrøntGrossistenPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.buttonGrøntGrossistenPath.Location = new System.Drawing.Point(12, 219);
+            this.buttonGrøntGrossistenPath.Name = "buttonGrøntGrossistenPath";
+            this.buttonGrøntGrossistenPath.Size = new System.Drawing.Size(351, 23);
+            this.buttonGrøntGrossistenPath.TabIndex = 21;
+            this.buttonGrøntGrossistenPath.UseVisualStyleBackColor = false;
+            this.buttonGrøntGrossistenPath.Click += new System.EventHandler(this.buttonGrøntGrossistenPath_Click);
+            // 
+            // buttonFriskSnitPath
+            // 
+            this.buttonFriskSnitPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.buttonFriskSnitPath.Location = new System.Drawing.Point(12, 193);
+            this.buttonFriskSnitPath.Name = "buttonFriskSnitPath";
+            this.buttonFriskSnitPath.Size = new System.Drawing.Size(351, 23);
+            this.buttonFriskSnitPath.TabIndex = 22;
+            this.buttonFriskSnitPath.UseVisualStyleBackColor = false;
+            this.buttonFriskSnitPath.Click += new System.EventHandler(this.buttonFriskSnitPath_Click);
+            // 
+            // buttonEmmerysPath
+            // 
+            this.buttonEmmerysPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.buttonEmmerysPath.Location = new System.Drawing.Point(12, 167);
+            this.buttonEmmerysPath.Name = "buttonEmmerysPath";
+            this.buttonEmmerysPath.Size = new System.Drawing.Size(351, 23);
+            this.buttonEmmerysPath.TabIndex = 23;
+            this.buttonEmmerysPath.UseVisualStyleBackColor = false;
+            this.buttonEmmerysPath.Click += new System.EventHandler(this.buttonEmmerysPath_Click);
+            // 
+            // buttonDagrofaPath
+            // 
+            this.buttonDagrofaPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.buttonDagrofaPath.Location = new System.Drawing.Point(12, 141);
+            this.buttonDagrofaPath.Name = "buttonDagrofaPath";
+            this.buttonDagrofaPath.Size = new System.Drawing.Size(351, 23);
+            this.buttonDagrofaPath.TabIndex = 24;
+            this.buttonDagrofaPath.UseVisualStyleBackColor = false;
+            this.buttonDagrofaPath.Click += new System.EventHandler(this.buttonDagrofaPath_Click);
+            // 
+            // buttonCBPBageriPath
+            // 
+            this.buttonCBPBageriPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.buttonCBPBageriPath.Location = new System.Drawing.Point(12, 115);
+            this.buttonCBPBageriPath.Name = "buttonCBPBageriPath";
+            this.buttonCBPBageriPath.Size = new System.Drawing.Size(351, 23);
+            this.buttonCBPBageriPath.TabIndex = 25;
+            this.buttonCBPBageriPath.UseVisualStyleBackColor = false;
+            this.buttonCBPBageriPath.Click += new System.EventHandler(this.buttonCBPBageriPath_Click);
+            // 
+            // buttonACPath
+            // 
+            this.buttonACPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.buttonACPath.Location = new System.Drawing.Point(12, 63);
+            this.buttonACPath.Name = "buttonACPath";
+            this.buttonACPath.Size = new System.Drawing.Size(351, 23);
+            this.buttonACPath.TabIndex = 26;
+            this.buttonACPath.UseVisualStyleBackColor = false;
+            this.buttonACPath.Click += new System.EventHandler(this.buttonACPath_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(506, 577);
-            this.Controls.Add(this.buttonShutdown);
+            this.Controls.Add(this.buttonACPath);
+            this.Controls.Add(this.buttonCBPBageriPath);
+            this.Controls.Add(this.buttonDagrofaPath);
+            this.Controls.Add(this.buttonEmmerysPath);
+            this.Controls.Add(this.buttonFriskSnitPath);
+            this.Controls.Add(this.buttonGrøntGrossistenPath);
+            this.Controls.Add(this.buttonHørkramPath);
+            this.Controls.Add(this.buttonBCPath);
             this.Controls.Add(this.createNewExcelButton);
             this.Controls.Add(this.createNewExcelTextbox);
-            this.Controls.Add(this.hørkramTextbox);
             this.Controls.Add(this.grøntgrossistenButton);
-            this.Controls.Add(this.grøntgrossistenTextbox);
-            this.Controls.Add(this.frisksnitTextbox);
             this.Controls.Add(this.frisksnitButton);
             this.Controls.Add(this.emmerysButton);
             this.Controls.Add(this.cbpbageriButton);
             this.Controls.Add(this.bcButton);
-            this.Controls.Add(this.acTextbox);
-            this.Controls.Add(this.bcTextbox);
-            this.Controls.Add(this.cbpbageriTextbox);
             this.Controls.Add(this.dagrofaButton);
             this.Controls.Add(this.acButton);
-            this.Controls.Add(this.emmerysTextbox);
-            this.Controls.Add(this.dagrofaTextbox);
             this.Controls.Add(this.hørkramButton);
             this.Name = "Form1";
             this.Text = "Rens Excel-ark";
@@ -256,24 +260,24 @@
         #endregion
 
         private System.Windows.Forms.Button hørkramButton;
-        private System.Windows.Forms.TextBox dagrofaTextbox;
-        private System.Windows.Forms.TextBox emmerysTextbox;
         private System.Windows.Forms.Button acButton;
         private System.Windows.Forms.Button dagrofaButton;
-        private System.Windows.Forms.TextBox cbpbageriTextbox;
-        private System.Windows.Forms.TextBox bcTextbox;
-        private System.Windows.Forms.TextBox acTextbox;
         private System.Windows.Forms.Button bcButton;
         private System.Windows.Forms.Button cbpbageriButton;
         private System.Windows.Forms.Button emmerysButton;
         private System.Windows.Forms.Button frisksnitButton;
-        private System.Windows.Forms.TextBox frisksnitTextbox;
-        private System.Windows.Forms.TextBox grøntgrossistenTextbox;
         private System.Windows.Forms.Button grøntgrossistenButton;
-        private System.Windows.Forms.TextBox hørkramTextbox;
         private System.Windows.Forms.TextBox createNewExcelTextbox;
         private System.Windows.Forms.Button createNewExcelButton;
-        private System.Windows.Forms.Button buttonShutdown;
+        private System.Windows.Forms.Button buttonBCPath;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.Button buttonHørkramPath;
+        private System.Windows.Forms.Button buttonGrøntGrossistenPath;
+        private System.Windows.Forms.Button buttonFriskSnitPath;
+        private System.Windows.Forms.Button buttonEmmerysPath;
+        private System.Windows.Forms.Button buttonDagrofaPath;
+        private System.Windows.Forms.Button buttonCBPBageriPath;
+        private System.Windows.Forms.Button buttonACPath;
     }
 }
 
