@@ -633,7 +633,7 @@ namespace AutomisationHospitalData
 
             try
             {
-                foreach (String fileAC in pathDagrofa)
+                foreach (String fileDagrofa in pathDagrofa)
                 {
 
                 }
@@ -695,13 +695,12 @@ namespace AutomisationHospitalData
 
                         string currentHospital = worksheetEmmerys.Cells[1, 2].Text;
 
-
                         // Creates a List of String arrays for every rowOld in the BC worksheet.
                         // Amount of rows as a List to allow for deletion of irrelevant entries.
                         List<String[]> listEmmerys = new List<String[]>();
 
-                        int rowNew = 0;
                         // For every row in the imported Hørkram Object array, copy its value to the corresponding String in the List of String arrays
+                        int rowNew = 0;
                         for (int rowEmmerys = headerRows; rowEmmerys < rowCountEmmerys; rowEmmerys++)
                         {
                             if (!arrayEmmerys[rowEmmerys, 1].ToString().Contains("Produktnavn"))
@@ -728,7 +727,7 @@ namespace AutomisationHospitalData
 
                         object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
 
-                        // Sets the values in the Hørkram Object Array
+                        // Sets the values in the Emmerys Object Array
                         for (int row = 0; row < listEmmerys.Count; row++)
                         {
                             Debug.WriteLine(row);
@@ -809,12 +808,130 @@ namespace AutomisationHospitalData
 
             Excel._Workbook workbookFrisksnit;
             Excel._Worksheet worksheetFrisksnit;
-            Excel._Worksheet infosheetFrisksnit;
             Excel.Range rangeFrisksnit;
 
             try
             {
+                foreach (String fileFrisksnit in pathFrisksnit)
+                {
+                    workbookFrisksnit = excelProgram.Workbooks.Open(fileFrisksnit);
+                    worksheetFrisksnit = workbookFrisksnit.Sheets[1];
+                    rangeFrisksnit = worksheetFrisksnit.UsedRange;
 
+                    int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
+
+                    int rowCountFrisksnit = rangeFrisksnit.Rows.Count;
+                    int colCountFrisksnit = rangeFrisksnit.Columns.Count;
+
+                    int headerRows = 7;
+                    bool øko = false;
+
+                    string currentHospital = worksheetFrisksnit.Cells[3, 1].Text;
+
+                    String infostringFrisksnit = worksheetFrisksnit.Cells[4, 1].Text;
+                    String[] dateFrisksnitString = infostringFrisksnit.Split(new string[] { " - " }, StringSplitOptions.None);
+                    DateTime dateFrisksnit = DateTime.Parse(dateFrisksnitString[2]);
+
+                    // Imports the cell data from the Frisksnit sheet as an array of Objects
+                    Object[,] arrayFrisksnit = rangeFrisksnit.get_Value();
+
+                    // Creates a List of String arrays for every rowOld in the BC worksheet.
+                    // Amount of rows as a List to allow for deletion of irrelevant entries.
+                    List<String[]> listFrisksnit = new List<String[]>();
+
+                    // For every row in the imported Frisksnit Object array, copy its value to the corresponding String in the List of String arrays
+                    int rowNew = 0;
+                    for (int rowFrisksnit = headerRows; rowFrisksnit < rowCountFrisksnit-1; rowFrisksnit++)
+                    {
+                        try
+                        {
+                            if (!(arrayFrisksnit[rowFrisksnit, 1].ToString().Contains("Total") | arrayFrisksnit[rowFrisksnit, 1].ToString().Contains("Gruppe")))
+                            {
+                                listFrisksnit.Add(new string[14]);
+                                for (int col = 0; col < colCountFrisksnit; col++)
+                                {
+                                    Debug.WriteLine(col);
+                                    try // "Try" because the cell's value can be Null
+                                    {
+                                        listFrisksnit[rowNew].SetValue(arrayFrisksnit[rowFrisksnit, col + 1].ToString(), col);
+                                    }
+                                    catch (NullReferenceException) // "Catch" in case the cell's value is Null
+                                    {
+                                        listFrisksnit[rowNew].SetValue("", col);
+                                    }
+                                }
+                                rowNew++;
+                            }
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listFrisksnit.Count));
+
+                    object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
+
+                    // Sets the values in the Frisksnit Object Array
+                    for (int row = 0; row < listFrisksnit.Count; row++)
+                    {
+                        øko = false;
+                        if (listFrisksnit[row].GetValue(0).ToString().Contains("Øko"))
+                        {
+                            øko = true;
+                        }
+                        arrayMerged[row + 1, 1] = dateFrisksnit.Year; // År
+                        arrayMerged[row + 1, 2] = (dateFrisksnit.Month) / 3; // Kvartal
+                        arrayMerged[row + 1, 3] = currentHospital; // Hospital
+                        arrayMerged[row + 1, 4] = ""; // Råvarekategori
+                        arrayMerged[row + 1, 5] = "Frisksnit"; // Leverandør
+                        if (øko) // konv/øko
+                        {
+                            arrayMerged[row + 1, 6] = listFrisksnit[row].GetValue(0).ToString().Replace("Øko - ", ""); // Råvare
+                        }
+                        else
+                        {
+                            arrayMerged[row + 1, 6] = listFrisksnit[row].GetValue(0); // Råvare
+                        }
+                        if (øko) // konv/øko
+                        {
+                            arrayMerged[row + 1, 7] = "Øko";
+                        }
+                        else
+                        {
+                            arrayMerged[row + 1, 7] = "Konv";
+                        }
+                        arrayMerged[row + 1, 8] = listFrisksnit[row].GetValue(2); // Varianter/opr
+                        arrayMerged[row + 1, 9] = float.Parse(listFrisksnit[row].GetValue(5).ToString()) / float.Parse(listFrisksnit[row].GetValue(3).ToString()); // Pris pr enhed
+                        arrayMerged[row + 1, 10] = listFrisksnit[row].GetValue(5); // Pris i alt
+                        arrayMerged[row + 1, 11] = listFrisksnit[row].GetValue(4); // Kg
+                        arrayMerged[row + 1, 12] = float.Parse(listFrisksnit[row].GetValue(5).ToString()) / float.Parse(listFrisksnit[row].GetValue(4).ToString()); // Kilopris
+                        arrayMerged[row + 1, 13] = "DAN"; // Oprindelse
+                    }
+
+                    rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                    rangeMerged = worksheetMerged.UsedRange;
+
+                    //Format the cells.
+                    worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listFrisksnit.Count)).Font.Name = "Calibri";
+                    worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listFrisksnit.Count)).Font.Size = 11;
+
+                    //AutoFit columns A:V.
+                    rangeMerged = worksheetMerged.get_Range("A1", "M1");
+                    rangeMerged.EntireColumn.AutoFit();
+
+
+                    //Make sure Excel is visible and give the user control
+                    //of Microsoft Excel's lifetime.
+                    excelProgram.Visible = true;
+                    excelProgram.UserControl = true;
+
+                    // Releasing the Excel interop objects
+                    workbookFrisksnit.Close(false);
+                    MRCO(workbookFrisksnit);
+                    MRCO(worksheetFrisksnit);
+                    MRCO(rangeFrisksnit);
+                }
             }
             catch (Exception theException)
             {
@@ -973,7 +1090,6 @@ namespace AutomisationHospitalData
                 //AutoFit columns A:V.
                 rangeMerged = worksheetMerged.get_Range("A1", "M1");
                 rangeMerged.EntireColumn.AutoFit();
-
 
                 //Make sure Excel is visible and give the user control
                 //of Microsoft Excel's lifetime.
