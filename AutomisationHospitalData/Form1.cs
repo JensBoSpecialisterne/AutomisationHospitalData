@@ -15,16 +15,13 @@ namespace AutomisationHospitalData
 {
     public partial class Form1 : Form
     {
+        // Objects for the merged worksheet
         Excel.Application excelProgram;
         Excel._Workbook workbookMerged;
         Excel._Worksheet worksheetMerged;
         Excel.Range rangeMerged;
 
-        // paths for companies supplying folders of excel sheets
-        List<String> pathAC = new List<String>();
-        List<String> pathDagrofa = new List<String>();
-        List<String> pathFrisksnit = new List<String>();
-
+        // File dialogues
         private OpenFileDialog openACPathDialog = new OpenFileDialog();
         private OpenFileDialog openBCPathDialog = new OpenFileDialog();
         private OpenFileDialog openCBPBageriPathDialog = new OpenFileDialog();
@@ -34,9 +31,14 @@ namespace AutomisationHospitalData
         private OpenFileDialog openGrøntGrossistenPathDialog = new OpenFileDialog();
         private OpenFileDialog openHørkramPathDialog = new OpenFileDialog();
 
+        // paths for companies supplying folders of excel sheets
+        List<String> pathAC = new List<String>();
+        List<String> pathDagrofa = new List<String>();
+        List<String> pathFrisksnit = new List<String>();
+
         // paths for companies supplying individual excel sheets
         string pathBC = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\BC.xlsx";
-        string pathCBP = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\CBP bageri.xlsx";
+        string pathCBPBageri = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\CBP bageri.xlsx";
         string pathEmmerys = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\Emmerys 01-04-2021..30-06-2021.xlsx";
         string pathGrøntGrossisten = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\Grønt Grossisten.xlsx";
         string pathHørkram = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\Hørkram.xlsx";
@@ -93,6 +95,8 @@ namespace AutomisationHospitalData
         private void createNewExcelButton_Click(object sender, System.EventArgs e)
         {
         }
+
+        // Code for AC files
         private void buttonACPath_Click(object sender, EventArgs e)
         {
             this.openACPathDialog.Multiselect = true;
@@ -250,9 +254,11 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
+
+        // Code for BC files
         private void buttonBCPath_Click(object sender, EventArgs e)
         {
-            this.openFileDialog1.Title = "Select BC File";
+            this.openBCPathDialog.Title = "Select BC File";
             if (openBCPathDialog.ShowDialog() == DialogResult.OK)
             {
                 pathBC = openBCPathDialog.FileName;
@@ -477,9 +483,16 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
+
+        // Code for CBP Bageri files
         private void buttonCBPBageriPath_Click(object sender, EventArgs e)
         {
-
+            this.openCBPBageriPathDialog.Title = "Select CBP Bageri File";
+            if (openCBPBageriPathDialog.ShowDialog() == DialogResult.OK)
+            {
+                pathCBPBageri = openCBPBageriPathDialog.FileName;
+                buttonCBPBageriPath.Text = openCBPBageriPathDialog.FileName;
+            }
         }
         private void cbpbageriButton_Click(object sender, System.EventArgs e)
         {
@@ -491,7 +504,100 @@ namespace AutomisationHospitalData
 
             try
             {
+                workbookCBP = excelProgram.Workbooks.Open(pathCBPBageri);
+                infosheetCBP = workbookCBP.Sheets[1];
+                worksheetCBP = workbookCBP.Sheets[2];
+                rangeCBP = worksheetCBP.UsedRange;
 
+                int headerRows = 1;
+
+                int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
+
+                int rowCountCBP = rangeCBP.Rows.Count - headerRows;
+                int colCountCBP = rangeCBP.Columns.Count;
+
+                // Imports the date from the CBP worksheet
+                string stringDate = infosheetCBP.Cells[1, 1].Text;
+                DateTime dateCBP = DateTime.Parse(stringDate.Split(' ')[3]);
+
+                // Imports the cell data from the CBP sheet as an array of Objects
+                Object[,] arrayCBP = rangeCBP.get_Value();
+
+                // Creates a List of String arrays for every row in the CBP worksheet.
+                // Amount of rows as a List to allow for deletion of irrelevant entries.
+                List<String[]> listCBP = new List<String[]>();
+
+                // For every row in the imported CBP Object array, copy its value to the corresponding String in the List of String arrays
+                for (int row = 0; row < rowCountCBP; row++)
+                {
+                    listCBP.Add(new string[14]);
+                    for (int col = 0; col < colCountCBP; col++)
+                    {
+                        try // "Try" because the cell's value can be Null
+                        {
+                            listCBP[row].SetValue(arrayCBP[row + 1 + headerRows, col + 1].ToString(), col);
+                        }
+                        catch (NullReferenceException) // "Catch" in case the cell's value is Null
+                        {
+                            listCBP[row].SetValue("", col);
+                        }
+                    }
+                }
+
+                // Deletion of irrelevant entries from the List of String arrays
+                listCBP.RemoveRange(0, 2); // Header entries in row 1 and 2
+
+                rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listCBP.Count));
+
+                object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
+
+                // Sets the values in the CBP Object Array
+                for (int row = 0; row < listCBP.Count; row++)
+                { 
+                    arrayMerged[row + 1, 1] = dateCBP.Year; // År
+                    arrayMerged[row + 1, 2] = dateCBP.Month/3; // Kvartal
+                    arrayMerged[row + 1, 3] = listCBP[row].GetValue(0).ToString().Split(new string[] { " ~ " }, StringSplitOptions.None).Last(); // Hospital
+                    arrayMerged[row + 1, 4] = ""; // Råvarekategori
+                    arrayMerged[row + 1, 5] = "CBP Bageri"; // Leverandør
+                    arrayMerged[row + 1, 6] = ""; // Råvare
+                    if (listCBP[row].GetValue(10) as String == "Økologi") // konv/øko
+                    {
+                        arrayMerged[row + 1, 7] = "Øko";
+                    }
+                    if (listCBP[row].GetValue(10) as String == "Ej Økologi")
+                    {
+                        arrayMerged[row + 1, 7] = "Konv";
+                    }
+                    arrayMerged[row + 1, 8] = listCBP[row].GetValue(1).ToString().Split(new string[] { " ~ " }, StringSplitOptions.None).Last(); // Varianter/opr
+                    arrayMerged[row + 1, 9] = ""; // Pris pr enhed
+                    arrayMerged[row + 1, 10] = listCBP[row].GetValue(3); // Pris i alt
+                    arrayMerged[row + 1, 11] = listCBP[row].GetValue(2); // Kg
+                    arrayMerged[row + 1, 12] = listCBP[row].GetValue(8); // Kilopris
+                    arrayMerged[row + 1, 13] = ""; // Oprindelse
+                }
+
+                rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                rangeMerged = worksheetMerged.UsedRange;
+
+                //Format the cells.
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listCBP.Count)).Font.Name = "Calibri";
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listCBP.Count)).Font.Size = 11;
+
+                //AutoFit columns A:V.
+                rangeMerged = worksheetMerged.get_Range("A1", "M1");
+                rangeMerged.EntireColumn.AutoFit();
+
+
+                //Make sure Excel is visible and give the user control
+                //of Microsoft Excel's lifetime.
+                excelProgram.Visible = true;
+                excelProgram.UserControl = true;
+
+                // Releasing the Excel interop objects
+                workbookCBP.Close(false);
+                MRCO(workbookCBP);
+                MRCO(worksheetCBP);
+                MRCO(rangeCBP);
             }
             catch (Exception theException)
             {
@@ -504,9 +610,18 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
+
+        // Code for Dagrofa files
         private void buttonDagrofaPath_Click(object sender, EventArgs e)
         {
+            this.openDagrofaPathDialog.Multiselect = true;
+            this.openDagrofaPathDialog.Title = "Select Dagrofa files";
 
+            if (openDagrofaPathDialog.ShowDialog() == DialogResult.OK)
+            {
+                pathDagrofa = openDagrofaPathDialog.FileNames.ToList();
+                buttonDagrofaPath.Text = openDagrofaPathDialog.FileName;
+            }
         }
         private void dagrofaButton_Click(object sender, System.EventArgs e)
         {
@@ -518,7 +633,10 @@ namespace AutomisationHospitalData
 
             try
             {
+                foreach (String fileAC in pathDagrofa)
+                {
 
+                }
             }
             catch (Exception theException)
             {
@@ -531,21 +649,136 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
+
+        // Code for Emmerys files
         private void buttonEmmerysPath_Click(object sender, EventArgs e)
         {
-
+            this.openEmmerysPathDialog.Title = "Select Emmerys File";
+            if (openEmmerysPathDialog.ShowDialog() == DialogResult.OK)
+            {
+                pathEmmerys = openEmmerysPathDialog.FileName;
+                buttonEmmerysPath.Text = openEmmerysPathDialog.FileName;
+            }
         }
         private void emmerysButton_Click(object sender, System.EventArgs e)
         {
 
             Excel._Workbook workbookEmmerys;
-            Excel._Worksheet worksheetEmmerys;
-            Excel._Worksheet infosheetEmmerys;
             Excel.Range rangeEmmerys;
 
             try
             {
+                workbookEmmerys = excelProgram.Workbooks.Open(pathEmmerys);
 
+                bool skipSheet = true;
+
+                foreach (Excel.Worksheet worksheetEmmerys in workbookEmmerys.Sheets)
+                {
+                    if (!skipSheet)
+                    {
+                        Debug.WriteLine(worksheetEmmerys.Name);
+                        rangeEmmerys = worksheetEmmerys.UsedRange;
+
+                        int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
+
+                        int rowCountEmmerys = rangeEmmerys.Rows.Count;
+                        int colCountEmmerys = rangeEmmerys.Columns.Count;
+
+                        int headerRows = 10;
+
+                        String infostringEmmerys = worksheetEmmerys.Cells[2, 2].Text;
+                        String[] dateEmmerysString = infostringEmmerys.Split(new string[] { ".." }, StringSplitOptions.None);
+                        DateTime dateEmmerys = DateTime.Parse(dateEmmerysString[1]);
+
+                        // Imports the cell data from the Emmerys sheet as an array of Objects
+                        Object[,] arrayEmmerys = rangeEmmerys.get_Value();
+
+                        string currentHospital = worksheetEmmerys.Cells[1, 2].Text;
+
+
+                        // Creates a List of String arrays for every rowOld in the BC worksheet.
+                        // Amount of rows as a List to allow for deletion of irrelevant entries.
+                        List<String[]> listEmmerys = new List<String[]>();
+
+                        int rowNew = 0;
+                        // For every row in the imported Hørkram Object array, copy its value to the corresponding String in the List of String arrays
+                        for (int rowEmmerys = headerRows; rowEmmerys < rowCountEmmerys; rowEmmerys++)
+                        {
+                            if (!arrayEmmerys[rowEmmerys, 1].ToString().Contains("Produktnavn"))
+                            {
+                                Debug.WriteLine(rowNew);
+                                listEmmerys.Add(new string[14]);
+                                for (int col = 0; col < colCountEmmerys; col++)
+                                {
+                                    Debug.WriteLine(col);
+                                    try // "Try" because the cell's value can be Null
+                                    {
+                                        listEmmerys[rowNew].SetValue(arrayEmmerys[rowEmmerys, col + 1].ToString(), col);
+                                    }
+                                    catch (NullReferenceException) // "Catch" in case the cell's value is Null
+                                    {
+                                        listEmmerys[rowNew].SetValue("", col);
+                                    }
+                                }
+                                rowNew++;
+                            }
+                        }
+
+                        rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listEmmerys.Count));
+
+                        object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
+
+                        // Sets the values in the Hørkram Object Array
+                        for (int row = 0; row < listEmmerys.Count; row++)
+                        {
+                            Debug.WriteLine(row);
+                            arrayMerged[row + 1, 1] = dateEmmerys.Year; // År
+                            arrayMerged[row + 1, 2] = (dateEmmerys.Month) / 3; // Kvartal
+                            arrayMerged[row + 1, 3] = currentHospital; // Hospital
+                            arrayMerged[row + 1, 4] = ""; // Råvarekategori
+                            arrayMerged[row + 1, 5] = "Emmerys"; // Leverandør
+                            arrayMerged[row + 1, 6] = ""; // Råvare
+                            if (listEmmerys[row].GetValue(1) as String == "ØKO") // konv/øko
+                            {
+                                arrayMerged[row + 1, 7] = "Øko";
+                            }
+                            if (listEmmerys[row].GetValue(1) as String == "Konventionel")
+                            {
+                                arrayMerged[row + 1, 7] = "Konv";
+                            }
+                            arrayMerged[row + 1, 8] = listEmmerys[row].GetValue(0); // Varianter/opr
+                            arrayMerged[row + 1, 9] = listEmmerys[row].GetValue(2); // Pris pr enhed
+                            arrayMerged[row + 1, 10] = listEmmerys[row].GetValue(4); // Pris i alt
+                            arrayMerged[row + 1, 11] = listEmmerys[row].GetValue(6); // Kg
+                            arrayMerged[row + 1, 12] = float.Parse(listEmmerys[row].GetValue(4).ToString()) / float.Parse(listEmmerys[row].GetValue(6).ToString()); // Kilopris
+                            arrayMerged[row + 1, 13] = "DAN"; // Oprindelse
+                        }
+
+                        rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                        rangeMerged = worksheetMerged.UsedRange;
+
+                        //Format the cells.
+                        worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listEmmerys.Count)).Font.Name = "Calibri";
+                        worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listEmmerys.Count)).Font.Size = 11;
+
+                        // Releasing the Excel interop objects for the worksheet
+                        MRCO(rangeEmmerys);
+                    }
+                    skipSheet = false;
+                    MRCO(worksheetEmmerys);
+                }
+                //AutoFit columns A:V.
+                rangeMerged = worksheetMerged.get_Range("A1", "M1");
+                rangeMerged.EntireColumn.AutoFit();
+
+                //Make sure Excel is visible and give the user control
+                //of Microsoft Excel's lifetime.
+                excelProgram.Visible = true;
+                excelProgram.UserControl = true;
+
+                // Releasing the Excel interop objects for workbook
+                workbookEmmerys.Close(false);
+                MRCO(workbookEmmerys);
             }
             catch (Exception theException)
             {
@@ -558,9 +791,18 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
-        private void buttonFriskSnitPath_Click(object sender, EventArgs e)
-        {
 
+        // Code for Frisksnit files
+        private void buttonFrisksnitPath_Click(object sender, EventArgs e)
+        {
+            this.openFrisksnitPathDialog.Multiselect = true;
+            this.openFrisksnitPathDialog.Title = "Select Frisksnit files";
+
+            if (openFrisksnitPathDialog.ShowDialog() == DialogResult.OK)
+            {
+                pathFrisksnit = openFrisksnitPathDialog.FileNames.ToList();
+                buttonFrisksnitPath.Text = openFrisksnitPathDialog.FileName;
+            }
         }
         private void frisksnitButton_Click(object sender, System.EventArgs e)
         {
@@ -585,6 +827,8 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
+
+        // Code for Grønt Grossisten files
         private void buttonGrøntGrossistenPath_Click(object sender, EventArgs e)
         {
             this.openGrøntGrossistenPathDialog.Title = "Select Grønt Grossisten file";
@@ -625,6 +869,8 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
+
+        // Code for Hørkram files
         private void buttonHørkramPath_Click(object sender, EventArgs e)
         {
             this.openHørkramPathDialog.Title = "Select Hørkram file";
@@ -752,6 +998,8 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
+
+        // Support code
         public void MRCO(Object comObject) // Based on code from breezetree.com/blog/
         {
             if (comObject != null)

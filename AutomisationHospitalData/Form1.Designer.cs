@@ -41,7 +41,7 @@
             this.buttonBCPath = new System.Windows.Forms.Button();
             this.buttonHørkramPath = new System.Windows.Forms.Button();
             this.buttonGrøntGrossistenPath = new System.Windows.Forms.Button();
-            this.buttonFriskSnitPath = new System.Windows.Forms.Button();
+            this.buttonFrisksnitPath = new System.Windows.Forms.Button();
             this.buttonEmmerysPath = new System.Windows.Forms.Button();
             this.buttonDagrofaPath = new System.Windows.Forms.Button();
             this.buttonCBPBageriPath = new System.Windows.Forms.Button();
@@ -176,15 +176,15 @@
             this.buttonGrøntGrossistenPath.UseVisualStyleBackColor = false;
             this.buttonGrøntGrossistenPath.Click += new System.EventHandler(this.buttonGrøntGrossistenPath_Click);
             // 
-            // buttonFriskSnitPath
+            // buttonFrisksnitPath
             // 
-            this.buttonFriskSnitPath.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.buttonFriskSnitPath.Location = new System.Drawing.Point(12, 193);
-            this.buttonFriskSnitPath.Name = "buttonFriskSnitPath";
-            this.buttonFriskSnitPath.Size = new System.Drawing.Size(351, 23);
-            this.buttonFriskSnitPath.TabIndex = 22;
-            this.buttonFriskSnitPath.UseVisualStyleBackColor = false;
-            this.buttonFriskSnitPath.Click += new System.EventHandler(this.buttonFriskSnitPath_Click);
+            this.buttonFrisksnitPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.buttonFrisksnitPath.Location = new System.Drawing.Point(12, 193);
+            this.buttonFrisksnitPath.Name = "buttonFrisksnitPath";
+            this.buttonFrisksnitPath.Size = new System.Drawing.Size(351, 23);
+            this.buttonFrisksnitPath.TabIndex = 22;
+            this.buttonFrisksnitPath.UseVisualStyleBackColor = false;
+            this.buttonFrisksnitPath.Click += new System.EventHandler(this.buttonFrisksnitPath_Click);
             // 
             // buttonEmmerysPath
             // 
@@ -230,12 +230,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(506, 577);
+            this.ClientSize = new System.Drawing.Size(506, 290);
             this.Controls.Add(this.buttonACPath);
             this.Controls.Add(this.buttonCBPBageriPath);
             this.Controls.Add(this.buttonDagrofaPath);
             this.Controls.Add(this.buttonEmmerysPath);
-            this.Controls.Add(this.buttonFriskSnitPath);
+            this.Controls.Add(this.buttonFrisksnitPath);
             this.Controls.Add(this.buttonGrøntGrossistenPath);
             this.Controls.Add(this.buttonHørkramPath);
             this.Controls.Add(this.buttonBCPath);
@@ -273,7 +273,7 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button buttonHørkramPath;
         private System.Windows.Forms.Button buttonGrøntGrossistenPath;
-        private System.Windows.Forms.Button buttonFriskSnitPath;
+        private System.Windows.Forms.Button buttonFrisksnitPath;
         private System.Windows.Forms.Button buttonEmmerysPath;
         private System.Windows.Forms.Button buttonDagrofaPath;
         private System.Windows.Forms.Button buttonCBPBageriPath;
