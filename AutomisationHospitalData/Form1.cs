@@ -21,7 +21,11 @@ namespace AutomisationHospitalData
         Excel._Worksheet worksheetMerged;
         Excel.Range rangeMerged;
 
+        // List of String arrays for the category library
+        List<String[]> listLibrary = new List<String[]>();
+
         // File dialogues
+        private OpenFileDialog openBibliotekPathDialog = new OpenFileDialog();
         private OpenFileDialog openACPathDialog = new OpenFileDialog();
         private OpenFileDialog openBCPathDialog = new OpenFileDialog();
         private OpenFileDialog openCBPBageriPathDialog = new OpenFileDialog();
@@ -30,6 +34,8 @@ namespace AutomisationHospitalData
         private OpenFileDialog openFrisksnitPathDialog = new OpenFileDialog();
         private OpenFileDialog openGrøntGrossistenPathDialog = new OpenFileDialog();
         private OpenFileDialog openHørkramPathDialog = new OpenFileDialog();
+
+        string pathBibliotek = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\Kategoribibliotek 2.xlsx";
 
         // paths for companies supplying folders of excel sheets
         List<String> pathAC = new List<String>();
@@ -88,12 +94,45 @@ namespace AutomisationHospitalData
             worksheetMerged.get_Range("A1", "V1").VerticalAlignment =
             Excel.XlVAlign.xlVAlignCenter;
         }
-        private void createNewExcelTextbox_TextChanged(object sender, EventArgs e)
+        private void buttonBibliotekPath_Click(object sender, EventArgs e)
         {
-
+            this.openBibliotekPathDialog.Title = "Select Bibliotek File";
+            if (openBibliotekPathDialog.ShowDialog() == DialogResult.OK)
+            {
+                pathBibliotek = openBibliotekPathDialog.FileName;
+                buttonBibliotekPath.Text = openBibliotekPathDialog.FileName;
+            }
         }
-        private void createNewExcelButton_Click(object sender, System.EventArgs e)
+        private void createBibliotekButton_Click(object sender, System.EventArgs e)
         {
+            Excel._Workbook workbookLibrary;
+            Excel._Worksheet worksheetLibrary;
+            Excel.Range rangeLibrary;
+
+            workbookLibrary = excelProgram.Workbooks.Open(pathBibliotek);
+            worksheetLibrary = workbookLibrary.Sheets[1];
+            rangeLibrary = worksheetLibrary.UsedRange;
+
+            int rowCountLibrary = rangeLibrary.Rows.Count;
+            int colCountLibrary = rangeLibrary.Columns.Count;
+
+            Object[,] arrayLibrary = rangeLibrary.get_Value();
+
+            for(int row = 0; row < rowCountLibrary-2; row++)
+            {
+                listLibrary.Add(new string[5]);
+                for (int col = 0; col < colCountLibrary; col++)
+                {
+                    listLibrary[row].SetValue(arrayLibrary[row + 3, col + 1].ToString(), col);
+                }
+            }
+
+            listLibrary = listLibrary.Distinct().ToList();
+
+            workbookLibrary.Close(false);
+            MRCO(workbookLibrary);
+            MRCO(worksheetLibrary);
+            MRCO(rangeLibrary);
         }
 
         // Code for AC files
@@ -110,7 +149,6 @@ namespace AutomisationHospitalData
         }
         private void acButton_Click(object sender, System.EventArgs e)
         {
-
             Excel._Workbook workbookAC;
             Excel._Worksheet worksheetAC;
             Excel.Range rangeAC;
@@ -185,9 +223,12 @@ namespace AutomisationHospitalData
                         arrayMerged[row + 1, 1] = "Ikke oplyst"; // År
                         arrayMerged[row + 1, 2] = "Ikke oplyst"; // Kvartal
                         arrayMerged[row + 1, 3] = listAC[row].GetValue(1); // Hospital
-                        arrayMerged[row + 1, 4] = ""; // Råvarekategori
+
+                        string[] råvare = GetRåvare("AC", listAC[row].GetValue(3).ToString());
+
+                        arrayMerged[row + 1, 4] = råvare[0]; // Råvarekategori
                         arrayMerged[row + 1, 5] = "AC"; // Leverandør
-                        arrayMerged[row + 1, 6] = ""; // Råvare
+                        arrayMerged[row + 1, 6] = råvare[1]; // Råvare
 
                         String[] nameSplitAC1 = (listAC[row].GetValue(3) as String).Split(' ');
                         String[] nameSplitAC2 = (listAC[row].GetValue(3) as String).Split('(');
@@ -734,9 +775,12 @@ namespace AutomisationHospitalData
                             arrayMerged[row + 1, 1] = dateEmmerys.Year; // År
                             arrayMerged[row + 1, 2] = (dateEmmerys.Month) / 3; // Kvartal
                             arrayMerged[row + 1, 3] = currentHospital; // Hospital
-                            arrayMerged[row + 1, 4] = ""; // Råvarekategori
+
+                            string[] råvare = GetRåvare("Emmerys", listEmmerys[row].GetValue(0).ToString());
+
+                            arrayMerged[row + 1, 4] = råvare[0]; // Råvarekategori
                             arrayMerged[row + 1, 5] = "Emmerys"; // Leverandør
-                            arrayMerged[row + 1, 6] = ""; // Råvare
+                            arrayMerged[row + 1, 6] = råvare[1]; // Råvare
                             if (listEmmerys[row].GetValue(1) as String == "ØKO") // konv/øko
                             {
                                 arrayMerged[row + 1, 7] = "Øko";
@@ -1130,6 +1174,28 @@ namespace AutomisationHospitalData
             MRCO(workbookMerged);
             MRCO(worksheetMerged);
             MRCO(rangeMerged);
+        }
+
+        private string[] GetRåvare(string company, string variant)
+        {
+            List<String[]> listCompany = listLibrary.Where(x => x[1] == company).ToList();
+
+            List<String[]> listVariant = listCompany.Where(x => x[4] == variant).ToList();
+
+            string[] categories = new string[2];
+
+            if (listVariant.Count > 0)
+            {
+                categories[0] = listVariant[0].GetValue(0).ToString(); // Råvarekategori
+                categories[1] = listVariant[0].GetValue(2).ToString(); // Råvare
+            }
+            else
+            {
+                categories[0] = "Ikke oplyst";
+                categories[1] = "Ikke oplyst";
+            }
+
+            return categories;
         }
     }
 }

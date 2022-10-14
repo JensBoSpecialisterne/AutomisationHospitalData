@@ -36,7 +36,7 @@
             this.emmerysButton = new System.Windows.Forms.Button();
             this.frisksnitButton = new System.Windows.Forms.Button();
             this.grøntgrossistenButton = new System.Windows.Forms.Button();
-            this.createNewExcelButton = new System.Windows.Forms.Button();
+            this.createBibliotekButton = new System.Windows.Forms.Button();
             this.buttonBCPath = new System.Windows.Forms.Button();
             this.buttonHørkramPath = new System.Windows.Forms.Button();
             this.buttonGrøntGrossistenPath = new System.Windows.Forms.Button();
@@ -45,7 +45,7 @@
             this.buttonDagrofaPath = new System.Windows.Forms.Button();
             this.buttonCBPBageriPath = new System.Windows.Forms.Button();
             this.buttonACPath = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.buttonBibliotekPath = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // hørkramButton
@@ -128,15 +128,15 @@
             this.grøntgrossistenButton.UseVisualStyleBackColor = true;
             this.grøntgrossistenButton.Click += new System.EventHandler(this.grøntgrossistenButton_Click);
             // 
-            // createNewExcelButton
+            // createBibliotekButton
             // 
-            this.createNewExcelButton.Location = new System.Drawing.Point(370, 12);
-            this.createNewExcelButton.Name = "createNewExcelButton";
-            this.createNewExcelButton.Size = new System.Drawing.Size(97, 23);
-            this.createNewExcelButton.TabIndex = 17;
-            this.createNewExcelButton.Text = "Kategoribibliotek";
-            this.createNewExcelButton.UseVisualStyleBackColor = true;
-            this.createNewExcelButton.Click += new System.EventHandler(this.createNewExcelButton_Click);
+            this.createBibliotekButton.Location = new System.Drawing.Point(370, 12);
+            this.createBibliotekButton.Name = "createBibliotekButton";
+            this.createBibliotekButton.Size = new System.Drawing.Size(97, 23);
+            this.createBibliotekButton.TabIndex = 17;
+            this.createBibliotekButton.Text = "Kategoribibliotek";
+            this.createBibliotekButton.UseVisualStyleBackColor = true;
+            this.createBibliotekButton.Click += new System.EventHandler(this.createBibliotekButton_Click);
             // 
             // buttonBCPath
             // 
@@ -218,21 +218,22 @@
             this.buttonACPath.UseVisualStyleBackColor = false;
             this.buttonACPath.Click += new System.EventHandler(this.buttonACPath_Click);
             // 
-            // button1
+            // buttonBibliotekPath
             // 
-            this.button1.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.button1.Location = new System.Drawing.Point(13, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(351, 23);
-            this.button1.TabIndex = 27;
-            this.button1.UseVisualStyleBackColor = false;
+            this.buttonBibliotekPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.buttonBibliotekPath.Location = new System.Drawing.Point(13, 12);
+            this.buttonBibliotekPath.Name = "buttonBibliotekPath";
+            this.buttonBibliotekPath.Size = new System.Drawing.Size(351, 23);
+            this.buttonBibliotekPath.TabIndex = 27;
+            this.buttonBibliotekPath.UseVisualStyleBackColor = false;
+            this.buttonBibliotekPath.Click += new System.EventHandler(this.buttonBibliotekPath_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(506, 290);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.buttonBibliotekPath);
             this.Controls.Add(this.buttonACPath);
             this.Controls.Add(this.buttonCBPBageriPath);
             this.Controls.Add(this.buttonDagrofaPath);
@@ -241,7 +242,7 @@
             this.Controls.Add(this.buttonGrøntGrossistenPath);
             this.Controls.Add(this.buttonHørkramPath);
             this.Controls.Add(this.buttonBCPath);
-            this.Controls.Add(this.createNewExcelButton);
+            this.Controls.Add(this.createBibliotekButton);
             this.Controls.Add(this.grøntgrossistenButton);
             this.Controls.Add(this.frisksnitButton);
             this.Controls.Add(this.emmerysButton);
@@ -267,7 +268,7 @@
         private System.Windows.Forms.Button emmerysButton;
         private System.Windows.Forms.Button frisksnitButton;
         private System.Windows.Forms.Button grøntgrossistenButton;
-        private System.Windows.Forms.Button createNewExcelButton;
+        private System.Windows.Forms.Button createBibliotekButton;
         private System.Windows.Forms.Button buttonBCPath;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button buttonHørkramPath;
@@ -277,7 +278,7 @@
         private System.Windows.Forms.Button buttonDagrofaPath;
         private System.Windows.Forms.Button buttonCBPBageriPath;
         private System.Windows.Forms.Button buttonACPath;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button buttonBibliotekPath;
     }
 }
 
