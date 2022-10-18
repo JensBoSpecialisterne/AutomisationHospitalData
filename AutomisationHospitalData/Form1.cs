@@ -746,7 +746,6 @@ namespace AutomisationHospitalData
                         {
                             if (!arrayEmmerys[rowEmmerys, 1].ToString().Contains("Produktnavn"))
                             {
-                                Debug.WriteLine(rowNew);
                                 listEmmerys.Add(new string[14]);
                                 for (int col = 0; col < colCountEmmerys; col++)
                                 {
@@ -771,7 +770,6 @@ namespace AutomisationHospitalData
                         // Sets the values in the Emmerys Object Array
                         for (int row = 0; row < listEmmerys.Count; row++)
                         {
-                            Debug.WriteLine(row);
                             arrayMerged[row + 1, 1] = dateEmmerys.Year; // År
                             arrayMerged[row + 1, 2] = (dateEmmerys.Month) / 3; // Kvartal
                             arrayMerged[row + 1, 3] = currentHospital; // Hospital
@@ -1004,20 +1002,54 @@ namespace AutomisationHospitalData
 
             Excel._Workbook workbookGrøntGrossisten;
             Excel._Worksheet worksheetGrøntGrossisten;
-            Excel._Worksheet infosheetGrøntGrossisten;
             Excel.Range rangeGrøntGrossisten;
 
             try
             {
                 workbookGrøntGrossisten = excelProgram.Workbooks.Open(pathGrøntGrossisten);
-                worksheetGrøntGrossisten = workbookGrøntGrossisten.Sheets[2];
-                infosheetGrøntGrossisten = workbookGrøntGrossisten.Sheets[1];
+                worksheetGrøntGrossisten = workbookGrøntGrossisten.Sheets[1];
                 rangeGrøntGrossisten = worksheetGrøntGrossisten.UsedRange;
 
                 int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
 
-                int rowCountHørkram = rangeGrøntGrossisten.Rows.Count;
-                int colCountHørkram = rangeGrøntGrossisten.Columns.Count;
+                int rowCountGrøntGrossisten = rangeGrøntGrossisten.Rows.Count;
+                int colCountGrøntGrossisten = rangeGrøntGrossisten.Columns.Count;
+
+                // Imports the cell data from the Grønt Grossisten sheet as an array of Objects
+                Object[,] arrayGrøntGrossisten = rangeGrøntGrossisten.get_Value();
+
+                // Creates a List of String arrays for every rowOld in the Grønt Grossisten worksheet.
+                // Amount of rows as a List to allow for deletion of irrelevant entries.
+                List<String[]> listGrøntGrossisten = new List<String[]>();
+
+                string currentHospital = "";
+
+                for (int row = 0; row < rowCountGrøntGrossisten; row++)
+                {
+                    try
+                    {
+                        if (IsNumeric(arrayGrøntGrossisten[row, 0].ToString()))
+                        {
+                            listGrøntGrossisten.Add(new string[14]);
+                            listGrøntGrossisten[row].SetValue(, 0);
+                        }
+                        else
+                        {
+                            currentHospital = arrayGrøntGrossisten[row, 0].ToString();
+                            row++;
+                        }
+                    }
+                    catch
+                    {
+                        row++;
+                    }
+                }
+
+                // Releasing the Excel interop objects
+                workbookGrøntGrossisten.Close(false);
+                MRCO(workbookGrøntGrossisten);
+                MRCO(worksheetGrøntGrossisten);
+                MRCO(rangeGrøntGrossisten);
             }
             catch (Exception theException)
             {
@@ -1196,6 +1228,11 @@ namespace AutomisationHospitalData
             }
 
             return categories;
+        }
+
+        private bool IsNumeric(string input)
+        {
+            return float.TryParse(input, out _);
         }
     }
 }
