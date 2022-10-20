@@ -184,7 +184,7 @@ namespace AutomisationHospitalData
 
                     int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
 
-                    // Imports the cell data from the Hørkram sheet as an array of Objects
+                    // Imports the cell data from the AC sheet as an array of Objects
                     Object[,] arrayAC = rangeAC.get_Value();
 
                     // Creates a List of String arrays for every rowOld in the AC worksheet.
@@ -270,7 +270,6 @@ namespace AutomisationHospitalData
                     //AutoFit columns A:V.
                     rangeMerged = worksheetMerged.get_Range("A1", "M1");
                     rangeMerged.EntireColumn.AutoFit();
-
 
                     //Make sure Excel is visible and give the user control
                     //of Microsoft Excel's lifetime.
@@ -669,15 +668,123 @@ namespace AutomisationHospitalData
 
             Excel._Workbook workbookDagrofa;
             Excel._Worksheet worksheetDagrofa;
-            Excel._Worksheet infosheetDagrofa;
             Excel.Range rangeDagrofa;
 
             try
             {
-                foreach (String fileDagrofa in pathDagrofa)
+                foreach (string fileDagrofa in pathDagrofa)
                 {
+                    workbookDagrofa = excelProgram.Workbooks.Open(fileDagrofa);
+                    worksheetDagrofa = workbookDagrofa.Sheets[1];
+                    rangeDagrofa = worksheetDagrofa.UsedRange;
 
+                    int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
+
+                    int rowCountDagrofa = rangeDagrofa.Rows.Count;
+                    int colCountDagrofa = rangeDagrofa.Columns.Count;
+
+                    int headerRows = 9;
+                    int headerCols = 5;
+
+                    object[,] arrayDagrofa = rangeDagrofa.get_Value();
+
+                    string[] date = arrayDagrofa[1,1].ToString().Split(' ');
+                    string year = date[date.Length - 1];
+                    string quarter = date[date.Length - 2].Replace("Q","");
+
+                    List<string[]> listDagrofa = new List<string[]>();
+                    try
+                    {
+                        for (int row = headerRows; row < rowCountDagrofa-1; row++)
+                        {
+                            for (int col = headerCols; col < colCountDagrofa; col += 4)
+                            {
+                                try
+                                {
+                                    float currentAmount = float.Parse(arrayDagrofa[row, col].ToString());
+                                    if(currentAmount > 0)
+                                    {
+                                        listDagrofa.Add(new string[13]);
+
+                                        listDagrofa[listDagrofa.Count-1].SetValue(year, 0); // År
+                                        if (listDagrofa[listDagrofa.Count - 1].GetValue(0) == null)
+                                        listDagrofa[listDagrofa.Count - 1].SetValue(quarter, 1); // Kvartal
+                                        listDagrofa[listDagrofa.Count - 1].SetValue(arrayDagrofa[7, col], 2); // Hospital
+
+                                        string[] råvare = GetRåvare("Dagrofa", arrayDagrofa[row, 2].ToString());
+
+                                        listDagrofa[listDagrofa.Count - 1].SetValue(råvare[0], 3); // Råvarekategori
+                                        listDagrofa[listDagrofa.Count - 1].SetValue("Dagrofa", 4); // Leverandør
+                                        listDagrofa[listDagrofa.Count - 1].SetValue(råvare[1], 5); // Råvare
+                                        if (arrayDagrofa[row, 3].ToString() == "Ja") // konv/øko
+                                        {
+                                            listDagrofa[listDagrofa.Count - 1].SetValue("Øko", 6);
+                                        }
+                                        else
+                                        {
+                                            listDagrofa[listDagrofa.Count - 1].SetValue("Konv", 6);
+                                        }
+
+                                        listDagrofa[listDagrofa.Count - 1].SetValue(arrayDagrofa[row, 2].ToString(), 7); // Variant
+                                        listDagrofa[listDagrofa.Count - 1].SetValue(arrayDagrofa[row, col + 3].ToString(), 8); // pris pr. enhed
+                                        listDagrofa[listDagrofa.Count - 1].SetValue(arrayDagrofa[row, col + 2].ToString(), 9); // pris i alt
+                                        listDagrofa[listDagrofa.Count - 1].SetValue(arrayDagrofa[row, col + 1].ToString(), 10); // Kg
+
+                                        float totalPrice = float.Parse(listDagrofa[listDagrofa.Count - 1].GetValue(9).ToString());
+                                        float totalWeight = float.Parse(listDagrofa[listDagrofa.Count - 1].GetValue(10).ToString());
+
+                                        listDagrofa[listDagrofa.Count - 1].SetValue(totalPrice / totalWeight + "", 11); // kilopris
+                                        listDagrofa[listDagrofa.Count - 1].SetValue(arrayDagrofa[row, 4].ToString(), 12); // oprindelse
+                                    }
+                                }
+                                catch(NullReferenceException)
+                                {
+
+                                }
+                            }
+                        }
+                        rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listDagrofa.Count));
+
+                        object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
+
+                        // Sets the values in the Grønt Grossisten Object Array
+                        for (int row = 0; row < listDagrofa.Count; row++)
+                        {
+                            for (int col = 0; col < 13; col++)
+                            {
+                                arrayMerged[row + 1, col + 1] = listDagrofa[row].GetValue(col);
+                            }
+                        }
+                        rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                        rangeMerged = worksheetMerged.UsedRange;
+                    }
+                    catch
+                    {
+
+                    }
+                    //Format the cells.
+                    worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listDagrofa.Count)).Font.Name = "Calibri";
+                    worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listDagrofa.Count)).Font.Size = 11;
+
+                    // Releasing the Excel interop objects
+                    workbookDagrofa.Close(false);
+                    MRCO(workbookDagrofa);
+                    MRCO(worksheetDagrofa);
+                    MRCO(rangeDagrofa);
                 }
+
+                // rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                // rangeMerged = worksheetMerged.UsedRange;
+
+                //AutoFit columns A:V.
+                rangeMerged = worksheetMerged.get_Range("A1", "M1");
+                rangeMerged.EntireColumn.AutoFit();
+
+                //Make sure Excel is visible and give the user control
+                //of Microsoft Excel's lifetime.
+                excelProgram.Visible = true;
+                excelProgram.UserControl = true;
+
             }
             catch (Exception theException)
             {
@@ -717,7 +824,6 @@ namespace AutomisationHospitalData
                 {
                     if (!skipSheet)
                     {
-                        Debug.WriteLine(worksheetEmmerys.Name);
                         rangeEmmerys = worksheetEmmerys.UsedRange;
 
                         int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
@@ -1024,18 +1130,48 @@ namespace AutomisationHospitalData
 
                 string currentHospital = "";
 
+                int entries = 0;
+
                 for (int row = 0; row < rowCountGrøntGrossisten; row++)
                 {
                     try
                     {
-                        if (IsNumeric(arrayGrøntGrossisten[row, 0].ToString()))
+                        if (IsNumeric(arrayGrøntGrossisten[row + 1, 1].ToString()))
                         {
-                            listGrøntGrossisten.Add(new string[14]);
-                            listGrøntGrossisten[row].SetValue(, 0);
+                            listGrøntGrossisten.Add(new string[13]);
+                            listGrøntGrossisten[entries].SetValue("Ikke oplyst", 0); // År
+                            listGrøntGrossisten[entries].SetValue("Ikke oplyst", 1); // Kvartal
+                            listGrøntGrossisten[entries].SetValue(currentHospital, 2); // Hospital
+                            listGrøntGrossisten[entries].SetValue("Ikke oplyst", 3); // Råvarekategori
+                            listGrøntGrossisten[entries].SetValue("Grønt Grossisten", 4); // Leverandør
+                            listGrøntGrossisten[entries].SetValue("Ikke oplyst", 5); // Råvare
+                            if (arrayGrøntGrossisten[row + 1, 9].ToString() == "1") // konv/øko
+                            {
+                                listGrøntGrossisten[entries].SetValue("Øko", 6);
+                            }
+                            else
+                            {
+                                listGrøntGrossisten[entries].SetValue("Konv", 6);
+                            }
+                            listGrøntGrossisten[entries].SetValue(arrayGrøntGrossisten[row + 1, 3].ToString(), 7); // Variant
+
+                            string priceprunit = arrayGrøntGrossisten[row + 1, 12].ToString();
+                            string pricetotalstring = arrayGrøntGrossisten[row + 1, 13].ToString();
+                            string weighttotalstring = arrayGrøntGrossisten[row + 1, 8].ToString();
+
+                            float pricetotalfloat = float.Parse(pricetotalstring);
+                            float weighttotalfloat = float.Parse(weighttotalstring)/1000;
+
+                            listGrøntGrossisten[entries].SetValue(priceprunit, 8); // pris pr. enhed
+                            listGrøntGrossisten[entries].SetValue(pricetotalstring, 9); // pris i alt
+                            listGrøntGrossisten[entries].SetValue(weighttotalfloat + "", 10); // Kg
+                            listGrøntGrossisten[entries].SetValue((pricetotalfloat / weighttotalfloat) + "", 11); // kilopris
+                            listGrøntGrossisten[entries].SetValue(arrayGrøntGrossisten[row + 1, 10], 12); // oprindelse
+                            entries++;
                         }
                         else
                         {
-                            currentHospital = arrayGrøntGrossisten[row, 0].ToString();
+                            currentHospital = arrayGrøntGrossisten[row+1, 1].ToString();
                             row++;
                         }
                     }
@@ -1044,6 +1180,35 @@ namespace AutomisationHospitalData
                         row++;
                     }
                 }
+
+                rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listGrøntGrossisten.Count));
+
+                object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
+
+                // Sets the values in the Grønt Grossisten Object Array
+                for (int row = 0; row < listGrøntGrossisten.Count; row++)
+                {
+                    for (int col = 0; col < 13; col++)
+                    {
+                        arrayMerged[row + 1, col + 1] = listGrøntGrossisten[row].GetValue(col);
+                    }
+                }
+
+                rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                rangeMerged = worksheetMerged.UsedRange;
+
+                //Format the cells.
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listGrøntGrossisten.Count)).Font.Name = "Calibri";
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listGrøntGrossisten.Count)).Font.Size = 11;
+
+                //AutoFit columns A:V.
+                rangeMerged = worksheetMerged.get_Range("A1", "M1");
+                rangeMerged.EntireColumn.AutoFit();
+
+                //Make sure Excel is visible and give the user control
+                //of Microsoft Excel's lifetime.
+                excelProgram.Visible = true;
+                excelProgram.UserControl = true;
 
                 // Releasing the Excel interop objects
                 workbookGrøntGrossisten.Close(false);
