@@ -100,7 +100,7 @@ namespace AutomisationHospitalData
             if (openBibliotekPathDialog.ShowDialog() == DialogResult.OK)
             {
                 pathBibliotek = openBibliotekPathDialog.FileName;
-                buttonBibliotekPath.Text = openBibliotekPathDialog.FileName;
+                ButtonBibliotekPath.Text = openBibliotekPathDialog.FileName;
             }
         }
         private void CreateBibliotekButton_Click(object sender, System.EventArgs e)
@@ -144,7 +144,7 @@ namespace AutomisationHospitalData
             if (openACPathDialog.ShowDialog() == DialogResult.OK)
             {
                 pathAC = openACPathDialog.FileNames.ToList();
-                buttonACPath.Text = openACPathDialog.FileName;
+                ButtonACPath.Text = openACPathDialog.FileName;
             }
         }
         private void ACButton_Click(object sender, System.EventArgs e)
@@ -302,7 +302,7 @@ namespace AutomisationHospitalData
             if (openBCPathDialog.ShowDialog() == DialogResult.OK)
             {
                 pathBC = openBCPathDialog.FileName;
-                buttonBCPath.Text = openBCPathDialog.FileName;
+                ButtonBCPath.Text = openBCPathDialog.FileName;
             }
         }
         private void BCButton_Click(object sender, System.EventArgs e)
@@ -531,7 +531,7 @@ namespace AutomisationHospitalData
             if (openCBPBageriPathDialog.ShowDialog() == DialogResult.OK)
             {
                 pathCBPBageri = openCBPBageriPathDialog.FileName;
-                buttonCBPBageriPath.Text = openCBPBageriPathDialog.FileName;
+                ButtonCBPBageriPath.Text = openCBPBageriPathDialog.FileName;
             }
         }
         private void CBPBageriButton_Click(object sender, System.EventArgs e)
@@ -660,7 +660,7 @@ namespace AutomisationHospitalData
             if (openDagrofaPathDialog.ShowDialog() == DialogResult.OK)
             {
                 pathDagrofa = openDagrofaPathDialog.FileNames.ToList();
-                buttonDagrofaPath.Text = openDagrofaPathDialog.FileName;
+                ButtonDagrofaPath.Text = openDagrofaPathDialog.FileName;
             }
         }
         private void DagrofaButton_Click(object sender, System.EventArgs e)
@@ -805,7 +805,7 @@ namespace AutomisationHospitalData
             if (openEmmerysPathDialog.ShowDialog() == DialogResult.OK)
             {
                 pathEmmerys = openEmmerysPathDialog.FileName;
-                buttonEmmerysPath.Text = openEmmerysPathDialog.FileName;
+                ButtonEmmerysPath.Text = openEmmerysPathDialog.FileName;
             }
         }
         private void EmmerysButton_Click(object sender, System.EventArgs e)
@@ -948,7 +948,7 @@ namespace AutomisationHospitalData
             if (openFrisksnitPathDialog.ShowDialog() == DialogResult.OK)
             {
                 pathFrisksnit = openFrisksnitPathDialog.FileNames.ToList();
-                buttonFrisksnitPath.Text = openFrisksnitPathDialog.FileName;
+                ButtonFrisksnitPath.Text = openFrisksnitPathDialog.FileName;
             }
         }
         private void FrisksnitButton_Click(object sender, System.EventArgs e)
@@ -1100,7 +1100,7 @@ namespace AutomisationHospitalData
             if (openGrøntGrossistenPathDialog.ShowDialog() == DialogResult.OK)
             {
                 pathGrøntGrossisten = openGrøntGrossistenPathDialog.FileName;
-                buttonGrøntGrossistenPath.Text = openGrøntGrossistenPathDialog.FileName;
+                ButtonGrøntGrossistenPath.Text = openGrøntGrossistenPathDialog.FileName;
             }
         }
         private void GrøntgrossistenButton_Click(object sender, System.EventArgs e)
@@ -1235,7 +1235,7 @@ namespace AutomisationHospitalData
             if (openHørkramPathDialog.ShowDialog() == DialogResult.OK)
             {
                 pathHørkram = openHørkramPathDialog.FileName;
-                buttonHørkramPath.Text = openHørkramPathDialog.FileName;
+                ButtonHørkramPath.Text = openHørkramPathDialog.FileName;
             }
         }
         private void HørkramButton_Click(object sender, System.EventArgs e)

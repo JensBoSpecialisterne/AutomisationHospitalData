@@ -28,229 +28,229 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.hørkramButton = new System.Windows.Forms.Button();
-            this.acButton = new System.Windows.Forms.Button();
-            this.dagrofaButton = new System.Windows.Forms.Button();
-            this.bcButton = new System.Windows.Forms.Button();
-            this.cbpbageriButton = new System.Windows.Forms.Button();
-            this.emmerysButton = new System.Windows.Forms.Button();
-            this.frisksnitButton = new System.Windows.Forms.Button();
-            this.grøntgrossistenButton = new System.Windows.Forms.Button();
-            this.createBibliotekButton = new System.Windows.Forms.Button();
-            this.buttonBCPath = new System.Windows.Forms.Button();
-            this.buttonHørkramPath = new System.Windows.Forms.Button();
-            this.buttonGrøntGrossistenPath = new System.Windows.Forms.Button();
-            this.buttonFrisksnitPath = new System.Windows.Forms.Button();
-            this.buttonEmmerysPath = new System.Windows.Forms.Button();
-            this.buttonDagrofaPath = new System.Windows.Forms.Button();
-            this.buttonCBPBageriPath = new System.Windows.Forms.Button();
-            this.buttonACPath = new System.Windows.Forms.Button();
-            this.buttonBibliotekPath = new System.Windows.Forms.Button();
+            this.HørkramButton = new System.Windows.Forms.Button();
+            this.ACButton = new System.Windows.Forms.Button();
+            this.DagrofaButton = new System.Windows.Forms.Button();
+            this.BCButton = new System.Windows.Forms.Button();
+            this.CBPBageriButton = new System.Windows.Forms.Button();
+            this.EmmerysButton = new System.Windows.Forms.Button();
+            this.FrisksnitButton = new System.Windows.Forms.Button();
+            this.GrøntgrossistenButton = new System.Windows.Forms.Button();
+            this.CreateBibliotekButton = new System.Windows.Forms.Button();
+            this.ButtonBCPath = new System.Windows.Forms.Button();
+            this.ButtonHørkramPath = new System.Windows.Forms.Button();
+            this.ButtonGrøntGrossistenPath = new System.Windows.Forms.Button();
+            this.ButtonFrisksnitPath = new System.Windows.Forms.Button();
+            this.ButtonEmmerysPath = new System.Windows.Forms.Button();
+            this.ButtonDagrofaPath = new System.Windows.Forms.Button();
+            this.ButtonCBPBageriPath = new System.Windows.Forms.Button();
+            this.ButtonACPath = new System.Windows.Forms.Button();
+            this.ButtonBibliotekPath = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // hørkramButton
             // 
-            this.hørkramButton.Location = new System.Drawing.Point(370, 245);
-            this.hørkramButton.Name = "hørkramButton";
-            this.hørkramButton.Size = new System.Drawing.Size(97, 23);
-            this.hørkramButton.TabIndex = 0;
-            this.hørkramButton.Text = "Hørkram";
-            this.hørkramButton.UseVisualStyleBackColor = true;
-            this.hørkramButton.Click += new System.EventHandler(this.hørkramButton_Click);
+            this.HørkramButton.Location = new System.Drawing.Point(370, 245);
+            this.HørkramButton.Name = "hørkramButton";
+            this.HørkramButton.Size = new System.Drawing.Size(97, 23);
+            this.HørkramButton.TabIndex = 0;
+            this.HørkramButton.Text = "Hørkram";
+            this.HørkramButton.UseVisualStyleBackColor = true;
+            this.HørkramButton.Click += new System.EventHandler(this.HørkramButton_Click);
             // 
             // acButton
             // 
-            this.acButton.Location = new System.Drawing.Point(370, 63);
-            this.acButton.Name = "acButton";
-            this.acButton.Size = new System.Drawing.Size(97, 23);
-            this.acButton.TabIndex = 3;
-            this.acButton.Text = "AC";
-            this.acButton.UseVisualStyleBackColor = true;
-            this.acButton.Click += new System.EventHandler(this.acButton_Click);
+            this.ACButton.Location = new System.Drawing.Point(370, 63);
+            this.ACButton.Name = "acButton";
+            this.ACButton.Size = new System.Drawing.Size(97, 23);
+            this.ACButton.TabIndex = 3;
+            this.ACButton.Text = "AC";
+            this.ACButton.UseVisualStyleBackColor = true;
+            this.ACButton.Click += new System.EventHandler(this.ACButton_Click);
             // 
             // dagrofaButton
             // 
-            this.dagrofaButton.Location = new System.Drawing.Point(370, 141);
-            this.dagrofaButton.Name = "dagrofaButton";
-            this.dagrofaButton.Size = new System.Drawing.Size(97, 23);
-            this.dagrofaButton.TabIndex = 4;
-            this.dagrofaButton.Text = "Dagrofa";
-            this.dagrofaButton.UseVisualStyleBackColor = true;
-            this.dagrofaButton.Click += new System.EventHandler(this.dagrofaButton_Click);
+            this.DagrofaButton.Location = new System.Drawing.Point(370, 141);
+            this.DagrofaButton.Name = "dagrofaButton";
+            this.DagrofaButton.Size = new System.Drawing.Size(97, 23);
+            this.DagrofaButton.TabIndex = 4;
+            this.DagrofaButton.Text = "Dagrofa";
+            this.DagrofaButton.UseVisualStyleBackColor = true;
+            this.DagrofaButton.Click += new System.EventHandler(this.DagrofaButton_Click);
             // 
             // bcButton
             // 
-            this.bcButton.Location = new System.Drawing.Point(370, 89);
-            this.bcButton.Name = "bcButton";
-            this.bcButton.Size = new System.Drawing.Size(97, 23);
-            this.bcButton.TabIndex = 8;
-            this.bcButton.Text = "BC";
-            this.bcButton.UseVisualStyleBackColor = true;
-            this.bcButton.Click += new System.EventHandler(this.bcButton_Click);
+            this.BCButton.Location = new System.Drawing.Point(370, 89);
+            this.BCButton.Name = "bcButton";
+            this.BCButton.Size = new System.Drawing.Size(97, 23);
+            this.BCButton.TabIndex = 8;
+            this.BCButton.Text = "BC";
+            this.BCButton.UseVisualStyleBackColor = true;
+            this.BCButton.Click += new System.EventHandler(this.BCButton_Click);
             // 
             // cbpbageriButton
             // 
-            this.cbpbageriButton.Location = new System.Drawing.Point(370, 115);
-            this.cbpbageriButton.Name = "cbpbageriButton";
-            this.cbpbageriButton.Size = new System.Drawing.Size(97, 23);
-            this.cbpbageriButton.TabIndex = 9;
-            this.cbpbageriButton.Text = "CBP bageri";
-            this.cbpbageriButton.UseVisualStyleBackColor = true;
-            this.cbpbageriButton.Click += new System.EventHandler(this.cbpbageriButton_Click);
+            this.CBPBageriButton.Location = new System.Drawing.Point(370, 115);
+            this.CBPBageriButton.Name = "cbpbageriButton";
+            this.CBPBageriButton.Size = new System.Drawing.Size(97, 23);
+            this.CBPBageriButton.TabIndex = 9;
+            this.CBPBageriButton.Text = "CBP bageri";
+            this.CBPBageriButton.UseVisualStyleBackColor = true;
+            this.CBPBageriButton.Click += new System.EventHandler(this.CBPBageriButton_Click);
             // 
             // emmerysButton
             // 
-            this.emmerysButton.Location = new System.Drawing.Point(370, 167);
-            this.emmerysButton.Name = "emmerysButton";
-            this.emmerysButton.Size = new System.Drawing.Size(97, 23);
-            this.emmerysButton.TabIndex = 10;
-            this.emmerysButton.Text = "Emmerys";
-            this.emmerysButton.UseVisualStyleBackColor = true;
-            this.emmerysButton.Click += new System.EventHandler(this.emmerysButton_Click);
+            this.EmmerysButton.Location = new System.Drawing.Point(370, 167);
+            this.EmmerysButton.Name = "emmerysButton";
+            this.EmmerysButton.Size = new System.Drawing.Size(97, 23);
+            this.EmmerysButton.TabIndex = 10;
+            this.EmmerysButton.Text = "Emmerys";
+            this.EmmerysButton.UseVisualStyleBackColor = true;
+            this.EmmerysButton.Click += new System.EventHandler(this.EmmerysButton_Click);
             // 
             // frisksnitButton
             // 
-            this.frisksnitButton.Location = new System.Drawing.Point(370, 193);
-            this.frisksnitButton.Name = "frisksnitButton";
-            this.frisksnitButton.Size = new System.Drawing.Size(97, 23);
-            this.frisksnitButton.TabIndex = 11;
-            this.frisksnitButton.Text = "Frisksnit";
-            this.frisksnitButton.UseVisualStyleBackColor = true;
-            this.frisksnitButton.Click += new System.EventHandler(this.FrisksnitButton_Click);
+            this.FrisksnitButton.Location = new System.Drawing.Point(370, 193);
+            this.FrisksnitButton.Name = "frisksnitButton";
+            this.FrisksnitButton.Size = new System.Drawing.Size(97, 23);
+            this.FrisksnitButton.TabIndex = 11;
+            this.FrisksnitButton.Text = "Frisksnit";
+            this.FrisksnitButton.UseVisualStyleBackColor = true;
+            this.FrisksnitButton.Click += new System.EventHandler(this.FrisksnitButton_Click);
             // 
             // grøntgrossistenButton
             // 
-            this.grøntgrossistenButton.Location = new System.Drawing.Point(370, 219);
-            this.grøntgrossistenButton.Name = "grøntgrossistenButton";
-            this.grøntgrossistenButton.Size = new System.Drawing.Size(97, 23);
-            this.grøntgrossistenButton.TabIndex = 14;
-            this.grøntgrossistenButton.Text = "Grønt Grossisten";
-            this.grøntgrossistenButton.UseVisualStyleBackColor = true;
-            this.grøntgrossistenButton.Click += new System.EventHandler(this.grøntgrossistenButton_Click);
+            this.GrøntgrossistenButton.Location = new System.Drawing.Point(370, 219);
+            this.GrøntgrossistenButton.Name = "grøntgrossistenButton";
+            this.GrøntgrossistenButton.Size = new System.Drawing.Size(97, 23);
+            this.GrøntgrossistenButton.TabIndex = 14;
+            this.GrøntgrossistenButton.Text = "Grønt Grossisten";
+            this.GrøntgrossistenButton.UseVisualStyleBackColor = true;
+            this.GrøntgrossistenButton.Click += new System.EventHandler(this.GrøntgrossistenButton_Click);
             // 
             // createBibliotekButton
             // 
-            this.createBibliotekButton.Location = new System.Drawing.Point(370, 12);
-            this.createBibliotekButton.Name = "createBibliotekButton";
-            this.createBibliotekButton.Size = new System.Drawing.Size(97, 23);
-            this.createBibliotekButton.TabIndex = 17;
-            this.createBibliotekButton.Text = "Kategoribibliotek";
-            this.createBibliotekButton.UseVisualStyleBackColor = true;
-            this.createBibliotekButton.Click += new System.EventHandler(this.createBibliotekButton_Click);
+            this.CreateBibliotekButton.Location = new System.Drawing.Point(370, 12);
+            this.CreateBibliotekButton.Name = "createBibliotekButton";
+            this.CreateBibliotekButton.Size = new System.Drawing.Size(97, 23);
+            this.CreateBibliotekButton.TabIndex = 17;
+            this.CreateBibliotekButton.Text = "Kategoribibliotek";
+            this.CreateBibliotekButton.UseVisualStyleBackColor = true;
+            this.CreateBibliotekButton.Click += new System.EventHandler(this.CreateBibliotekButton_Click);
             // 
             // buttonBCPath
             // 
-            this.buttonBCPath.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.buttonBCPath.Location = new System.Drawing.Point(12, 89);
-            this.buttonBCPath.Name = "buttonBCPath";
-            this.buttonBCPath.Size = new System.Drawing.Size(351, 23);
-            this.buttonBCPath.TabIndex = 19;
-            this.buttonBCPath.UseVisualStyleBackColor = false;
-            this.buttonBCPath.Click += new System.EventHandler(this.buttonBCPath_Click);
+            this.ButtonBCPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.ButtonBCPath.Location = new System.Drawing.Point(12, 89);
+            this.ButtonBCPath.Name = "ButtonBCPath";
+            this.ButtonBCPath.Size = new System.Drawing.Size(351, 23);
+            this.ButtonBCPath.TabIndex = 19;
+            this.ButtonBCPath.UseVisualStyleBackColor = false;
+            this.ButtonBCPath.Click += new System.EventHandler(this.ButtonBCPath_Click);
             // 
             // buttonHørkramPath
             // 
-            this.buttonHørkramPath.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.buttonHørkramPath.Location = new System.Drawing.Point(12, 245);
-            this.buttonHørkramPath.Name = "buttonHørkramPath";
-            this.buttonHørkramPath.Size = new System.Drawing.Size(351, 23);
-            this.buttonHørkramPath.TabIndex = 20;
-            this.buttonHørkramPath.UseVisualStyleBackColor = false;
-            this.buttonHørkramPath.Click += new System.EventHandler(this.buttonHørkramPath_Click);
+            this.ButtonHørkramPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.ButtonHørkramPath.Location = new System.Drawing.Point(12, 245);
+            this.ButtonHørkramPath.Name = "ButtonHørkramPath";
+            this.ButtonHørkramPath.Size = new System.Drawing.Size(351, 23);
+            this.ButtonHørkramPath.TabIndex = 20;
+            this.ButtonHørkramPath.UseVisualStyleBackColor = false;
+            this.ButtonHørkramPath.Click += new System.EventHandler(this.ButtonHørkramPath_Click);
             // 
             // buttonGrøntGrossistenPath
             // 
-            this.buttonGrøntGrossistenPath.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.buttonGrøntGrossistenPath.Location = new System.Drawing.Point(12, 219);
-            this.buttonGrøntGrossistenPath.Name = "buttonGrøntGrossistenPath";
-            this.buttonGrøntGrossistenPath.Size = new System.Drawing.Size(351, 23);
-            this.buttonGrøntGrossistenPath.TabIndex = 21;
-            this.buttonGrøntGrossistenPath.UseVisualStyleBackColor = false;
-            this.buttonGrøntGrossistenPath.Click += new System.EventHandler(this.buttonGrøntGrossistenPath_Click);
+            this.ButtonGrøntGrossistenPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.ButtonGrøntGrossistenPath.Location = new System.Drawing.Point(12, 219);
+            this.ButtonGrøntGrossistenPath.Name = "ButtonGrøntGrossistenPath";
+            this.ButtonGrøntGrossistenPath.Size = new System.Drawing.Size(351, 23);
+            this.ButtonGrøntGrossistenPath.TabIndex = 21;
+            this.ButtonGrøntGrossistenPath.UseVisualStyleBackColor = false;
+            this.ButtonGrøntGrossistenPath.Click += new System.EventHandler(this.ButtonGrøntGrossistenPath_Click);
             // 
             // buttonFrisksnitPath
             // 
-            this.buttonFrisksnitPath.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.buttonFrisksnitPath.Location = new System.Drawing.Point(12, 193);
-            this.buttonFrisksnitPath.Name = "buttonFrisksnitPath";
-            this.buttonFrisksnitPath.Size = new System.Drawing.Size(351, 23);
-            this.buttonFrisksnitPath.TabIndex = 22;
-            this.buttonFrisksnitPath.UseVisualStyleBackColor = false;
-            this.buttonFrisksnitPath.Click += new System.EventHandler(this.ButtonFrisksnitPath_Click);
+            this.ButtonFrisksnitPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.ButtonFrisksnitPath.Location = new System.Drawing.Point(12, 193);
+            this.ButtonFrisksnitPath.Name = "ButtonFrisksnitPath";
+            this.ButtonFrisksnitPath.Size = new System.Drawing.Size(351, 23);
+            this.ButtonFrisksnitPath.TabIndex = 22;
+            this.ButtonFrisksnitPath.UseVisualStyleBackColor = false;
+            this.ButtonFrisksnitPath.Click += new System.EventHandler(this.ButtonFrisksnitPath_Click);
             // 
             // buttonEmmerysPath
             // 
-            this.buttonEmmerysPath.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.buttonEmmerysPath.Location = new System.Drawing.Point(12, 167);
-            this.buttonEmmerysPath.Name = "buttonEmmerysPath";
-            this.buttonEmmerysPath.Size = new System.Drawing.Size(351, 23);
-            this.buttonEmmerysPath.TabIndex = 23;
-            this.buttonEmmerysPath.UseVisualStyleBackColor = false;
-            this.buttonEmmerysPath.Click += new System.EventHandler(this.buttonEmmerysPath_Click);
+            this.ButtonEmmerysPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.ButtonEmmerysPath.Location = new System.Drawing.Point(12, 167);
+            this.ButtonEmmerysPath.Name = "ButtonEmmerysPath";
+            this.ButtonEmmerysPath.Size = new System.Drawing.Size(351, 23);
+            this.ButtonEmmerysPath.TabIndex = 23;
+            this.ButtonEmmerysPath.UseVisualStyleBackColor = false;
+            this.ButtonEmmerysPath.Click += new System.EventHandler(this.ButtonEmmerysPath_Click);
             // 
             // buttonDagrofaPath
             // 
-            this.buttonDagrofaPath.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.buttonDagrofaPath.Location = new System.Drawing.Point(12, 141);
-            this.buttonDagrofaPath.Name = "buttonDagrofaPath";
-            this.buttonDagrofaPath.Size = new System.Drawing.Size(351, 23);
-            this.buttonDagrofaPath.TabIndex = 24;
-            this.buttonDagrofaPath.UseVisualStyleBackColor = false;
-            this.buttonDagrofaPath.Click += new System.EventHandler(this.buttonDagrofaPath_Click);
+            this.ButtonDagrofaPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.ButtonDagrofaPath.Location = new System.Drawing.Point(12, 141);
+            this.ButtonDagrofaPath.Name = "ButtonDagrofaPath";
+            this.ButtonDagrofaPath.Size = new System.Drawing.Size(351, 23);
+            this.ButtonDagrofaPath.TabIndex = 24;
+            this.ButtonDagrofaPath.UseVisualStyleBackColor = false;
+            this.ButtonDagrofaPath.Click += new System.EventHandler(this.ButtonDagrofaPath_Click);
             // 
             // buttonCBPBageriPath
             // 
-            this.buttonCBPBageriPath.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.buttonCBPBageriPath.Location = new System.Drawing.Point(12, 115);
-            this.buttonCBPBageriPath.Name = "buttonCBPBageriPath";
-            this.buttonCBPBageriPath.Size = new System.Drawing.Size(351, 23);
-            this.buttonCBPBageriPath.TabIndex = 25;
-            this.buttonCBPBageriPath.UseVisualStyleBackColor = false;
-            this.buttonCBPBageriPath.Click += new System.EventHandler(this.buttonCBPBageriPath_Click);
+            this.ButtonCBPBageriPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.ButtonCBPBageriPath.Location = new System.Drawing.Point(12, 115);
+            this.ButtonCBPBageriPath.Name = "ButtonCBPBageriPath";
+            this.ButtonCBPBageriPath.Size = new System.Drawing.Size(351, 23);
+            this.ButtonCBPBageriPath.TabIndex = 25;
+            this.ButtonCBPBageriPath.UseVisualStyleBackColor = false;
+            this.ButtonCBPBageriPath.Click += new System.EventHandler(this.ButtonCBPBageriPath_Click);
             // 
             // buttonACPath
             // 
-            this.buttonACPath.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.buttonACPath.Location = new System.Drawing.Point(12, 63);
-            this.buttonACPath.Name = "buttonACPath";
-            this.buttonACPath.Size = new System.Drawing.Size(351, 23);
-            this.buttonACPath.TabIndex = 26;
-            this.buttonACPath.UseVisualStyleBackColor = false;
-            this.buttonACPath.Click += new System.EventHandler(this.buttonACPath_Click);
+            this.ButtonACPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.ButtonACPath.Location = new System.Drawing.Point(12, 63);
+            this.ButtonACPath.Name = "ButtonACPath";
+            this.ButtonACPath.Size = new System.Drawing.Size(351, 23);
+            this.ButtonACPath.TabIndex = 26;
+            this.ButtonACPath.UseVisualStyleBackColor = false;
+            this.ButtonACPath.Click += new System.EventHandler(this.ButtonACPath_Click);
             // 
             // buttonBibliotekPath
             // 
-            this.buttonBibliotekPath.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.buttonBibliotekPath.Location = new System.Drawing.Point(13, 12);
-            this.buttonBibliotekPath.Name = "buttonBibliotekPath";
-            this.buttonBibliotekPath.Size = new System.Drawing.Size(351, 23);
-            this.buttonBibliotekPath.TabIndex = 27;
-            this.buttonBibliotekPath.UseVisualStyleBackColor = false;
-            this.buttonBibliotekPath.Click += new System.EventHandler(this.buttonBibliotekPath_Click);
+            this.ButtonBibliotekPath.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.ButtonBibliotekPath.Location = new System.Drawing.Point(13, 12);
+            this.ButtonBibliotekPath.Name = "ButtonBibliotekPath";
+            this.ButtonBibliotekPath.Size = new System.Drawing.Size(351, 23);
+            this.ButtonBibliotekPath.TabIndex = 27;
+            this.ButtonBibliotekPath.UseVisualStyleBackColor = false;
+            this.ButtonBibliotekPath.Click += new System.EventHandler(this.ButtonBibliotekPath_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(506, 290);
-            this.Controls.Add(this.buttonBibliotekPath);
-            this.Controls.Add(this.buttonACPath);
-            this.Controls.Add(this.buttonCBPBageriPath);
-            this.Controls.Add(this.buttonDagrofaPath);
-            this.Controls.Add(this.buttonEmmerysPath);
-            this.Controls.Add(this.buttonFrisksnitPath);
-            this.Controls.Add(this.buttonGrøntGrossistenPath);
-            this.Controls.Add(this.buttonHørkramPath);
-            this.Controls.Add(this.buttonBCPath);
-            this.Controls.Add(this.createBibliotekButton);
-            this.Controls.Add(this.grøntgrossistenButton);
-            this.Controls.Add(this.frisksnitButton);
-            this.Controls.Add(this.emmerysButton);
-            this.Controls.Add(this.cbpbageriButton);
-            this.Controls.Add(this.bcButton);
-            this.Controls.Add(this.dagrofaButton);
-            this.Controls.Add(this.acButton);
-            this.Controls.Add(this.hørkramButton);
+            this.Controls.Add(this.ButtonBibliotekPath);
+            this.Controls.Add(this.ButtonACPath);
+            this.Controls.Add(this.ButtonCBPBageriPath);
+            this.Controls.Add(this.ButtonDagrofaPath);
+            this.Controls.Add(this.ButtonEmmerysPath);
+            this.Controls.Add(this.ButtonFrisksnitPath);
+            this.Controls.Add(this.ButtonGrøntGrossistenPath);
+            this.Controls.Add(this.ButtonHørkramPath);
+            this.Controls.Add(this.ButtonBCPath);
+            this.Controls.Add(this.CreateBibliotekButton);
+            this.Controls.Add(this.GrøntgrossistenButton);
+            this.Controls.Add(this.FrisksnitButton);
+            this.Controls.Add(this.EmmerysButton);
+            this.Controls.Add(this.CBPBageriButton);
+            this.Controls.Add(this.BCButton);
+            this.Controls.Add(this.DagrofaButton);
+            this.Controls.Add(this.ACButton);
+            this.Controls.Add(this.HørkramButton);
             this.Name = "Form1";
             this.Text = "Rens Excel-ark";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -260,25 +260,24 @@
 
         #endregion
 
-        private System.Windows.Forms.Button hørkramButton;
-        private System.Windows.Forms.Button acButton;
-        private System.Windows.Forms.Button dagrofaButton;
-        private System.Windows.Forms.Button bcButton;
-        private System.Windows.Forms.Button cbpbageriButton;
-        private System.Windows.Forms.Button emmerysButton;
-        private System.Windows.Forms.Button frisksnitButton;
-        private System.Windows.Forms.Button grøntgrossistenButton;
-        private System.Windows.Forms.Button createBibliotekButton;
-        private System.Windows.Forms.Button buttonBCPath;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.Button buttonHørkramPath;
-        private System.Windows.Forms.Button buttonGrøntGrossistenPath;
-        private System.Windows.Forms.Button buttonFrisksnitPath;
-        private System.Windows.Forms.Button buttonEmmerysPath;
-        private System.Windows.Forms.Button buttonDagrofaPath;
-        private System.Windows.Forms.Button buttonCBPBageriPath;
-        private System.Windows.Forms.Button buttonACPath;
-        private System.Windows.Forms.Button buttonBibliotekPath;
+        private System.Windows.Forms.Button HørkramButton;
+        private System.Windows.Forms.Button ACButton;
+        private System.Windows.Forms.Button DagrofaButton;
+        private System.Windows.Forms.Button BCButton;
+        private System.Windows.Forms.Button CBPBageriButton;
+        private System.Windows.Forms.Button EmmerysButton;
+        private System.Windows.Forms.Button FrisksnitButton;
+        private System.Windows.Forms.Button GrøntgrossistenButton;
+        private System.Windows.Forms.Button CreateBibliotekButton;
+        private System.Windows.Forms.Button ButtonBCPath;
+        private System.Windows.Forms.Button ButtonHørkramPath;
+        private System.Windows.Forms.Button ButtonGrøntGrossistenPath;
+        private System.Windows.Forms.Button ButtonFrisksnitPath;
+        private System.Windows.Forms.Button ButtonEmmerysPath;
+        private System.Windows.Forms.Button ButtonDagrofaPath;
+        private System.Windows.Forms.Button ButtonCBPBageriPath;
+        private System.Windows.Forms.Button ButtonACPath;
+        private System.Windows.Forms.Button ButtonBibliotekPath;
     }
 }
 
