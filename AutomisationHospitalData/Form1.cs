@@ -94,7 +94,7 @@ namespace AutomisationHospitalData
             worksheetMerged.get_Range("A1", "V1").VerticalAlignment =
             Excel.XlVAlign.xlVAlignCenter;
         }
-        private void buttonBibliotekPath_Click(object sender, EventArgs e)
+        private void ButtonBibliotekPath_Click(object sender, EventArgs e)
         {
             this.openBibliotekPathDialog.Title = "Select Bibliotek File";
             if (openBibliotekPathDialog.ShowDialog() == DialogResult.OK)
@@ -103,7 +103,7 @@ namespace AutomisationHospitalData
                 buttonBibliotekPath.Text = openBibliotekPathDialog.FileName;
             }
         }
-        private void createBibliotekButton_Click(object sender, System.EventArgs e)
+        private void CreateBibliotekButton_Click(object sender, System.EventArgs e)
         {
             Excel._Workbook workbookLibrary;
             Excel._Worksheet worksheetLibrary;
@@ -136,7 +136,7 @@ namespace AutomisationHospitalData
         }
 
         // Code for AC files
-        private void buttonACPath_Click(object sender, EventArgs e)
+        private void ButtonACPath_Click(object sender, EventArgs e)
         {
             this.openACPathDialog.Multiselect = true;
             this.openACPathDialog.Title = "Select AC files";
@@ -147,7 +147,7 @@ namespace AutomisationHospitalData
                 buttonACPath.Text = openACPathDialog.FileName;
             }
         }
-        private void acButton_Click(object sender, System.EventArgs e)
+        private void ACButton_Click(object sender, System.EventArgs e)
         {
             Excel._Workbook workbookAC;
             Excel._Worksheet worksheetAC;
@@ -296,7 +296,7 @@ namespace AutomisationHospitalData
         }
 
         // Code for BC files
-        private void buttonBCPath_Click(object sender, EventArgs e)
+        private void ButtonBCPath_Click(object sender, EventArgs e)
         {
             this.openBCPathDialog.Title = "Select BC File";
             if (openBCPathDialog.ShowDialog() == DialogResult.OK)
@@ -305,7 +305,7 @@ namespace AutomisationHospitalData
                 buttonBCPath.Text = openBCPathDialog.FileName;
             }
         }
-        private void bcButton_Click(object sender, System.EventArgs e)
+        private void BCButton_Click(object sender, System.EventArgs e)
         {
 
             Excel._Workbook workbookBC;
@@ -525,7 +525,7 @@ namespace AutomisationHospitalData
         }
 
         // Code for CBP Bageri files
-        private void buttonCBPBageriPath_Click(object sender, EventArgs e)
+        private void ButtonCBPBageriPath_Click(object sender, EventArgs e)
         {
             this.openCBPBageriPathDialog.Title = "Select CBP Bageri File";
             if (openCBPBageriPathDialog.ShowDialog() == DialogResult.OK)
@@ -534,7 +534,7 @@ namespace AutomisationHospitalData
                 buttonCBPBageriPath.Text = openCBPBageriPathDialog.FileName;
             }
         }
-        private void cbpbageriButton_Click(object sender, System.EventArgs e)
+        private void CBPBageriButton_Click(object sender, System.EventArgs e)
         {
 
             Excel._Workbook workbookCBP;
@@ -652,7 +652,7 @@ namespace AutomisationHospitalData
         }
 
         // Code for Dagrofa files
-        private void buttonDagrofaPath_Click(object sender, EventArgs e)
+        private void ButtonDagrofaPath_Click(object sender, EventArgs e)
         {
             this.openDagrofaPathDialog.Multiselect = true;
             this.openDagrofaPathDialog.Title = "Select Dagrofa files";
@@ -663,7 +663,7 @@ namespace AutomisationHospitalData
                 buttonDagrofaPath.Text = openDagrofaPathDialog.FileName;
             }
         }
-        private void dagrofaButton_Click(object sender, System.EventArgs e)
+        private void DagrofaButton_Click(object sender, System.EventArgs e)
         {
 
             Excel._Workbook workbookDagrofa;
@@ -799,7 +799,7 @@ namespace AutomisationHospitalData
         }
 
         // Code for Emmerys files
-        private void buttonEmmerysPath_Click(object sender, EventArgs e)
+        private void ButtonEmmerysPath_Click(object sender, EventArgs e)
         {
             this.openEmmerysPathDialog.Title = "Select Emmerys File";
             if (openEmmerysPathDialog.ShowDialog() == DialogResult.OK)
@@ -808,7 +808,7 @@ namespace AutomisationHospitalData
                 buttonEmmerysPath.Text = openEmmerysPathDialog.FileName;
             }
         }
-        private void emmerysButton_Click(object sender, System.EventArgs e)
+        private void EmmerysButton_Click(object sender, System.EventArgs e)
         {
 
             Excel._Workbook workbookEmmerys;
@@ -940,7 +940,7 @@ namespace AutomisationHospitalData
         }
 
         // Code for Frisksnit files
-        private void buttonFrisksnitPath_Click(object sender, EventArgs e)
+        private void ButtonFrisksnitPath_Click(object sender, EventArgs e)
         {
             this.openFrisksnitPathDialog.Multiselect = true;
             this.openFrisksnitPathDialog.Title = "Select Frisksnit files";
@@ -951,7 +951,7 @@ namespace AutomisationHospitalData
                 buttonFrisksnitPath.Text = openFrisksnitPathDialog.FileName;
             }
         }
-        private void frisksnitButton_Click(object sender, System.EventArgs e)
+        private void FrisksnitButton_Click(object sender, System.EventArgs e)
         {
 
             Excel._Workbook workbookFrisksnit;
@@ -1094,7 +1094,7 @@ namespace AutomisationHospitalData
         }
 
         // Code for Grønt Grossisten files
-        private void buttonGrøntGrossistenPath_Click(object sender, EventArgs e)
+        private void ButtonGrøntGrossistenPath_Click(object sender, EventArgs e)
         {
             this.openGrøntGrossistenPathDialog.Title = "Select Grønt Grossisten file";
             if (openGrøntGrossistenPathDialog.ShowDialog() == DialogResult.OK)
@@ -1103,7 +1103,7 @@ namespace AutomisationHospitalData
                 buttonGrøntGrossistenPath.Text = openGrøntGrossistenPathDialog.FileName;
             }
         }
-        private void grøntgrossistenButton_Click(object sender, System.EventArgs e)
+        private void GrøntgrossistenButton_Click(object sender, System.EventArgs e)
         {
 
             Excel._Workbook workbookGrøntGrossisten;
@@ -1229,7 +1229,7 @@ namespace AutomisationHospitalData
         }
 
         // Code for Hørkram files
-        private void buttonHørkramPath_Click(object sender, EventArgs e)
+        private void ButtonHørkramPath_Click(object sender, EventArgs e)
         {
             this.openHørkramPathDialog.Title = "Select Hørkram file";
             if (openHørkramPathDialog.ShowDialog() == DialogResult.OK)
@@ -1238,7 +1238,7 @@ namespace AutomisationHospitalData
                 buttonHørkramPath.Text = openHørkramPathDialog.FileName;
             }
         }
-        private void hørkramButton_Click(object sender, System.EventArgs e)
+        private void HørkramButton_Click(object sender, System.EventArgs e)
         {
 
             Excel._Workbook workbookHørkram;
@@ -1357,7 +1357,7 @@ namespace AutomisationHospitalData
         }
 
         // Support code
-        public void MRCO(Object comObject) // Based on code from breezetree.com/blog/
+        public void MRCO(object comObject) // Based on code from breezetree.com/blog/
         {
             if (comObject != null)
             {
@@ -1365,7 +1365,7 @@ namespace AutomisationHospitalData
                 comObject = null;
             }
         }
-        private void Form1_FormClosing(Object sender, FormClosingEventArgs e)
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             MRCO(excelProgram);
             MRCO(workbookMerged);

@@ -116,7 +116,7 @@
             this.frisksnitButton.TabIndex = 11;
             this.frisksnitButton.Text = "Frisksnit";
             this.frisksnitButton.UseVisualStyleBackColor = true;
-            this.frisksnitButton.Click += new System.EventHandler(this.frisksnitButton_Click);
+            this.frisksnitButton.Click += new System.EventHandler(this.FrisksnitButton_Click);
             // 
             // grøntgrossistenButton
             // 
@@ -176,7 +176,7 @@
             this.buttonFrisksnitPath.Size = new System.Drawing.Size(351, 23);
             this.buttonFrisksnitPath.TabIndex = 22;
             this.buttonFrisksnitPath.UseVisualStyleBackColor = false;
-            this.buttonFrisksnitPath.Click += new System.EventHandler(this.buttonFrisksnitPath_Click);
+            this.buttonFrisksnitPath.Click += new System.EventHandler(this.ButtonFrisksnitPath_Click);
             // 
             // buttonEmmerysPath
             // 
