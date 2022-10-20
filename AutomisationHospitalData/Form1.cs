@@ -983,7 +983,7 @@ namespace AutomisationHospitalData
                     // Imports the cell data from the Frisksnit sheet as an array of Objects
                     Object[,] arrayFrisksnit = rangeFrisksnit.get_Value();
 
-                    // Creates a List of String arrays for every rowOld in the BC worksheet.
+                    // Creates a List of String arrays for every row to be added to the merged worksheet.
                     // Amount of rows as a List to allow for deletion of irrelevant entries.
                     List<String[]> listFrisksnit = new List<String[]>();
 
