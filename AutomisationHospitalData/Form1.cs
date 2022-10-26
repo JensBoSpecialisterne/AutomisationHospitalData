@@ -3,12 +3,16 @@ using Microsoft.Office.Interop.Excel;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using static System.Net.WebRequestMethods;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace AutomisationHospitalData
@@ -35,12 +39,15 @@ namespace AutomisationHospitalData
         private OpenFileDialog openGrøntGrossistenPathDialog = new OpenFileDialog();
         private OpenFileDialog openHørkramPathDialog = new OpenFileDialog();
 
+        private OpenFileDialog openPathDialog = new OpenFileDialog();
+
         string pathBibliotek = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\Kategoribibliotek 2.xlsx";
 
         // paths for companies supplying folders of excel sheets
         List<String> pathAC = new List<String>();
         List<String> pathDagrofa = new List<String>();
         List<String> pathFrisksnit = new List<String>();
+        List<String> pathDeViKas = new List<String>();
 
         // paths for companies supplying individual excel sheets
         string pathBC = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\BC.xlsx";
@@ -118,7 +125,7 @@ namespace AutomisationHospitalData
 
             Object[,] arrayLibrary = rangeLibrary.get_Value();
 
-            for(int row = 0; row < rowCountLibrary-2; row++)
+            for (int row = 0; row < rowCountLibrary - 2; row++)
             {
                 listLibrary.Add(new string[5]);
                 for (int col = 0; col < colCountLibrary; col++)
@@ -149,28 +156,30 @@ namespace AutomisationHospitalData
         }
         private void ACButton_Click(object sender, System.EventArgs e)
         {
-            Excel._Workbook workbookAC;
-            Excel._Worksheet worksheetAC;
-            Excel.Range rangeAC;
+            Excel._Workbook workbookSource;
+            Excel._Worksheet worksheetSource;
+            Excel.Range rangeSource;
 
             try
             {
-                foreach(String fileAC in pathAC)
+                foreach (String fileAC in pathAC)
                 {
-                    workbookAC = excelProgram.Workbooks.Open(fileAC);
-                    worksheetAC = workbookAC.Sheets[1];
-                    rangeAC = worksheetAC.UsedRange;
+                    workbookSource = excelProgram.Workbooks.Open(fileAC);
+                    worksheetSource = workbookSource.Sheets[1];
+                    rangeSource = worksheetSource.UsedRange;
 
-                    Object[,] firstColumn = rangeAC.get_Value();
+                    Object[,] firstColumn = rangeSource.get_Value();
 
-                    int rowCountAC = 2;
-                    for(int count = 2; count < rangeAC.Rows.Count; count++)
+                    Debug.WriteLine(fileAC);
+
+                    int rowCountSource = 2;
+                    for (int count = 2; count < rangeSource.Rows.Count; count++)
                     {
                         try // 
                         {
-                            if (float.Parse(firstColumn[count,1].ToString()) > 0)
+                            if (float.Parse(firstColumn[count, 1].ToString()) > 0)
                             {
-                                rowCountAC++;
+                                rowCountSource++;
                             }
                         }
                         catch (NullReferenceException) // "Catch" in case the cell's value is Null
@@ -178,94 +187,31 @@ namespace AutomisationHospitalData
                             break;
                         }
                     }
-                    rangeAC = worksheetAC.get_Range("A1", "H"+ rowCountAC);
+                    rangeSource = worksheetSource.get_Range("A1", "H" + rowCountSource);
 
-                    int colCountAC = rangeAC.Columns.Count;
+                    int colCountAC = rangeSource.Columns.Count;
 
                     int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
 
                     // Imports the cell data from the AC sheet as an array of Objects
-                    Object[,] arrayAC = rangeAC.get_Value();
+                    Object[,] arrayImported = rangeSource.get_Value();
 
                     // Creates a List of String arrays for every rowOld in the AC worksheet.
                     // Amount of rows as a List to allow for deletion of irrelevant entries.
-                    List<String[]> listAC = new List<String[]>();
+                    List<Row> listConverted = ConvertAC(arrayImported, rowCountSource);
 
-                    // For every row in the imported AC Object array, copy its value to the corresponding String in the List of String arrays
-                    for (int row = 0; row < rowCountAC; row++)
-                    {
-                        Debug.WriteLine(row);
-                        listAC.Add(new string[14]);
-                        for (int col = 0; col < 8; col++)
-                        {
-                            try // "Try" because the cell's value can be Null
-                            {
-                                listAC[row].SetValue(arrayAC[row + 1, col + 1].ToString(), col);
-                            }
-                            catch (NullReferenceException) // "Catch" in case the cell's value is Null
-                            {
-                                listAC[row].SetValue("", col);
-                            }
-                        }
-                    }
-
-                    // Deletion of irrelevant entries from the List of String arrays
-                    listAC.RemoveRange(0, 1); // Header entries in row 1
-
-                    rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listAC.Count - 1));
+                    rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listConverted.Count));
 
                     object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
 
-                    // Sets the values in the AC Object Array
-                    for (int row = 0; row < listAC.Count-1; row++)
-                    {
-                        Debug.WriteLine(row);
-                        arrayMerged[row + 1, 1] = "Ikke oplyst"; // År
-                        arrayMerged[row + 1, 2] = "Ikke oplyst"; // Kvartal
-                        arrayMerged[row + 1, 3] = listAC[row].GetValue(1); // Hospital
-
-                        string[] råvare = GetRåvare("AC", listAC[row].GetValue(3).ToString());
-
-                        arrayMerged[row + 1, 4] = råvare[0]; // Råvarekategori
-                        arrayMerged[row + 1, 5] = "AC"; // Leverandør
-                        arrayMerged[row + 1, 6] = råvare[1]; // Råvare
-
-                        String[] nameSplitAC1 = (listAC[row].GetValue(3) as String).Split(' ');
-                        String[] nameSplitAC2 = (listAC[row].GetValue(3) as String).Split('(');
-                        
-                        if (nameSplitAC1.First() == "ØKO")
-                        {
-                            arrayMerged[row + 1, 7] = "Øko"; // øko
-                        }
-                        else
-                        {
-                            arrayMerged[row + 1, 7] = "Konv"; // konv
-                        }
-                        arrayMerged[row + 1, 8] = listAC[row].GetValue(3); // Varianter/opr
-                        arrayMerged[row + 1, 9] = listAC[row].GetValue(7); // Pris pr enhed
-                        arrayMerged[row + 1, 10] = listAC[row].GetValue(6); // Pris i alt
-                        arrayMerged[row + 1, 11] = listAC[row].GetValue(5); // Kg
-
-                        float floatTotalPrice = float.Parse(listAC[row].GetValue(6).ToString());
-                        float floatWeight = float.Parse(listAC[row].GetValue(5).ToString());
-
-                        arrayMerged[row + 1, 12] = floatTotalPrice/floatWeight + ""; // Kilopris
-                        if (nameSplitAC2.Last().Length > 2)
-                        {
-                            arrayMerged[row + 1, 13] = nameSplitAC2.Last().Substring(0,3); // Oprindelse
-                        }
-                        else
-                        {
-                            arrayMerged[row + 1, 13] = "Ikke oplyst"; // Oprindelse
-                        }
-                    }
+                    arrayMerged = ConvertList(listConverted, arrayMerged);
 
                     rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
                     rangeMerged = worksheetMerged.UsedRange;
 
                     //Format the cells.
-                    worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listAC.Count - 1)).Font.Name = "Calibri";
-                    worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listAC.Count - 1)).Font.Size = 11;
+                    worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count - 1)).Font.Name = "Calibri";
+                    worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count - 1)).Font.Size = 11;
 
                     //AutoFit columns A:V.
                     rangeMerged = worksheetMerged.get_Range("A1", "M1");
@@ -277,10 +223,10 @@ namespace AutomisationHospitalData
                     excelProgram.UserControl = true;
 
                     // Releasing the Excel interop objects
-                    workbookAC.Close(false);
-                    MRCO(workbookAC);
-                    MRCO(worksheetAC);
-                    MRCO(rangeAC);
+                    workbookSource.Close(false);
+                    MRCO(workbookSource);
+                    MRCO(worksheetSource);
+                    MRCO(rangeSource);
                 }
             }
             catch (Exception theException)
@@ -332,7 +278,7 @@ namespace AutomisationHospitalData
                 DateTime dateBC = DateTime.Parse(dateBCString[1]);
 
                 // Imports the cell data from the Hørkram sheet as an array of Objects
-                Object[,] arrayBC= rangeBC.get_Value();
+                Object[,] arrayBC = rangeBC.get_Value();
 
                 // Creates a List of String arrays for every rowOld in the BC worksheet.
                 // Amount of rows as a List to allow for deletion of irrelevant entries.
@@ -347,7 +293,7 @@ namespace AutomisationHospitalData
                     Boolean categoryEnd = false;
                     Boolean skipping = false;
 
-                    string currentHospital = arrayBC[rowOld + 1,2].ToString();
+                    string currentHospital = arrayBC[rowOld + 1, 2].ToString();
                     rowOld++;
                     rowOld++;
                     string currentCategory = arrayBC[rowOld + 1, 2].ToString();
@@ -367,7 +313,7 @@ namespace AutomisationHospitalData
                                 listBC[rowNew].Add(currentHospital); // 2 Hospital
                                 listBC[rowNew].Add(currentCategory); // 3 Råvarekategori
                                 listBC[rowNew].Add("BC"); // 4 Leverandør
-                                try 
+                                try
                                 {
                                     listBC[rowNew].Add(arrayBC[rowOld + 1, 19].ToString()); // 5 Råvare
                                 }
@@ -427,7 +373,7 @@ namespace AutomisationHospitalData
 
                             try // "Try" to check if this cell is empty
                             {
-                                arrayBC[rowOld + 1, 2].ToString(); 
+                                arrayBC[rowOld + 1, 2].ToString();
                             }
                             catch (NullReferenceException) // "Catch" in case the cell is empty
                             {
@@ -457,12 +403,12 @@ namespace AutomisationHospitalData
                         }
                     }
                     skipping = true;
-                    while(skipping)
+                    while (skipping)
                     {
                         rowOld++;
-                        try 
+                        try
                         {
-                            if (arrayBC[rowOld+1,2].ToString().Contains("Total beløb"))
+                            if (arrayBC[rowOld + 1, 2].ToString().Contains("Total beløb"))
                             {
                                 skipping = false;
                                 rowOld++;
@@ -593,9 +539,9 @@ namespace AutomisationHospitalData
 
                 // Sets the values in the CBP Object Array
                 for (int row = 0; row < listCBP.Count; row++)
-                { 
+                {
                     arrayMerged[row + 1, 1] = dateCBP.Year; // År
-                    arrayMerged[row + 1, 2] = dateCBP.Month/3; // Kvartal
+                    arrayMerged[row + 1, 2] = dateCBP.Month / 3; // Kvartal
                     arrayMerged[row + 1, 3] = listCBP[row].GetValue(0).ToString().Split(new string[] { " ~ " }, StringSplitOptions.None).Last(); // Hospital
                     arrayMerged[row + 1, 4] = ""; // Råvarekategori
                     arrayMerged[row + 1, 5] = "CBP Bageri"; // Leverandør
@@ -688,27 +634,27 @@ namespace AutomisationHospitalData
 
                     object[,] arrayDagrofa = rangeDagrofa.get_Value();
 
-                    string[] date = arrayDagrofa[1,1].ToString().Split(' ');
+                    string[] date = arrayDagrofa[1, 1].ToString().Split(' ');
                     string year = date[date.Length - 1];
-                    string quarter = date[date.Length - 2].Replace("Q","");
+                    string quarter = date[date.Length - 2].Replace("Q", "");
 
                     List<string[]> listDagrofa = new List<string[]>();
                     try
                     {
-                        for (int row = headerRows; row < rowCountDagrofa-1; row++)
+                        for (int row = headerRows; row < rowCountDagrofa - 1; row++)
                         {
                             for (int col = headerCols; col < colCountDagrofa; col += 4)
                             {
                                 try
                                 {
                                     float currentAmount = float.Parse(arrayDagrofa[row, col].ToString());
-                                    if(currentAmount > 0)
+                                    if (currentAmount > 0)
                                     {
                                         listDagrofa.Add(new string[13]);
 
-                                        listDagrofa[listDagrofa.Count-1].SetValue(year, 0); // År
+                                        listDagrofa[listDagrofa.Count - 1].SetValue(year, 0); // År
                                         if (listDagrofa[listDagrofa.Count - 1].GetValue(0) == null)
-                                        listDagrofa[listDagrofa.Count - 1].SetValue(quarter, 1); // Kvartal
+                                            listDagrofa[listDagrofa.Count - 1].SetValue(quarter, 1); // Kvartal
                                         listDagrofa[listDagrofa.Count - 1].SetValue(arrayDagrofa[7, col], 2); // Hospital
 
                                         string[] råvare = GetRåvare("Dagrofa", arrayDagrofa[row, 2].ToString());
@@ -737,7 +683,7 @@ namespace AutomisationHospitalData
                                         listDagrofa[listDagrofa.Count - 1].SetValue(arrayDagrofa[row, 4].ToString(), 12); // oprindelse
                                     }
                                 }
-                                catch(NullReferenceException)
+                                catch (NullReferenceException)
                                 {
 
                                 }
@@ -989,7 +935,7 @@ namespace AutomisationHospitalData
 
                     // For every row in the imported Frisksnit Object array, copy its value to the corresponding String in the List of String arrays
                     int rowNew = 0;
-                    for (int rowFrisksnit = headerRows; rowFrisksnit < rowCountFrisksnit-1; rowFrisksnit++)
+                    for (int rowFrisksnit = headerRows; rowFrisksnit < rowCountFrisksnit - 1; rowFrisksnit++)
                     {
                         try
                         {
@@ -1160,7 +1106,7 @@ namespace AutomisationHospitalData
                             string weighttotalstring = arrayGrøntGrossisten[row + 1, 8].ToString();
 
                             float pricetotalfloat = float.Parse(pricetotalstring);
-                            float weighttotalfloat = float.Parse(weighttotalstring)/1000;
+                            float weighttotalfloat = float.Parse(weighttotalstring) / 1000;
 
                             listGrøntGrossisten[entries].SetValue(priceprunit, 8); // pris pr. enhed
                             listGrøntGrossisten[entries].SetValue(pricetotalstring, 9); // pris i alt
@@ -1171,7 +1117,7 @@ namespace AutomisationHospitalData
                         }
                         else
                         {
-                            currentHospital = arrayGrøntGrossisten[row+1, 1].ToString();
+                            currentHospital = arrayGrøntGrossisten[row + 1, 1].ToString();
                             row++;
                         }
                     }
@@ -1295,17 +1241,17 @@ namespace AutomisationHospitalData
                 rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listHørkram.Count));
 
                 object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
-                
+
                 // Sets the values in the Hørkram Object Array
-                for (int row = 0; row<listHørkram.Count; row++)
+                for (int row = 0; row < listHørkram.Count; row++)
                 {
                     arrayMerged[row + 1, 1] = dateHørkram.Year; // År
-                    arrayMerged[row + 1, 2] = (dateHørkram.Month)/ 3; // Kvartal
+                    arrayMerged[row + 1, 2] = (dateHørkram.Month) / 3; // Kvartal
                     arrayMerged[row + 1, 3] = listHørkram[row].GetValue(1); // Hospital
                     arrayMerged[row + 1, 4] = listHørkram[row].GetValue(4); // Råvarekategori
                     arrayMerged[row + 1, 5] = "Hørkram"; // Leverandør
                     arrayMerged[row + 1, 6] = listHørkram[row].GetValue(5); // Råvare
-                    if(listHørkram[row].GetValue(6) as String == "J") // konv/øko
+                    if (listHørkram[row].GetValue(6) as String == "J") // konv/øko
                     {
                         arrayMerged[row + 1, 7] = "Øko";
                     }
@@ -1314,7 +1260,7 @@ namespace AutomisationHospitalData
                         arrayMerged[row + 1, 7] = "Konv";
                     }
                     arrayMerged[row + 1, 8] = listHørkram[row].GetValue(3); // Varianter/opr
-                    arrayMerged[row + 1, 9] = float.Parse(listHørkram[row].GetValue(10) as String)/ float.Parse(listHørkram[row].GetValue(9) as String); // Pris pr enhed
+                    arrayMerged[row + 1, 9] = float.Parse(listHørkram[row].GetValue(10) as String) / float.Parse(listHørkram[row].GetValue(9) as String); // Pris pr enhed
                     arrayMerged[row + 1, 10] = listHørkram[row].GetValue(10); // Pris i alt
                     arrayMerged[row + 1, 11] = listHørkram[row].GetValue(11); // Kg
                     arrayMerged[row + 1, 12] = listHørkram[row].GetValue(13); // Kilopris
@@ -1343,6 +1289,94 @@ namespace AutomisationHospitalData
                 MRCO(worksheetHørkram);
                 MRCO(infosheetHørkram);
                 MRCO(rangeHørkram);
+            }
+            catch (Exception theException)
+            {
+                String errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = String.Concat(errorMessage, theException.Message);
+                errorMessage = String.Concat(errorMessage, " Line: ");
+                errorMessage = String.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+
+        // Path buttons code
+        private void ButtonDeViKasPath_Click(object sender, EventArgs e)
+        {
+            this.openPathDialog.Multiselect = true;
+            this.openPathDialog.Title = "Select DeViKas files";
+
+            if (openPathDialog.ShowDialog() == DialogResult.OK)
+            {
+                pathDeViKas = openPathDialog.FileNames.ToList();
+                ButtonDeViKasPath.Text = openPathDialog.FileName;
+            }
+        }
+
+        // Import buttons code
+        private void DeViKasButton_Click(object sender, EventArgs e)
+        {
+            Excel._Workbook workbookSource;
+            Excel.Range rangeSource;
+            try
+            {
+                foreach (String fileDeViKas in pathDeViKas)
+                {
+                    workbookSource = excelProgram.Workbooks.Open(fileDeViKas);
+                    foreach (Excel.Worksheet worksheetDeViKas in workbookSource.Sheets)
+                    {
+                        rangeSource = worksheetDeViKas.UsedRange;
+
+                        int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
+
+                        int rowCountSource = rangeSource.Rows.Count;
+                        int colCountSource = rangeSource.Columns.Count;
+
+                        Object[,] arrayImported = rangeSource.get_Value();
+
+                        bool splitWeight = false;
+                        if (arrayImported[12, 7].ToString().Contains("Øko"))
+                        {
+                            splitWeight = true;
+                        }
+
+                        List<Row> listConverted = ConvertDeViKas(arrayImported, splitWeight, rowCountSource);
+
+                        if(listConverted.Count > 0)
+                        {
+                            rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listConverted.Count));
+
+                            object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
+
+                            arrayMerged = ConvertList(listConverted, arrayMerged);
+
+                            rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                            rangeMerged = worksheetMerged.UsedRange;
+
+                            //Format the cells.
+                            worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Name = "Calibri";
+                            worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Size = 11;
+                        }
+                        // Releasing the Excel interop objects for the worksheet
+                        MRCO(rangeSource);
+                        MRCO(worksheetDeViKas);
+                    }
+
+                    // Releasing the Excel interop objects for workbook
+                    workbookSource.Close(false);
+                    MRCO(workbookSource);
+                }
+
+                //AutoFit columns A:V.
+                rangeMerged = worksheetMerged.get_Range("A1", "M1");
+                rangeMerged.EntireColumn.AutoFit();
+
+                //Make sure Excel is visible and give the user control
+                //of Microsoft Excel's lifetime.
+                excelProgram.Visible = true;
+                excelProgram.UserControl = true;
             }
             catch (Exception theException)
             {
@@ -1388,16 +1422,312 @@ namespace AutomisationHospitalData
             }
             else
             {
-                categories[0] = "Ikke oplyst";
-                categories[1] = "Ikke oplyst";
+                categories[0] = "";
+                categories[1] = "";
             }
 
             return categories;
+        }
+        private string GetRåvare(string company, string variant, bool getcategory)
+        {
+            List<String[]> listCompany = listLibrary.Where(x => x[1] == company).ToList();
+
+            List<String[]> listVariant = listCompany.Where(x => x[4] == variant).ToList();
+
+            string[] categories = new string[2];
+
+            if (listVariant.Count > 0)
+            {
+                categories[0] = listVariant[0].GetValue(0).ToString(); // Råvarekategori
+                categories[1] = listVariant[0].GetValue(2).ToString(); // Råvare
+            }
+            else
+            {
+                categories[0] = "";
+                categories[1] = "";
+            }
+            if (getcategory)
+            {
+                return categories[0];
+            }
+            else
+            {
+                return categories[1];
+            }
         }
 
         private bool IsNumeric(string input)
         {
             return float.TryParse(input, out _);
+        }
+
+        private string GetQuarter(string input)
+        {
+            return (int.Parse(input) + 2) / 3 + "";
+        }
+
+        // Transformations from input Array to standardised List of Rows
+        internal List<Row> ConvertDeViKas(Object[,] inputMatrix, bool splitWeight, int rowCount)
+        {
+            string year;
+            string month;
+            string quarter;
+
+            try
+            {
+                year = DateTime.Parse(inputMatrix[3, 2].ToString()).Year + "";
+                month = DateTime.Parse(inputMatrix[3, 2].ToString()).Month + "";
+                quarter = "K" + GetQuarter(month);
+            }
+            catch
+            {
+                year = inputMatrix[1, 1].ToString().Split(' ').Last();
+                try
+                {
+                    month = inputMatrix[4, 4].ToString().Split('/','-','.').Last();
+                    quarter = "K" + GetQuarter(month);
+                }
+                catch
+                {
+                    quarter = "Fejl i data";
+                }
+            }
+
+            int headerRows = 13;
+
+            List<Row> output = new List<Row>();
+
+            if (splitWeight)
+            {
+                int rowOutput = 0;
+                for (int rowInput = headerRows; rowInput < rowCount; rowInput++)
+                {
+                    try
+                    {
+                        int amount = int.Parse(inputMatrix[rowInput, 4].ToString());
+
+                        if(amount > 0)
+                        {
+                            string ecology = "Konv";
+                            string weight = "";
+
+                            try
+                            {
+                                weight = float.Parse(inputMatrix[rowInput, 6].ToString()) / 1000 + "";
+                            }
+                            catch
+                            {
+                                weight = float.Parse(inputMatrix[rowInput, 7].ToString()) / 1000 + "";
+                                ecology = "Øko";
+                            }
+
+                            Row newEntry = new Row(
+                                år: year,
+                                kvartal: quarter,
+                                hospital: inputMatrix[8, 2].ToString(),
+                                råvarekategori: "Bagværk / søde sager",
+                                leverandør: "DeViKas Bageri",
+                                råvare: "Bagværk",
+                                øko: ecology,
+                                variant: inputMatrix[rowInput, 1].ToString(),
+                                prisEnhed: inputMatrix[rowInput, 3].ToString(),
+                                prisTotal: inputMatrix[rowInput, 5].ToString(),
+                                kg: weight,
+                                oprindelse: "DAN"
+                                );
+                            output.Add(newEntry);
+                            rowOutput++;
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+            else
+            {
+                int rowOutput = 0;
+                for (int rowInput = headerRows; rowInput < rowCount; rowInput++)
+                {
+                    try
+                    {
+                        int amount = int.Parse(inputMatrix[rowInput, 5].ToString());
+
+                        if (amount > 0)
+                        {
+                            string ecology = "Konv";
+
+                            if (inputMatrix[rowInput, 1].ToString().Contains("økologisk"))
+                            {
+                                ecology = "Øko";
+                            }
+
+                            Row newEntry = new Row(
+                                år: year,
+                                kvartal: quarter,
+                                hospital: inputMatrix[8, 2].ToString(),
+                                råvarekategori: "Bagværk / søde sager",
+                                leverandør: "DeViKas Bageri",
+                                råvare: "Bagværk",
+                                øko: ecology,
+                                variant: inputMatrix[rowInput, 1].ToString(),
+                                prisEnhed: inputMatrix[rowInput, 4].ToString(),
+                                prisTotal: inputMatrix[rowInput, 6].ToString(),
+                                kg: float.Parse(inputMatrix[rowInput, 7].ToString()) / 1000 + "",
+                                oprindelse: "DAN"
+                                );
+                            output.Add(newEntry);
+                            rowOutput++;
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+            return output;
+        }
+        internal List<Row> ConvertAC(object[,] inputMatrix, int rowCount)
+        {
+            string year = "2021";
+            string month;
+            string quarter = "K2";
+            string ecology = "Konv";
+
+            int headerrows = 2;
+
+            List<Row> output = new List<Row>();
+
+            for (int rowInput = headerrows; rowInput < rowCount; rowInput++)
+            {
+                if (inputMatrix[rowInput, 4].ToString().Contains("ØKO"))
+                {
+                    ecology = "Øko";
+                }
+
+                string oprindelse = inputMatrix[rowInput, 4].ToString().Replace(" ", "").Split('(').Last();
+
+                Row newEntry = new Row(
+                    år: year,
+                    kvartal: quarter,
+                    hospital: inputMatrix[rowInput, 2].ToString(),
+                    råvarekategori: GetRåvare("AC", inputMatrix[rowInput, 4].ToString(), true),
+                    leverandør: "AC",
+                    råvare: GetRåvare("AC", inputMatrix[rowInput, 4].ToString(), false),
+                    øko: ecology,
+                    variant: inputMatrix[rowInput, 4].ToString(),
+                    prisEnhed: inputMatrix[rowInput, 8].ToString(),
+                    prisTotal: inputMatrix[rowInput, 7].ToString(),
+                    kg: inputMatrix[rowInput, 6].ToString(),
+                    oprindelse: oprindelse
+                    );
+                output.Add(newEntry);
+
+            }
+            return output;
+        }
+        internal List<Row> ConvertBC(object[,] inputMatrix, int rowCount, object[,] hospitalMatrix)
+        {
+            DateTime dateTime = DateTime.Parse(inputMatrix[2,2].ToString().Split(new string[] { ".." }, StringSplitOptions.None).Last());
+
+            string year = dateTime.Year + "";
+            string month = dateTime.Month + "";
+            string quarter = "K" + GetQuarter(month);
+            string ecology = "Konv";
+            string weight;
+            string currentHospital = "";
+
+            int headerrows = 6;
+            int rowOutput = 0;
+
+            List<Row> output = new List<Row>();
+            List<string> hospitalList = new List<string>();
+
+            foreach(object hospital in hospitalMatrix.GetColumn(1))
+            {
+                hospitalList.Add(hospital.ToString());
+            }
+
+            for (int rowInput = headerrows; rowInput < rowCount; rowInput++)
+            {
+                try
+                {
+                    if(hospitalList.Contains(inputMatrix[rowInput, 2].ToString()))
+                    {
+                        int hospitalIndex = hospitalList.FindIndex(a => a == inputMatrix[rowInput, 2].ToString());
+                        currentHospital = hospitalMatrix[hospitalIndex, 2].ToString();
+                    }
+                }
+                catch
+                {
+                }
+                try
+                {
+                    try
+                    {
+                        weight = inputMatrix[rowInput, 9].ToString();
+                        ecology = "Øko";
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            weight = inputMatrix[rowInput, 10].ToString();
+                        }
+                        catch
+                        {
+                            weight = inputMatrix[rowInput, 11].ToString();
+                        }
+                    }
+                    Row newEntry = new Row(
+                        år: year,
+                        kvartal: quarter,
+                        hospital: currentHospital,
+                        råvarekategori: inputMatrix[rowInput, 19].ToString(),
+                        leverandør: "BC",
+                        råvare: inputMatrix[rowInput, 20].ToString(),
+                        øko: ecology,
+                        variant: inputMatrix[rowInput, 2].ToString(),
+                        prisEnhed: inputMatrix[rowInput, 8].ToString(),
+                        prisTotal: inputMatrix[rowInput, 7].ToString(),
+                        kg: weight,
+                        oprindelse: inputMatrix[rowInput, 17].ToString()
+                        );
+                    output.Add(newEntry);
+                    rowOutput++;
+                }
+                catch
+                {
+                }
+            }
+
+            return output;
+        }
+
+        // Model code
+        internal object[,] ConvertList(List<Row> inputList, object[,] outputMatrix)
+        {
+            Debug.WriteLine("ConvertList");
+            Debug.WriteLine(outputMatrix.Length);
+            // Sets the values in the Emmerys Object Array
+            for (int row = 0; row < inputList.Count; row++)
+            {
+                Debug.WriteLine(row);
+                outputMatrix[row + 1, 1] = inputList[row].år;
+                outputMatrix[row + 1, 2] = inputList[row].kvartal;
+                outputMatrix[row + 1, 3] = inputList[row].hospital; // Hospital
+                outputMatrix[row + 1, 4] = inputList[row].råvarekategori; // Råvarekategori
+                outputMatrix[row + 1, 5] = inputList[row].leverandør; // Leverandør
+                outputMatrix[row + 1, 6] = inputList[row].råvare; // Råvare
+                outputMatrix[row + 1, 7] = inputList[row].øko; // Konv/øko
+                outputMatrix[row + 1, 8] = inputList[row].variant; // Varianter/opr
+                outputMatrix[row + 1, 9] = inputList[row].prisEnhed; // Pris pr enhed
+                outputMatrix[row + 1, 10] = inputList[row].prisTotal; // Pris i alt
+                outputMatrix[row + 1, 11] = inputList[row].kg; // Kg
+                outputMatrix[row + 1, 12] = inputList[row].kilopris; // Kilopris
+                outputMatrix[row + 1, 13] = inputList[row].oprindelse; // Oprindelse
+            }
+            return outputMatrix;
         }
     }
 }
