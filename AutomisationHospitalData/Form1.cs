@@ -110,7 +110,7 @@ namespace AutomisationHospitalData
                 ButtonBibliotekPath.Text = openBibliotekPathDialog.FileName;
             }
         }
-        private void CreateBibliotekButton_Click(object sender, System.EventArgs e)
+        private void CreateBibliotekButton_Click(object sender, EventArgs e)
         {
             Excel._Workbook workbookLibrary;
             Excel._Worksheet worksheetLibrary;
@@ -176,7 +176,7 @@ namespace AutomisationHospitalData
                 ButtonCBPBageriPath.Text = openCBPBageriPathDialog.FileName;
             }
         }
-        private void CBPBageriButton_Click(object sender, System.EventArgs e)
+        private void CBPBageriButton_Click(object sender, EventArgs e)
         {
 
             Excel._Workbook workbookCBP;
@@ -305,7 +305,7 @@ namespace AutomisationHospitalData
                 ButtonDagrofaPath.Text = openDagrofaPathDialog.FileName;
             }
         }
-        private void DagrofaButton_Click(object sender, System.EventArgs e)
+        private void DagrofaButton_Click(object sender, EventArgs e)
         {
 
             Excel._Workbook workbookDagrofa;
@@ -450,7 +450,7 @@ namespace AutomisationHospitalData
                 ButtonEmmerysPath.Text = openEmmerysPathDialog.FileName;
             }
         }
-        private void EmmerysButton_Click(object sender, System.EventArgs e)
+        private void EmmerysButton_Click(object sender, EventArgs e)
         {
 
             Excel._Workbook workbookEmmerys;
@@ -593,7 +593,7 @@ namespace AutomisationHospitalData
                 ButtonFrisksnitPath.Text = openFrisksnitPathDialog.FileName;
             }
         }
-        private void FrisksnitButton_Click(object sender, System.EventArgs e)
+        private void FrisksnitButton_Click(object sender, EventArgs e)
         {
 
             Excel._Workbook workbookFrisksnit;
@@ -745,7 +745,7 @@ namespace AutomisationHospitalData
                 ButtonGrøntGrossistenPath.Text = openGrøntGrossistenPathDialog.FileName;
             }
         }
-        private void GrøntgrossistenButton_Click(object sender, System.EventArgs e)
+        private void GrøntgrossistenButton_Click(object sender, EventArgs e)
         {
 
             Excel._Workbook workbookGrøntGrossisten;
@@ -880,7 +880,7 @@ namespace AutomisationHospitalData
                 ButtonHørkramPath.Text = openHørkramPathDialog.FileName;
             }
         }
-        private void HørkramButton_Click(object sender, System.EventArgs e)
+        private void HørkramButton_Click(object sender, EventArgs e)
         {
 
             Excel._Workbook workbookHørkram;
@@ -1012,7 +1012,7 @@ namespace AutomisationHospitalData
         }
 
         // Import buttons code
-        private void ACButton_Click(object sender, System.EventArgs e)
+        private void ACButton_Click(object sender, EventArgs e)
         {
             _Workbook workbookSource;
             _Worksheet worksheetSource;
@@ -1098,7 +1098,7 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
-        private void BCButton_Click(object sender, System.EventArgs e)
+        private void BCButton_Click(object sender, EventArgs e)
         {
             _Workbook workbookSource;
             _Worksheet worksheetSource;
@@ -1319,7 +1319,7 @@ namespace AutomisationHospitalData
         }
 
         // Transformations from input Array to standardised List of Rows
-        internal List<Row> ConvertDeViKas(Object[,] inputMatrix, bool splitWeight, int rowCount)
+        internal List<Row> ConvertDeViKas(object[,] inputMatrix, bool splitWeight, int rowCount)
         {
             string year;
             string month;
