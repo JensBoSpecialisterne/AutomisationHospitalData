@@ -1,18 +1,13 @@
 ﻿using CommunityToolkit.HighPerformance;
 using Microsoft.Office.Interop.Excel;
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using static System.Net.WebRequestMethods;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace AutomisationHospitalData
@@ -25,21 +20,9 @@ namespace AutomisationHospitalData
         _Worksheet worksheetMerged;
         Range rangeMerged;
 
-        // List of String arrays for the category library
         List<string[]> listLibrary = new List<string[]>();
 
-        // File dialogues
-        private OpenFileDialog openBibliotekPathDialog = new OpenFileDialog();
-        private OpenFileDialog openACPathDialog = new OpenFileDialog();
-        private OpenFileDialog openBCPathDialog = new OpenFileDialog();
-        private OpenFileDialog openCBPBageriPathDialog = new OpenFileDialog();
-        private OpenFileDialog openDagrofaPathDialog = new OpenFileDialog();
-        private OpenFileDialog openEmmerysPathDialog = new OpenFileDialog();
-        private OpenFileDialog openFrisksnitPathDialog = new OpenFileDialog();
-        private OpenFileDialog openGrøntGrossistenPathDialog = new OpenFileDialog();
-        private OpenFileDialog openHørkramPathDialog = new OpenFileDialog();
-
-        private OpenFileDialog openPathDialog = new OpenFileDialog();
+        private readonly OpenFileDialog openPathDialog = new OpenFileDialog();
 
         string pathBibliotek = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\Kategoribibliotek 2.xlsx";
 
@@ -108,20 +91,27 @@ namespace AutomisationHospitalData
             MRCO(worksheetMerged);
             MRCO(rangeMerged);
         }
+        private void Form1_Closing(object sender, FormClosingEventArgs e)
+        {
+            MRCO(excelProgram);
+            MRCO(workbookMerged);
+            MRCO(worksheetMerged);
+            MRCO(rangeMerged);
+        }
         private void ButtonBibliotekPath_Click(object sender, EventArgs e)
         {
-            this.openBibliotekPathDialog.Title = "Select Bibliotek File";
-            if (openBibliotekPathDialog.ShowDialog() == DialogResult.OK)
+            openPathDialog.Title = "Select Bibliotek File";
+            if (openPathDialog.ShowDialog() == DialogResult.OK)
             {
-                pathBibliotek = openBibliotekPathDialog.FileName;
-                ButtonBibliotekPath.Text = openBibliotekPathDialog.FileName;
+                pathBibliotek = openPathDialog.FileName;
+                ButtonBibliotekPath.Text = openPathDialog.FileName;
             }
         }
         private void CreateBibliotekButton_Click(object sender, EventArgs e)
         {
-            Excel._Workbook workbookLibrary;
-            Excel._Worksheet worksheetLibrary;
-            Excel.Range rangeLibrary;
+            _Workbook workbookLibrary;
+            _Worksheet worksheetLibrary;
+            Range rangeLibrary;
 
             workbookLibrary = excelProgram.Workbooks.Open(pathBibliotek);
             worksheetLibrary = workbookLibrary.Sheets[1];
@@ -130,7 +120,7 @@ namespace AutomisationHospitalData
             int rowCountLibrary = rangeLibrary.Rows.Count;
             int colCountLibrary = rangeLibrary.Columns.Count;
 
-            Object[,] arrayLibrary = rangeLibrary.get_Value();
+            object[,] arrayLibrary = rangeLibrary.get_Value();
 
             for (int row = 0; row < rowCountLibrary - 2; row++)
             {
@@ -149,274 +139,7 @@ namespace AutomisationHospitalData
             MRCO(rangeLibrary);
         }
 
-        // Code for Frisksnit files
-        private void FrisksnitButton_Click(object sender, EventArgs e)
-        {
-
-            Excel._Workbook workbookFrisksnit;
-            Excel._Worksheet worksheetFrisksnit;
-            Excel.Range rangeFrisksnit;
-
-            try
-            {
-                foreach (String fileFrisksnit in pathFrisksnit)
-                {
-                    workbookFrisksnit = excelProgram.Workbooks.Open(fileFrisksnit);
-                    worksheetFrisksnit = workbookFrisksnit.Sheets[1];
-                    rangeFrisksnit = worksheetFrisksnit.UsedRange;
-
-                    int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
-
-                    int rowCountFrisksnit = rangeFrisksnit.Rows.Count;
-                    int colCountFrisksnit = rangeFrisksnit.Columns.Count;
-
-                    int headerRows = 7;
-                    bool øko = false;
-
-                    string currentHospital = worksheetFrisksnit.Cells[3, 1].Text;
-
-                    String infostringFrisksnit = worksheetFrisksnit.Cells[4, 1].Text;
-                    String[] dateFrisksnitString = infostringFrisksnit.Split(new string[] { " - " }, StringSplitOptions.None);
-                    DateTime dateFrisksnit = DateTime.Parse(dateFrisksnitString[2]);
-
-                    // Imports the cell data from the Frisksnit sheet as an array of Objects
-                    Object[,] arrayFrisksnit = rangeFrisksnit.get_Value();
-
-                    // Creates a List of String arrays for every row to be added to the merged worksheet.
-                    // Amount of rows as a List to allow for deletion of irrelevant entries.
-                    List<String[]> listFrisksnit = new List<String[]>();
-
-                    // For every row in the imported Frisksnit Object array, copy its value to the corresponding String in the List of String arrays
-                    int rowNew = 0;
-                    for (int rowFrisksnit = headerRows; rowFrisksnit < rowCountFrisksnit - 1; rowFrisksnit++)
-                    {
-                        try
-                        {
-                            if (!(arrayFrisksnit[rowFrisksnit, 1].ToString().Contains("Total") | arrayFrisksnit[rowFrisksnit, 1].ToString().Contains("Gruppe")))
-                            {
-                                listFrisksnit.Add(new string[14]);
-                                for (int col = 0; col < colCountFrisksnit; col++)
-                                {
-                                    Debug.WriteLine(col);
-                                    try // "Try" because the cell's value can be Null
-                                    {
-                                        listFrisksnit[rowNew].SetValue(arrayFrisksnit[rowFrisksnit, col + 1].ToString(), col);
-                                    }
-                                    catch (NullReferenceException) // "Catch" in case the cell's value is Null
-                                    {
-                                        listFrisksnit[rowNew].SetValue("", col);
-                                    }
-                                }
-                                rowNew++;
-                            }
-                        }
-                        catch
-                        {
-                        }
-                    }
-
-                    rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listFrisksnit.Count));
-
-                    object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
-
-                    // Sets the values in the Frisksnit Object Array
-                    for (int row = 0; row < listFrisksnit.Count; row++)
-                    {
-                        øko = false;
-                        if (listFrisksnit[row].GetValue(0).ToString().Contains("Øko"))
-                        {
-                            øko = true;
-                        }
-                        arrayMerged[row + 1, 1] = dateFrisksnit.Year; // År
-                        arrayMerged[row + 1, 2] = (dateFrisksnit.Month) / 3; // Kvartal
-                        arrayMerged[row + 1, 3] = currentHospital; // Hospital
-                        arrayMerged[row + 1, 4] = ""; // Råvarekategori
-                        arrayMerged[row + 1, 5] = "Frisksnit"; // Leverandør
-                        if (øko) // konv/øko
-                        {
-                            arrayMerged[row + 1, 6] = listFrisksnit[row].GetValue(0).ToString().Replace("Øko - ", ""); // Råvare
-                        }
-                        else
-                        {
-                            arrayMerged[row + 1, 6] = listFrisksnit[row].GetValue(0); // Råvare
-                        }
-                        if (øko) // konv/øko
-                        {
-                            arrayMerged[row + 1, 7] = "Øko";
-                        }
-                        else
-                        {
-                            arrayMerged[row + 1, 7] = "Konv";
-                        }
-                        arrayMerged[row + 1, 8] = listFrisksnit[row].GetValue(2); // Varianter/opr
-                        arrayMerged[row + 1, 9] = float.Parse(listFrisksnit[row].GetValue(5).ToString()) / float.Parse(listFrisksnit[row].GetValue(3).ToString()); // Pris pr enhed
-                        arrayMerged[row + 1, 10] = listFrisksnit[row].GetValue(5); // Pris i alt
-                        arrayMerged[row + 1, 11] = listFrisksnit[row].GetValue(4); // Kg
-                        arrayMerged[row + 1, 12] = float.Parse(listFrisksnit[row].GetValue(5).ToString()) / float.Parse(listFrisksnit[row].GetValue(4).ToString()); // Kilopris
-                        arrayMerged[row + 1, 13] = "DAN"; // Oprindelse
-                    }
-
-                    rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
-                    rangeMerged = worksheetMerged.UsedRange;
-
-                    //Format the cells.
-                    worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listFrisksnit.Count)).Font.Name = "Calibri";
-                    worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listFrisksnit.Count)).Font.Size = 11;
-
-                    //AutoFit columns A:V.
-                    rangeMerged = worksheetMerged.get_Range("A1", "M1");
-                    rangeMerged.EntireColumn.AutoFit();
-
-
-                    //Make sure Excel is visible and give the user control
-                    //of Microsoft Excel's lifetime.
-                    excelProgram.Visible = true;
-                    excelProgram.UserControl = true;
-
-                    // Releasing the Excel interop objects
-                    workbookFrisksnit.Close(false);
-                    MRCO(workbookFrisksnit);
-                    MRCO(worksheetFrisksnit);
-                    MRCO(rangeFrisksnit);
-                }
-            }
-            catch (Exception theException)
-            {
-                String errorMessage;
-                errorMessage = "Error: ";
-                errorMessage = String.Concat(errorMessage, theException.Message);
-                errorMessage = String.Concat(errorMessage, " Line: ");
-                errorMessage = String.Concat(errorMessage, theException.Source);
-
-                MessageBox.Show(errorMessage, "Error");
-            }
-        }
-
         // Code for Grønt Grossisten files
-        private void GrøntgrossistenButton_Click(object sender, EventArgs e)
-        {
-
-            Excel._Workbook workbookGrøntGrossisten;
-            Excel._Worksheet worksheetGrøntGrossisten;
-            Excel.Range rangeGrøntGrossisten;
-
-            try
-            {
-                workbookGrøntGrossisten = excelProgram.Workbooks.Open(pathGrøntGrossisten);
-                worksheetGrøntGrossisten = workbookGrøntGrossisten.Sheets[1];
-                rangeGrøntGrossisten = worksheetGrøntGrossisten.UsedRange;
-
-                int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
-
-                int rowCountGrøntGrossisten = rangeGrøntGrossisten.Rows.Count;
-                int colCountGrøntGrossisten = rangeGrøntGrossisten.Columns.Count;
-
-                // Imports the cell data from the Grønt Grossisten sheet as an array of Objects
-                Object[,] arrayGrøntGrossisten = rangeGrøntGrossisten.get_Value();
-
-                // Creates a List of String arrays for every rowOld in the Grønt Grossisten worksheet.
-                // Amount of rows as a List to allow for deletion of irrelevant entries.
-                List<String[]> listGrøntGrossisten = new List<String[]>();
-
-                string currentHospital = "";
-
-                int entries = 0;
-
-                for (int row = 0; row < rowCountGrøntGrossisten; row++)
-                {
-                    try
-                    {
-                        if (IsNumeric(arrayGrøntGrossisten[row + 1, 1].ToString()))
-                        {
-                            listGrøntGrossisten.Add(new string[13]);
-                            listGrøntGrossisten[entries].SetValue("Ikke oplyst", 0); // År
-                            listGrøntGrossisten[entries].SetValue("Ikke oplyst", 1); // Kvartal
-                            listGrøntGrossisten[entries].SetValue(currentHospital, 2); // Hospital
-                            listGrøntGrossisten[entries].SetValue("Ikke oplyst", 3); // Råvarekategori
-                            listGrøntGrossisten[entries].SetValue("Grønt Grossisten", 4); // Leverandør
-                            listGrøntGrossisten[entries].SetValue("Ikke oplyst", 5); // Råvare
-                            if (arrayGrøntGrossisten[row + 1, 9].ToString() == "1") // konv/øko
-                            {
-                                listGrøntGrossisten[entries].SetValue("Øko", 6);
-                            }
-                            else
-                            {
-                                listGrøntGrossisten[entries].SetValue("Konv", 6);
-                            }
-                            listGrøntGrossisten[entries].SetValue(arrayGrøntGrossisten[row + 1, 3].ToString(), 7); // Variant
-
-                            string priceprunit = arrayGrøntGrossisten[row + 1, 12].ToString();
-                            string pricetotalstring = arrayGrøntGrossisten[row + 1, 13].ToString();
-                            string weighttotalstring = arrayGrøntGrossisten[row + 1, 8].ToString();
-
-                            float pricetotalfloat = float.Parse(pricetotalstring);
-                            float weighttotalfloat = float.Parse(weighttotalstring) / 1000;
-
-                            listGrøntGrossisten[entries].SetValue(priceprunit, 8); // pris pr. enhed
-                            listGrøntGrossisten[entries].SetValue(pricetotalstring, 9); // pris i alt
-                            listGrøntGrossisten[entries].SetValue(weighttotalfloat + "", 10); // Kg
-                            listGrøntGrossisten[entries].SetValue((pricetotalfloat / weighttotalfloat) + "", 11); // kilopris
-                            listGrøntGrossisten[entries].SetValue(arrayGrøntGrossisten[row + 1, 10], 12); // oprindelse
-                            entries++;
-                        }
-                        else
-                        {
-                            currentHospital = arrayGrøntGrossisten[row + 1, 1].ToString();
-                            row++;
-                        }
-                    }
-                    catch
-                    {
-                        row++;
-                    }
-                }
-
-                rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listGrøntGrossisten.Count));
-
-                object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
-
-                // Sets the values in the Grønt Grossisten Object Array
-                for (int row = 0; row < listGrøntGrossisten.Count; row++)
-                {
-                    for (int col = 0; col < 13; col++)
-                    {
-                        arrayMerged[row + 1, col + 1] = listGrøntGrossisten[row].GetValue(col);
-                    }
-                }
-
-                rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
-                rangeMerged = worksheetMerged.UsedRange;
-
-                //Format the cells.
-                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listGrøntGrossisten.Count)).Font.Name = "Calibri";
-                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listGrøntGrossisten.Count)).Font.Size = 11;
-
-                //AutoFit columns A:V.
-                rangeMerged = worksheetMerged.get_Range("A1", "M1");
-                rangeMerged.EntireColumn.AutoFit();
-
-                //Make sure Excel is visible and give the user control
-                //of Microsoft Excel's lifetime.
-                excelProgram.Visible = true;
-                excelProgram.UserControl = true;
-
-                // Releasing the Excel interop objects
-                workbookGrøntGrossisten.Close(false);
-                MRCO(workbookGrøntGrossisten);
-                MRCO(worksheetGrøntGrossisten);
-                MRCO(rangeGrøntGrossisten);
-            }
-            catch (Exception theException)
-            {
-                String errorMessage;
-                errorMessage = "Error: ";
-                errorMessage = String.Concat(errorMessage, theException.Message);
-                errorMessage = String.Concat(errorMessage, " Line: ");
-                errorMessage = String.Concat(errorMessage, theException.Source);
-
-                MessageBox.Show(errorMessage, "Error");
-            }
-        }
 
         // Code for Hørkram files
         private void HørkramButton_Click(object sender, EventArgs e)
@@ -540,48 +263,48 @@ namespace AutomisationHospitalData
         // Path buttons code
         private void ButtonACPath_Click(object sender, EventArgs e)
         {
-            this.openACPathDialog.Multiselect = true;
-            this.openACPathDialog.Title = "Select AC files";
+            openPathDialog.Multiselect = true;
+            openPathDialog.Title = "Select AC files";
 
-            if (openACPathDialog.ShowDialog() == DialogResult.OK)
+            if (openPathDialog.ShowDialog() == DialogResult.OK)
             {
-                pathAC = openACPathDialog.FileNames.ToList();
-                ButtonACPath.Text = openACPathDialog.FileName;
+                pathAC = openPathDialog.FileNames.ToList();
+                ButtonACPath.Text = openPathDialog.FileName;
             }
         }
         private void ButtonBCPath_Click(object sender, EventArgs e)
         {
-            this.openBCPathDialog.Title = "Select BC File";
-            if (openBCPathDialog.ShowDialog() == DialogResult.OK)
+            openPathDialog.Title = "Select BC File";
+            if (openPathDialog.ShowDialog() == DialogResult.OK)
             {
-                pathBC = openBCPathDialog.FileName;
-                ButtonBCPath.Text = openBCPathDialog.FileName;
+                pathBC = openPathDialog.FileName;
+                ButtonBCPath.Text = openPathDialog.FileName;
             }
         }
         private void ButtonCBPBageriPath_Click(object sender, EventArgs e)
         {
-            this.openCBPBageriPathDialog.Title = "Select CBP Bageri File";
-            if (openCBPBageriPathDialog.ShowDialog() == DialogResult.OK)
+            openPathDialog.Title = "Select CBP Bageri File";
+            if (openPathDialog.ShowDialog() == DialogResult.OK)
             {
-                pathCBPBageri = openCBPBageriPathDialog.FileName;
-                ButtonCBPBageriPath.Text = openCBPBageriPathDialog.FileName;
+                pathCBPBageri = openPathDialog.FileName;
+                ButtonCBPBageriPath.Text = openPathDialog.FileName;
             }
         }
         private void ButtonDagrofaPath_Click(object sender, EventArgs e)
         {
-            this.openDagrofaPathDialog.Multiselect = true;
-            this.openDagrofaPathDialog.Title = "Select Dagrofa files";
+            openPathDialog.Multiselect = true;
+            openPathDialog.Title = "Select Dagrofa files";
 
-            if (openDagrofaPathDialog.ShowDialog() == DialogResult.OK)
+            if (openPathDialog.ShowDialog() == DialogResult.OK)
             {
-                pathDagrofa = openDagrofaPathDialog.FileNames.ToList();
-                ButtonDagrofaPath.Text = openDagrofaPathDialog.FileName;
+                pathDagrofa = openPathDialog.FileNames.ToList();
+                ButtonDagrofaPath.Text = openPathDialog.FileName;
             }
         }
         private void ButtonDeViKasPath_Click(object sender, EventArgs e)
         {
-            this.openPathDialog.Multiselect = true;
-            this.openPathDialog.Title = "Select DeViKas files";
+            openPathDialog.Multiselect = true;
+            openPathDialog.Title = "Select DeViKas files";
 
             if (openPathDialog.ShowDialog() == DialogResult.OK)
             {
@@ -591,40 +314,40 @@ namespace AutomisationHospitalData
         }
         private void ButtonEmmerysPath_Click(object sender, EventArgs e)
         {
-            this.openEmmerysPathDialog.Title = "Select Emmerys File";
-            if (openEmmerysPathDialog.ShowDialog() == DialogResult.OK)
+            openPathDialog.Title = "Select Emmerys File";
+            if (openPathDialog.ShowDialog() == DialogResult.OK)
             {
-                pathEmmerys = openEmmerysPathDialog.FileName;
-                ButtonEmmerysPath.Text = openEmmerysPathDialog.FileName;
+                pathEmmerys = openPathDialog.FileName;
+                ButtonEmmerysPath.Text = openPathDialog.FileName;
             }
         }
         private void ButtonFrisksnitPath_Click(object sender, EventArgs e)
         {
-            this.openFrisksnitPathDialog.Multiselect = true;
-            this.openFrisksnitPathDialog.Title = "Select Frisksnit files";
+            openPathDialog.Multiselect = true;
+            openPathDialog.Title = "Select Frisksnit files";
 
-            if (openFrisksnitPathDialog.ShowDialog() == DialogResult.OK)
+            if (openPathDialog.ShowDialog() == DialogResult.OK)
             {
-                pathFrisksnit = openFrisksnitPathDialog.FileNames.ToList();
-                ButtonFrisksnitPath.Text = openFrisksnitPathDialog.FileName;
+                pathFrisksnit = openPathDialog.FileNames.ToList();
+                ButtonFrisksnitPath.Text = openPathDialog.FileName;
             }
         }
         private void ButtonGrøntGrossistenPath_Click(object sender, EventArgs e)
         {
-            this.openGrøntGrossistenPathDialog.Title = "Select Grønt Grossisten file";
-            if (openGrøntGrossistenPathDialog.ShowDialog() == DialogResult.OK)
+            openPathDialog.Title = "Select Grønt Grossisten file";
+            if (openPathDialog.ShowDialog() == DialogResult.OK)
             {
-                pathGrøntGrossisten = openGrøntGrossistenPathDialog.FileName;
-                ButtonGrøntGrossistenPath.Text = openGrøntGrossistenPathDialog.FileName;
+                pathGrøntGrossisten = openPathDialog.FileName;
+                ButtonGrøntGrossistenPath.Text = openPathDialog.FileName;
             }
         }
         private void ButtonHørkramPath_Click(object sender, EventArgs e)
         {
-            this.openHørkramPathDialog.Title = "Select Hørkram file";
-            if (openHørkramPathDialog.ShowDialog() == DialogResult.OK)
+            openPathDialog.Title = "Select Hørkram file";
+            if (openPathDialog.ShowDialog() == DialogResult.OK)
             {
-                pathHørkram = openHørkramPathDialog.FileName;
-                ButtonHørkramPath.Text = openHørkramPathDialog.FileName;
+                pathHørkram = openPathDialog.FileName;
+                ButtonHørkramPath.Text = openPathDialog.FileName;
             }
         }
 
@@ -1067,6 +790,139 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
+        private void FrisksnitButton_Click(object sender, EventArgs e)
+        {
+
+            _Workbook workbookSource;
+            _Worksheet worksheetSource;
+            Range rangeSource;
+
+            try
+            {
+                foreach (string fileFrisksnit in pathFrisksnit)
+                {
+                    workbookSource = excelProgram.Workbooks.Open(fileFrisksnit);
+                    worksheetSource = workbookSource.Sheets[1];
+                    rangeSource = worksheetSource.UsedRange;
+
+                    int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
+
+                    int rowCountSource = rangeSource.Rows.Count;
+                    int colCountSource = rangeSource.Columns.Count;
+
+                    // Imports the cell data from the Frisksnit sheet as an array of Objects
+                    object[,] arraySource = rangeSource.get_Value();
+
+                    // Creates a List of String arrays for every row to be added to the merged worksheet.
+                    // Amount of rows as a List to allow for deletion of irrelevant entries.
+                    List<Row> listConverted = ConvertFrisksnit(arraySource, rowCountSource);
+
+                    rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listConverted.Count));
+
+                    object[,] arrayMerged = rangeMerged.get_Value(XlRangeValueDataType.xlRangeValueDefault);
+
+                    arrayMerged = ConvertList(listConverted, arrayMerged);
+
+                    rangeMerged.set_Value(XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                    rangeMerged = worksheetMerged.UsedRange;
+
+                    //Format the cells.
+                    worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Name = "Calibri";
+                    worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Size = 11;
+
+                    //AutoFit columns A:V.
+                    rangeMerged = worksheetMerged.get_Range("A1", "M1");
+                    rangeMerged.EntireColumn.AutoFit();
+
+
+                    //Make sure Excel is visible and give the user control
+                    //of Microsoft Excel's lifetime.
+                    excelProgram.Visible = true;
+                    excelProgram.UserControl = true;
+
+                    // Releasing the Excel interop objects
+                    workbookSource.Close(false);
+                    MRCO(workbookSource);
+                    MRCO(worksheetSource);
+                    MRCO(rangeSource);
+                }
+            }
+            catch (Exception theException)
+            {
+                string errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = string.Concat(errorMessage, theException.Message);
+                errorMessage = string.Concat(errorMessage, " Line: ");
+                errorMessage = string.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void GrøntgrossistenButton_Click(object sender, EventArgs e)
+        {
+
+            _Workbook workbookSource;
+            _Worksheet worksheetSource;
+            Range rangeSource;
+
+            try
+            {
+                workbookSource = excelProgram.Workbooks.Open(pathGrøntGrossisten);
+                worksheetSource = workbookSource.Sheets[1];
+                rangeSource = worksheetSource.UsedRange;
+
+                int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
+
+                int rowCountSource = rangeSource.Rows.Count;
+                int colCountSource = rangeSource.Columns.Count;
+
+                // Imports the cell data from the Grønt Grossisten sheet as an array of Objects
+                object[,] arraySource = rangeSource.get_Value();
+
+                // Creates a List of String arrays for every rowOld in the Grønt Grossisten worksheet.
+                // Amount of rows as a List to allow for deletion of irrelevant entries.
+                List<Row> listConverted = ConvertGrøntGrossisten(arraySource, rowCountSource);
+
+                rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listConverted.Count));
+
+                Debug.WriteLine("Next");
+                object[,] arrayMerged = rangeMerged.get_Value(XlRangeValueDataType.xlRangeValueDefault);
+
+                arrayMerged = ConvertList(listConverted, arrayMerged);
+
+                rangeMerged.set_Value(XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                rangeMerged = worksheetMerged.UsedRange;
+
+                //Format the cells.
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Name = "Calibri";
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Size = 11;
+
+                //AutoFit columns A:V.
+                rangeMerged = worksheetMerged.get_Range("A1", "M1");
+                rangeMerged.EntireColumn.AutoFit();
+
+                //Make sure Excel is visible and give the user control
+                //of Microsoft Excel's lifetime.
+                excelProgram.Visible = true;
+                excelProgram.UserControl = true;
+
+                // Releasing the Excel interop objects
+                workbookSource.Close(false);
+                MRCO(workbookSource);
+                MRCO(worksheetSource);
+                MRCO(rangeSource);
+            }
+            catch (Exception theException)
+            {
+                string errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = string.Concat(errorMessage, theException.Message);
+                errorMessage = string.Concat(errorMessage, " Line: ");
+                errorMessage = string.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
 
         // Support code
         public void MRCO(object comObject) // Based on code from breezetree.com/blog/
@@ -1079,9 +935,9 @@ namespace AutomisationHospitalData
         }
         private string GetRåvare(string company, string variant, bool getcategory)
         {
-            List<String[]> listCompany = listLibrary.Where(x => x[1] == company).ToList();
+            List<string[]> listCompany = listLibrary.Where(x => x[1] == company).ToList();
 
-            List<String[]> listVariant = listCompany.Where(x => x[4] == variant).ToList();
+            List<string[]> listVariant = listCompany.Where(x => x[4] == variant).ToList();
 
             string[] categories = new string[2];
 
@@ -1126,29 +982,34 @@ namespace AutomisationHospitalData
 
             for (int rowInput = headerrows; rowInput <= rowCount; rowInput++)
             {
-                ecology = "Konv";
-                if (inputMatrix[rowInput, 4].ToString().Contains("ØKO"))
+                Debug.WriteLine(rowInput);
+                try
                 {
-                    ecology = "Øko";
+                    ecology = "Konv";
+                    if (inputMatrix[rowInput, 4].ToString().Contains("ØKO"))
+                    {
+                        ecology = "Øko";
+                    }
+
+                    string oprindelse = inputMatrix[rowInput, 4].ToString().Replace(" ", "").Split('(').Last();
+
+                    Row newEntry = new Row(
+                        år: year,
+                        kvartal: quarter,
+                        hospital: inputMatrix[rowInput, 2].ToString(),
+                        råvarekategori: GetRåvare("AC", inputMatrix[rowInput, 4].ToString(), true),
+                        leverandør: "AC",
+                        råvare: GetRåvare("AC", inputMatrix[rowInput, 4].ToString(), false),
+                        øko: ecology,
+                        variant: inputMatrix[rowInput, 4].ToString(),
+                        prisEnhed: inputMatrix[rowInput, 8].ToString(),
+                        prisTotal: inputMatrix[rowInput, 7].ToString(),
+                        kg: inputMatrix[rowInput, 6].ToString(),
+                        oprindelse: oprindelse
+                        );
+                    output.Add(newEntry);
                 }
-
-                string oprindelse = inputMatrix[rowInput, 4].ToString().Replace(" ", "").Split('(').Last();
-
-                Row newEntry = new Row(
-                    år: year,
-                    kvartal: quarter,
-                    hospital: inputMatrix[rowInput, 2].ToString(),
-                    råvarekategori: GetRåvare("AC", inputMatrix[rowInput, 4].ToString(), true),
-                    leverandør: "AC",
-                    råvare: GetRåvare("AC", inputMatrix[rowInput, 4].ToString(), false),
-                    øko: ecology,
-                    variant: inputMatrix[rowInput, 4].ToString(),
-                    prisEnhed: inputMatrix[rowInput, 8].ToString(),
-                    prisTotal: inputMatrix[rowInput, 7].ToString(),
-                    kg: inputMatrix[rowInput, 6].ToString(),
-                    oprindelse: oprindelse
-                    );
-                output.Add(newEntry);
+                catch { }
 
             }
             return output;
@@ -1192,9 +1053,7 @@ namespace AutomisationHospitalData
                         }
                     }
                 }
-                catch
-                {
-                }
+                catch { }
                 while (!categoryEnd)
                 {
                     try
@@ -1293,10 +1152,7 @@ namespace AutomisationHospitalData
                         output.Add(newEntry);
                     }
                 }
-                catch
-                {
-
-                }
+                catch { }
             }
             return output;
         }
@@ -1370,10 +1226,7 @@ namespace AutomisationHospitalData
                                 output.Add(newEntry);
                             }
                         }
-                        catch
-                        {
-
-                        }
+                        catch { }
                     }
                 }
             }
@@ -1401,7 +1254,7 @@ namespace AutomisationHospitalData
                 }
                 catch
                 {
-                    quarter = "Fejl i data";
+                    quarter = "";
                 }
             }
 
@@ -1451,9 +1304,7 @@ namespace AutomisationHospitalData
                             rowOutput++;
                         }
                     }
-                    catch
-                    {
-                    }
+                    catch { }
                 }
             }
             else
@@ -1492,9 +1343,7 @@ namespace AutomisationHospitalData
                             rowOutput++;
                         }
                     }
-                    catch
-                    {
-                    }
+                    catch { }
                 }
             }
             return output;
@@ -1527,77 +1376,138 @@ namespace AutomisationHospitalData
 
             for (int rowInput = headerrows; rowInput <= rowCount; rowInput++)
             {
-                ecology = "Konv";
-                if (inputMatrix[rowInput, 2].ToString().Contains("ØKO"))
+                try
                 {
-                    ecology = "Øko";
+                    ecology = "Konv";
+                    if (inputMatrix[rowInput, 2].ToString().Contains("ØKO"))
+                    {
+                        ecology = "Øko";
+                    }
+
+                    string variant = inputMatrix[rowInput, 1].ToString();
+
+                    Row newEntry = new Row(
+                        år: year,
+                        kvartal: quarter,
+                        hospital: hospital,
+                        råvarekategori: GetRåvare("Emmerys", variant, true),
+                        leverandør: "Emmerys",
+                        råvare: GetRåvare("Emmerys", variant, false),
+                        øko: ecology,
+                        variant: variant,
+                        prisEnhed: inputMatrix[rowInput, 3].ToString(),
+                        prisTotal: inputMatrix[rowInput, 5].ToString(),
+                        kg: inputMatrix[rowInput, 7].ToString(),
+                        oprindelse: "DAN"
+                        );
+                    output.Add(newEntry);
                 }
-
-                string variant = inputMatrix[rowInput, 1].ToString();
-
-                Row newEntry = new Row(
-                    år: year,
-                    kvartal: quarter,
-                    hospital: hospital,
-                    råvarekategori: GetRåvare("Emmerys", variant, true),
-                    leverandør: "Emmerys",
-                    råvare: GetRåvare("Emmerys", variant, false),
-                    øko: ecology,
-                    variant: variant,
-                    prisEnhed: inputMatrix[rowInput, 3].ToString(),
-                    prisTotal: inputMatrix[rowInput, 5].ToString(),
-                    kg: inputMatrix[rowInput, 7].ToString(),
-                    oprindelse: "DAN"
-                    );
-                output.Add(newEntry);
-
+                catch { }
             }
             return output;
         }
         internal List<Row> ConvertFrisksnit(object[,] inputMatrix, int rowCount)
         {
-            string[] dateArray = inputMatrix[4, 1].ToString().Split(new string[] { " - " }, StringSplitOptions.None);
+            string[] dateArray = inputMatrix[3, 1].ToString().Split(new string[] { " - " }, StringSplitOptions.None);
             DateTime dateTime = DateTime.Parse(dateArray[dateArray.Length-2]);
 
             string year = dateTime.Year + "";
             string month = dateTime.Month + "";
             string quarter = "K" + GetQuarter(month);
             string ecology;
-            string hospital = inputMatrix[3,1].ToString();
+            string hospital = inputMatrix[2,1].ToString();
 
-            int headerrows = 6;
+            int headerrows = 5;
 
             List<Row> output = new List<Row>();
 
             for (int rowInput = headerrows; rowInput <= rowCount; rowInput++)
             {
-                string variant = inputMatrix[rowInput, 3].ToString();
-                float priceTotal = float.Parse(inputMatrix[rowInput, 6].ToString());
-                float weight = float.Parse(inputMatrix[rowInput, 5].ToString());
-                float amount = float.Parse(inputMatrix[rowInput, 4].ToString());
-
-                ecology = "Konv";
-                if (inputMatrix[rowInput, 3].ToString().Contains("Økologisk"))
+                try
                 {
-                    ecology = "Øko";
+                    string variant = inputMatrix[rowInput, 3].ToString();
+                    float priceTotal = float.Parse(inputMatrix[rowInput, 6].ToString());
+                    float weight = float.Parse(inputMatrix[rowInput, 5].ToString());
+                    float amount = float.Parse(inputMatrix[rowInput, 4].ToString());
+
+                    ecology = "Konv";
+                    if (inputMatrix[rowInput, 3].ToString().Contains("Økologisk"))
+                    {
+                        ecology = "Øko";
+                    }
+
+                    Row newEntry = new Row(
+                        år: year,
+                        kvartal: quarter,
+                        hospital: hospital,
+                        råvarekategori: GetRåvare("Frisksnit", variant, true),
+                        leverandør: "Frisksnit",
+                        råvare: GetRåvare("Frisksnit", variant, false),
+                        øko: ecology,
+                        variant: variant,
+                        prisEnhed: priceTotal / amount + "",
+                        prisTotal: priceTotal + "",
+                        kg: weight + "",
+                        oprindelse: ""
+                        );
+                    output.Add(newEntry);
                 }
+                catch { }
+            }
+            return output;
+        }
+        internal List<Row> ConvertGrøntGrossisten(object[,] inputMatrix, int rowCount)
+        {
 
-                Row newEntry = new Row(
-                    år: year,
-                    kvartal: quarter,
-                    hospital: hospital,
-                    råvarekategori: GetRåvare("AC", variant, true),
-                    leverandør: "AC",
-                    råvare: GetRåvare("AC", variant, false),
-                    øko: ecology,
-                    variant: variant,
-                    prisEnhed: priceTotal/amount + "",
-                    prisTotal: priceTotal + "",
-                    kg: weight + "",
-                    oprindelse: ""
-                    );
-                output.Add(newEntry);
+            string year = "2021";
+            string quarter = "K2";
+            string ecology;
+            string hospital = "";
+            bool skip;
 
+            List<Row> output = new List<Row>();
+
+            for (int rowInput = 0; rowInput <= rowCount; rowInput++)
+            {
+                try
+                {
+                    skip = false;
+                    if (inputMatrix[rowInput,1].ToString().Contains("Source No_"))
+                    {
+                        hospital = inputMatrix[rowInput-1,1].ToString();
+                        skip = true;
+                    }
+                    if (!skip)
+                    {
+                        string variant = inputMatrix[rowInput, 3].ToString();
+                        float priceTotal = float.Parse(inputMatrix[rowInput, 13].ToString());
+                        float weight = float.Parse(inputMatrix[rowInput, 8].ToString())/1000;
+                        float amount = float.Parse(inputMatrix[rowInput, 6].ToString());
+
+                        ecology = "Konv";
+                        if (inputMatrix[rowInput, 3].ToString().Contains("øko"))
+                        {
+                            ecology = "Øko";
+                        }
+
+                        Row newEntry = new Row(
+                            år: year,
+                            kvartal: quarter,
+                            hospital: hospital,
+                            råvarekategori: GetRåvare("Grønt Grossisten", variant, true),
+                            leverandør: "Grønt Grossisten",
+                            råvare: GetRåvare("Grønt Grossisten", variant, false),
+                            øko: ecology,
+                            variant: variant,
+                            prisEnhed: inputMatrix[rowInput, 12].ToString(),
+                            prisTotal: priceTotal + "",
+                            kg: weight + "",
+                            oprindelse: ""
+                            );
+                        output.Add(newEntry);
+                    }
+                }
+                catch { }
             }
             return output;
         }

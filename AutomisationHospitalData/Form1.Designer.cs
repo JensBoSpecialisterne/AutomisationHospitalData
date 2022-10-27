@@ -281,6 +281,7 @@ namespace AutomisationHospitalData
             this.Text = "Rens Excel-ark";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.FormClosed += new FormClosedEventHandler(this.Form1_Closed);
+            this.FormClosing += new FormClosingEventHandler(this.Form1_Closing);
             this.ResumeLayout(false);
 
         }
