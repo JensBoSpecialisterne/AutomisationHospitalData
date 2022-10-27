@@ -1582,6 +1582,61 @@ namespace AutomisationHospitalData
             }
             return output;
         }
+        internal List<Row> ConvertEmmerys(object[,] inputMatrix, int rowCount)
+        {
+            DateTime dateTime = DateTime.Parse(inputMatrix[2,2].ToString().Split(new string[] { ".." }, StringSplitOptions.None).Last());
+            string year = dateTime.Year + "";
+            string month = dateTime.Month + "";
+            string quarter = "K" + GetQuarter(month);
+            string hospital = inputMatrix[1, 2].ToString();
+            string ecology;
+
+            int headerrows;
+
+            for(headerrows = 1; headerrows < rowCount; headerrows++)
+            {
+                try
+                {
+                    if(inputMatrix[headerrows, 1].ToString().Contains("Produktnavn"))
+                    {
+                        headerrows++;
+                        break;
+                    }
+                }
+                catch{}
+            }
+
+            List<Row> output = new List<Row>();
+
+            for (int rowInput = headerrows; rowInput <= rowCount; rowInput++)
+            {
+                ecology = "Konv";
+                if (inputMatrix[rowInput, 2].ToString().Contains("ØKO"))
+                {
+                    ecology = "Øko";
+                }
+
+                string variant = inputMatrix[rowInput, 1].ToString();
+
+                Row newEntry = new Row(
+                    år: year,
+                    kvartal: quarter,
+                    hospital: hospital,
+                    råvarekategori: GetRåvare("Emmerys", variant, true),
+                    leverandør: "Emmerys",
+                    råvare: GetRåvare("Emmerys", variant, false),
+                    øko: ecology,
+                    variant: variant,
+                    prisEnhed: inputMatrix[rowInput, 3].ToString(),
+                    prisTotal: inputMatrix[rowInput, 5].ToString(),
+                    kg: inputMatrix[rowInput, 7].ToString(),
+                    oprindelse: "DAN"
+                    );
+                output.Add(newEntry);
+
+            }
+            return output;
+        }
 
         // Model code
         internal object[,] ConvertList(List<Row> inputList, object[,] outputMatrix)
