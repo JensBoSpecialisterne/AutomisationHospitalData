@@ -101,6 +101,13 @@ namespace AutomisationHospitalData
             worksheetMerged.get_Range("A1", "V1").VerticalAlignment =
             Excel.XlVAlign.xlVAlignCenter;
         }
+        private void Form1_Closed(object sender, FormClosedEventArgs e)
+        {
+            MRCO(excelProgram);
+            MRCO(workbookMerged);
+            MRCO(worksheetMerged);
+            MRCO(rangeMerged);
+        }
         private void ButtonBibliotekPath_Click(object sender, EventArgs e)
         {
             this.openBibliotekPathDialog.Title = "Select Bibliotek File";
@@ -140,142 +147,6 @@ namespace AutomisationHospitalData
             MRCO(workbookLibrary);
             MRCO(worksheetLibrary);
             MRCO(rangeLibrary);
-        }
-
-        // Code for Dagrofa files
-        private void DagrofaButton_Click(object sender, EventArgs e)
-        {
-
-            Excel._Workbook workbookDagrofa;
-            Excel._Worksheet worksheetDagrofa;
-            Excel.Range rangeDagrofa;
-
-            try
-            {
-                foreach (string fileDagrofa in pathDagrofa)
-                {
-                    workbookDagrofa = excelProgram.Workbooks.Open(fileDagrofa);
-                    worksheetDagrofa = workbookDagrofa.Sheets[1];
-                    rangeDagrofa = worksheetDagrofa.UsedRange;
-
-                    int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
-
-                    int rowCountDagrofa = rangeDagrofa.Rows.Count;
-                    int colCountDagrofa = rangeDagrofa.Columns.Count;
-
-                    int headerRows = 9;
-                    int headerCols = 5;
-
-                    object[,] arrayDagrofa = rangeDagrofa.get_Value();
-
-                    string[] date = arrayDagrofa[1, 1].ToString().Split(' ');
-                    string year = date[date.Length - 1];
-                    string quarter = date[date.Length - 2].Replace("Q", "");
-
-                    List<string[]> listDagrofa = new List<string[]>();
-                    try
-                    {
-                        for (int row = headerRows; row < rowCountDagrofa - 1; row++)
-                        {
-                            for (int col = headerCols; col < colCountDagrofa; col += 4)
-                            {
-                                try
-                                {
-                                    float currentAmount = float.Parse(arrayDagrofa[row, col].ToString());
-                                    if (currentAmount > 0)
-                                    {
-                                        listDagrofa.Add(new string[13]);
-
-                                        listDagrofa[listDagrofa.Count - 1].SetValue(year, 0); // År
-                                        if (listDagrofa[listDagrofa.Count - 1].GetValue(0) == null)
-                                            listDagrofa[listDagrofa.Count - 1].SetValue(quarter, 1); // Kvartal
-                                        listDagrofa[listDagrofa.Count - 1].SetValue(arrayDagrofa[7, col], 2); // Hospital
-
-                                        string[] råvare = GetRåvare("Dagrofa", arrayDagrofa[row, 2].ToString());
-
-                                        listDagrofa[listDagrofa.Count - 1].SetValue(råvare[0], 3); // Råvarekategori
-                                        listDagrofa[listDagrofa.Count - 1].SetValue("Dagrofa", 4); // Leverandør
-                                        listDagrofa[listDagrofa.Count - 1].SetValue(råvare[1], 5); // Råvare
-                                        if (arrayDagrofa[row, 3].ToString() == "Ja") // konv/øko
-                                        {
-                                            listDagrofa[listDagrofa.Count - 1].SetValue("Øko", 6);
-                                        }
-                                        else
-                                        {
-                                            listDagrofa[listDagrofa.Count - 1].SetValue("Konv", 6);
-                                        }
-
-                                        listDagrofa[listDagrofa.Count - 1].SetValue(arrayDagrofa[row, 2].ToString(), 7); // Variant
-                                        listDagrofa[listDagrofa.Count - 1].SetValue(arrayDagrofa[row, col + 3].ToString(), 8); // pris pr. enhed
-                                        listDagrofa[listDagrofa.Count - 1].SetValue(arrayDagrofa[row, col + 2].ToString(), 9); // pris i alt
-                                        listDagrofa[listDagrofa.Count - 1].SetValue(arrayDagrofa[row, col + 1].ToString(), 10); // Kg
-
-                                        float totalPrice = float.Parse(listDagrofa[listDagrofa.Count - 1].GetValue(9).ToString());
-                                        float totalWeight = float.Parse(listDagrofa[listDagrofa.Count - 1].GetValue(10).ToString());
-
-                                        listDagrofa[listDagrofa.Count - 1].SetValue(totalPrice / totalWeight + "", 11); // kilopris
-                                        listDagrofa[listDagrofa.Count - 1].SetValue(arrayDagrofa[row, 4].ToString(), 12); // oprindelse
-                                    }
-                                }
-                                catch (NullReferenceException)
-                                {
-
-                                }
-                            }
-                        }
-                        rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listDagrofa.Count));
-
-                        object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
-
-                        // Sets the values in the Grønt Grossisten Object Array
-                        for (int row = 0; row < listDagrofa.Count; row++)
-                        {
-                            for (int col = 0; col < 13; col++)
-                            {
-                                arrayMerged[row + 1, col + 1] = listDagrofa[row].GetValue(col);
-                            }
-                        }
-                        rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
-                        rangeMerged = worksheetMerged.UsedRange;
-                    }
-                    catch
-                    {
-
-                    }
-                    //Format the cells.
-                    worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listDagrofa.Count)).Font.Name = "Calibri";
-                    worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listDagrofa.Count)).Font.Size = 11;
-
-                    // Releasing the Excel interop objects
-                    workbookDagrofa.Close(false);
-                    MRCO(workbookDagrofa);
-                    MRCO(worksheetDagrofa);
-                    MRCO(rangeDagrofa);
-                }
-
-                // rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
-                // rangeMerged = worksheetMerged.UsedRange;
-
-                //AutoFit columns A:V.
-                rangeMerged = worksheetMerged.get_Range("A1", "M1");
-                rangeMerged.EntireColumn.AutoFit();
-
-                //Make sure Excel is visible and give the user control
-                //of Microsoft Excel's lifetime.
-                excelProgram.Visible = true;
-                excelProgram.UserControl = true;
-
-            }
-            catch (Exception theException)
-            {
-                String errorMessage;
-                errorMessage = "Error: ";
-                errorMessage = String.Concat(errorMessage, theException.Message);
-                errorMessage = String.Concat(errorMessage, " Line: ");
-                errorMessage = String.Concat(errorMessage, theException.Source);
-
-                MessageBox.Show(errorMessage, "Error");
-            }
         }
 
         // Code for Emmerys files
@@ -859,6 +730,17 @@ namespace AutomisationHospitalData
                 ButtonEmmerysPath.Text = openEmmerysPathDialog.FileName;
             }
         }
+        private void ButtonFrisksnitPath_Click(object sender, EventArgs e)
+        {
+            this.openFrisksnitPathDialog.Multiselect = true;
+            this.openFrisksnitPathDialog.Title = "Select Frisksnit files";
+
+            if (openFrisksnitPathDialog.ShowDialog() == DialogResult.OK)
+            {
+                pathFrisksnit = openFrisksnitPathDialog.FileNames.ToList();
+                ButtonFrisksnitPath.Text = openFrisksnitPathDialog.FileName;
+            }
+        }
         private void ButtonGrøntGrossistenPath_Click(object sender, EventArgs e)
         {
             this.openGrøntGrossistenPathDialog.Title = "Select Grønt Grossisten file";
@@ -1057,12 +939,9 @@ namespace AutomisationHospitalData
                 int rowCountSource = rangeSource.Rows.Count;
                 int colCountSource = rangeSource.Columns.Count;
 
-                // Imports the cell data from the Hørkram sheet as an array of Objects
                 object[,] arraySource = rangeSource.get_Value();
                 object[,] arrayInfo = rangeInfo.get_Value();
 
-                // Creates a List of String arrays for every rowOld in the BC worksheet.
-                // Amount of rows as a List to allow for deletion of irrelevant entries.
                 List<Row> listConverted = ConvertCBPBageri(arraySource, rowCountSource, arrayInfo);
 
                 rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (listConverted.Count + usedRowsMerged));
@@ -1081,7 +960,6 @@ namespace AutomisationHospitalData
                 rangeMerged = worksheetMerged.get_Range("A1", "M1");
                 rangeMerged.EntireColumn.AutoFit();
 
-
                 //Make sure Excel is visible and give the user control
                 //of Microsoft Excel's lifetime.
                 excelProgram.Visible = true;
@@ -1092,6 +970,77 @@ namespace AutomisationHospitalData
                 MRCO(workbookSource);
                 MRCO(worksheetSource);
                 MRCO(rangeSource);
+            }
+            catch (Exception theException)
+            {
+                string errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = string.Concat(errorMessage, theException.Message);
+                errorMessage = string.Concat(errorMessage, " Line: ");
+                errorMessage = string.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void DagrofaButton_Click(object sender, EventArgs e)
+        {
+
+            _Workbook workbookSource;
+            _Worksheet worksheetSource;
+            Range rangeSource;
+
+            try
+            {
+                foreach (string fileDagrofa in pathDagrofa)
+                {
+                    workbookSource = excelProgram.Workbooks.Open(fileDagrofa);
+                    worksheetSource = workbookSource.Sheets[1];
+                    rangeSource = worksheetSource.UsedRange;
+
+                    int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
+
+                    int rowCountSource = rangeSource.Rows.Count;
+                    int colCountSource = rangeSource.Columns.Count;
+
+                    // Imports the cell data from the AC sheet as an array of Objects
+                    object[,] arrayImported = rangeSource.get_Value();
+
+                    // Creates a List of String arrays for every rowOld in the AC worksheet.
+                    // Amount of rows as a List to allow for deletion of irrelevant entries.
+                    List<Row> listConverted = ConvertDagrofa(arrayImported, rowCountSource, colCountSource);
+
+                    rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listConverted.Count));
+
+                    object[,] arrayMerged = rangeMerged.get_Value(XlRangeValueDataType.xlRangeValueDefault);
+
+                    arrayMerged = ConvertList(listConverted, arrayMerged);
+
+                    rangeMerged.set_Value(XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                    rangeMerged = worksheetMerged.UsedRange;
+
+                    //Format the cells.
+                    worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Name = "Calibri";
+                    worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Size = 11;
+
+                    // Releasing the Excel interop objects
+                    workbookSource.Close(false);
+                    MRCO(workbookSource);
+                    MRCO(worksheetSource);
+                    MRCO(rangeSource);
+                }
+
+                // rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                // rangeMerged = worksheetMerged.UsedRange;
+
+                //AutoFit columns A:V.
+                rangeMerged = worksheetMerged.get_Range("A1", "M1");
+                rangeMerged.EntireColumn.AutoFit();
+
+                //Make sure Excel is visible and give the user control
+                //of Microsoft Excel's lifetime.
+                excelProgram.Visible = true;
+                excelProgram.UserControl = true;
+
             }
             catch (Exception theException)
             {
@@ -1177,17 +1126,6 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
-        private void ButtonFrisksnitPath_Click(object sender, EventArgs e)
-        {
-            this.openFrisksnitPathDialog.Multiselect = true;
-            this.openFrisksnitPathDialog.Title = "Select Frisksnit files";
-
-            if (openFrisksnitPathDialog.ShowDialog() == DialogResult.OK)
-            {
-                pathFrisksnit = openFrisksnitPathDialog.FileNames.ToList();
-                ButtonFrisksnitPath.Text = openFrisksnitPathDialog.FileName;
-            }
-        }
 
         // Support code
         public void MRCO(object comObject) // Based on code from breezetree.com/blog/
@@ -1197,13 +1135,6 @@ namespace AutomisationHospitalData
                 Marshal.ReleaseComObject(comObject);
                 comObject = null;
             }
-        }
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            MRCO(excelProgram);
-            MRCO(workbookMerged);
-            MRCO(worksheetMerged);
-            MRCO(rangeMerged);
         }
 
         private string[] GetRåvare(string company, string variant)
@@ -1448,6 +1379,85 @@ namespace AutomisationHospitalData
                 catch
                 {
 
+                }
+            }
+            return output;
+        }
+        internal List<Row> ConvertDagrofa(object[,] inputMatrix, int rowCount, int colCount)
+        {
+            string[] headerInfo = inputMatrix[1, 1].ToString().Split(' ');
+
+            string year = headerInfo.Last();
+            string quarter = headerInfo[headerInfo.Length - 2].Replace('Q','K');
+            string ecology;
+            string variant;
+            string origin;
+
+            int headerRows = 9;
+            int headerCols = 5;
+
+            List<Row> output = new List<Row>();
+
+            for (int rowInput = headerRows; rowInput < rowCount-1; rowInput++)
+            {
+                Debug.WriteLine("Row" + rowInput);
+                ecology = "Konv";
+                if (inputMatrix[rowInput, 3].ToString().Contains("Ja"))
+                {
+                    ecology = "Øko";
+                }
+                variant = inputMatrix[rowInput, 2].ToString();
+                origin = inputMatrix[rowInput, 4].ToString();
+                if (!(variant.Contains("Pant") |
+                    variant.Contains("glas") |
+                    variant.Contains("Låg") |
+                    variant.Contains("låg") |
+                    variant.Contains("bøtte") |
+                    variant.Contains("Levering") |
+                    variant.Contains("levering") |
+                    variant.Contains("Gebyr") |
+                    variant.Contains("gebyr") |
+                    variant.Contains("smuld")
+                    ))
+                {
+                    for (int colInput = headerCols; colInput < colCount; colInput += 4)
+                    {
+                        Debug.WriteLine("Row" + rowInput + " Col" + colInput);
+
+                        string hospital = "";
+                        string[] hospitalArray = inputMatrix[7, colInput].ToString().Split(' ');
+                        for (int i = 1; i < hospitalArray.Length; i++)
+                        {
+                            hospital = hospital + hospitalArray[i] + " ";
+                        }
+
+
+                        try
+                        {
+                            if (float.Parse(inputMatrix[rowInput, colInput].ToString()) > 0)
+                            {
+                                Row newEntry = new Row(
+                                    år: year,
+                                    kvartal: quarter,
+                                    hospital: hospital,
+                                    råvarekategori: GetRåvare("Dagrofa", variant, true),
+                                    leverandør: "Dagrofa",
+                                    råvare: GetRåvare("Dagrofa", variant, false),
+                                    øko: ecology,
+                                    variant: variant,
+                                    prisEnhed: inputMatrix[rowInput, colInput + 3].ToString(),
+                                    prisTotal: inputMatrix[rowInput, colInput + 2].ToString(),
+                                    kg: inputMatrix[rowInput, colInput + 1].ToString(),
+                                    oprindelse: origin
+                                    );
+                                output.Add(newEntry);
+                            }
+                        }
+                        catch
+                        {
+
+                        }
+                    }
                 }
             }
             return output;

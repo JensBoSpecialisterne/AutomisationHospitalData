@@ -1,4 +1,6 @@
-﻿namespace AutomisationHospitalData
+﻿using System.Windows.Forms;
+
+namespace AutomisationHospitalData
 {
     partial class Form1
     {
@@ -254,7 +256,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(506, 369);
+            this.ClientSize = new System.Drawing.Size(480, 309);
             this.Controls.Add(this.DeViKasButton);
             this.Controls.Add(this.ButtonDeViKasPath);
             this.Controls.Add(this.ButtonBibliotekPath);
@@ -278,6 +280,7 @@
             this.Name = "Form1";
             this.Text = "Rens Excel-ark";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.FormClosed += new FormClosedEventHandler(this.Form1_Closed);
             this.ResumeLayout(false);
 
         }
