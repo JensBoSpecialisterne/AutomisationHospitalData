@@ -179,91 +179,44 @@ namespace AutomisationHospitalData
         private void CBPBageriButton_Click(object sender, EventArgs e)
         {
 
-            _Workbook workbookCBP;
-            _Worksheet worksheetCBP;
-            _Worksheet infosheetCBP;
-            Range rangeCBP;
+            _Workbook workbookSource;
+            _Worksheet worksheetSource;
+            _Worksheet infosheetSource;
+            Range rangeSource;
+            Range rangeInfo;
 
             try
             {
-                workbookCBP = excelProgram.Workbooks.Open(pathCBPBageri);
-                infosheetCBP = workbookCBP.Sheets[1];
-                worksheetCBP = workbookCBP.Sheets[2];
-                rangeCBP = worksheetCBP.UsedRange;
-
-                int headerRows = 1;
+                workbookSource = excelProgram.Workbooks.Open(pathCBPBageri);
+                worksheetSource = workbookSource.Sheets[2];
+                infosheetSource = workbookSource.Sheets[1];
+                rangeSource = worksheetSource.UsedRange;
+                rangeInfo = infosheetSource.UsedRange;
 
                 int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
 
-                int rowCountCBP = rangeCBP.Rows.Count - headerRows;
-                int colCountCBP = rangeCBP.Columns.Count;
+                int rowCountSource = rangeSource.Rows.Count;
+                int colCountSource = rangeSource.Columns.Count;
 
-                // Imports the date from the CBP worksheet
-                string stringDate = infosheetCBP.Cells[1, 1].Text;
-                DateTime dateCBP = DateTime.Parse(stringDate.Split(' ')[3]);
+                // Imports the cell data from the Hørkram sheet as an array of Objects
+                object[,] arraySource = rangeSource.get_Value();
+                object[,] arrayInfo = rangeInfo.get_Value();
 
-                // Imports the cell data from the CBP sheet as an array of Objects
-                object[,] arrayCBP = rangeCBP.get_Value();
-
-                // Creates a List of String arrays for every row in the CBP worksheet.
+                // Creates a List of String arrays for every rowOld in the BC worksheet.
                 // Amount of rows as a List to allow for deletion of irrelevant entries.
-                List<string[]> listCBP = new List<string[]>();
+                List<Row> listConverted = ConvertCBPBageri(arraySource, rowCountSource, arrayInfo);
 
-                // For every row in the imported CBP Object array, copy its value to the corresponding String in the List of String arrays
-                for (int row = 0; row < rowCountCBP; row++)
-                {
-                    listCBP.Add(new string[14]);
-                    for (int col = 0; col < colCountCBP; col++)
-                    {
-                        try // "Try" because the cell's value can be Null
-                        {
-                            listCBP[row].SetValue(arrayCBP[row + 1 + headerRows, col + 1].ToString(), col);
-                        }
-                        catch (NullReferenceException) // "Catch" in case the cell's value is Null
-                        {
-                            listCBP[row].SetValue("", col);
-                        }
-                    }
-                }
-
-                // Deletion of irrelevant entries from the List of String arrays
-                listCBP.RemoveRange(0, 2); // Header entries in row 1 and 2
-
-                rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listCBP.Count));
-
+                rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (listConverted.Count + usedRowsMerged));
                 object[,] arrayMerged = rangeMerged.get_Value(XlRangeValueDataType.xlRangeValueDefault);
 
-                // Sets the values in the CBP Object Array
-                for (int row = 0; row < listCBP.Count; row++)
-                {
-                    arrayMerged[row + 1, 1] = dateCBP.Year; // År
-                    arrayMerged[row + 1, 2] = dateCBP.Month / 3; // Kvartal
-                    arrayMerged[row + 1, 3] = listCBP[row].GetValue(0).ToString().Split(new string[] { " ~ " }, StringSplitOptions.None).Last(); // Hospital
-                    arrayMerged[row + 1, 4] = ""; // Råvarekategori
-                    arrayMerged[row + 1, 5] = "CBP Bageri"; // Leverandør
-                    arrayMerged[row + 1, 6] = ""; // Råvare
-                    if (listCBP[row].GetValue(10) as string == "Økologi") // konv/øko
-                    {
-                        arrayMerged[row + 1, 7] = "Øko";
-                    }
-                    if (listCBP[row].GetValue(10) as string == "Ej Økologi")
-                    {
-                        arrayMerged[row + 1, 7] = "Konv";
-                    }
-                    arrayMerged[row + 1, 8] = listCBP[row].GetValue(1).ToString().Split(new string[] { " ~ " }, StringSplitOptions.None).Last(); // Varianter/opr
-                    arrayMerged[row + 1, 9] = ""; // Pris pr enhed
-                    arrayMerged[row + 1, 10] = listCBP[row].GetValue(3); // Pris i alt
-                    arrayMerged[row + 1, 11] = listCBP[row].GetValue(2); // Kg
-                    arrayMerged[row + 1, 12] = listCBP[row].GetValue(8); // Kilopris
-                    arrayMerged[row + 1, 13] = ""; // Oprindelse
-                }
+                arrayMerged = ConvertList(listConverted, arrayMerged);
 
                 rangeMerged.set_Value(XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
                 rangeMerged = worksheetMerged.UsedRange;
 
                 //Format the cells.
-                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listCBP.Count)).Font.Name = "Calibri";
-                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listCBP.Count)).Font.Size = 11;
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Name = "Calibri";
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Size = 11;
 
                 //AutoFit columns A:V.
                 rangeMerged = worksheetMerged.get_Range("A1", "M1");
@@ -276,10 +229,10 @@ namespace AutomisationHospitalData
                 excelProgram.UserControl = true;
 
                 // Releasing the Excel interop objects
-                workbookCBP.Close(false);
-                MRCO(workbookCBP);
-                MRCO(worksheetCBP);
-                MRCO(rangeCBP);
+                workbookSource.Close(false);
+                MRCO(workbookSource);
+                MRCO(worksheetSource);
+                MRCO(rangeSource);
             }
             catch (Exception theException)
             {
@@ -1329,7 +1282,7 @@ namespace AutomisationHospitalData
 
             List<Row> output = new List<Row>();
 
-            for (int rowInput = headerrows; rowInput < rowCount; rowInput++)
+            for (int rowInput = headerrows; rowInput <= rowCount; rowInput++)
             {
                 ecology = "Konv";
                 if (inputMatrix[rowInput, 4].ToString().Contains("ØKO"))
@@ -1382,7 +1335,7 @@ namespace AutomisationHospitalData
                 hospitalList.Add(hospital.ToString());
             }
 
-            for (int rowInput = headerrows; rowInput < rowCount; rowInput++)
+            for (int rowInput = headerrows; rowInput <= rowCount; rowInput++)
             {
                 Debug.WriteLine(rowInput);
                 categoryEnd = false;
@@ -1458,7 +1411,7 @@ namespace AutomisationHospitalData
 
             List<Row> output = new List<Row>();
 
-            for(int rowInput = headerrows; rowInput < rowCount; rowInput++)
+            for(int rowInput = headerrows; rowInput <= rowCount; rowInput++)
             {
                 ecology = "Øko";
                 try
@@ -1470,21 +1423,33 @@ namespace AutomisationHospitalData
 
                     string variant = inputMatrix[rowInput, 2].ToString().Split(new string[] { " ~ " }, StringSplitOptions.None).Last();
 
-                    Row newEntry = new Row(
-                        år: inputMatrix[rowInput, 2].ToString(),
-                        kvartal: quarter,
-                        hospital: inputMatrix[rowInput, 1].ToString().Split(new string[] { " ~ " }, StringSplitOptions.None).Last(),
-                        råvarekategori: GetRåvare("CBP", variant, true),
-                        leverandør: "CBP Bageri",
-                        råvare: GetRåvare("CBP", variant, false),
-                        øko: ecology,
-                        variant: variant,
-                        prisEnhed: "",
-                        prisTotal: inputMatrix[rowInput, 4].ToString(),
-                        kg: inputMatrix[rowInput, 3].ToString(),
-                        oprindelse: "DAN"
-                        );
-                    output.Add(newEntry);
+                    if (float.Parse(inputMatrix[rowInput, 3].ToString()) > 0 &
+                        !(
+                        variant.Contains("gangshue") | 
+                        variant.Contains("bæger") | 
+                        variant.Contains("pose") | 
+                        variant.Contains("låg") | 
+                        variant.Contains("Palle") | 
+                        variant.Contains("papir") | 
+                        variant.Contains("Credi")
+                        ))
+                    {
+                        Row newEntry = new Row(
+                            år: inputMatrix[rowInput, 10].ToString(),
+                            kvartal: quarter,
+                            hospital: inputMatrix[rowInput, 1].ToString().Split(new string[] { " ~ " }, StringSplitOptions.None).Last(),
+                            råvarekategori: GetRåvare("CBP", variant, true),
+                            leverandør: "CBP Bageri",
+                            råvare: GetRåvare("CBP", variant, false),
+                            øko: ecology,
+                            variant: variant,
+                            prisEnhed: "",
+                            prisTotal: inputMatrix[rowInput, 4].ToString(),
+                            kg: inputMatrix[rowInput, 3].ToString(),
+                            oprindelse: "DAN"
+                            );
+                        output.Add(newEntry);
+                    }
                 }
                 catch
                 {
@@ -1526,7 +1491,7 @@ namespace AutomisationHospitalData
             if (splitWeight)
             {
                 int rowOutput = 0;
-                for (int rowInput = headerRows; rowInput < rowCount; rowInput++)
+                for (int rowInput = headerRows; rowInput <= rowCount; rowInput++)
                 {
                     try
                     {
