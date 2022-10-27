@@ -145,92 +145,45 @@ namespace AutomisationHospitalData
         private void HørkramButton_Click(object sender, EventArgs e)
         {
 
-            Excel._Workbook workbookHørkram;
-            Excel._Worksheet worksheetHørkram;
-            Excel._Worksheet infosheetHørkram;
-            Excel.Range rangeHørkram;
+            _Workbook workbookSource;
+            _Worksheet worksheetSource;
+            _Worksheet infosheetSource;
+            Range rangeSource;
+            Range rangeInfo;
 
             try
             {
-                workbookHørkram = excelProgram.Workbooks.Open(pathHørkram);
-                worksheetHørkram = workbookHørkram.Sheets[2];
-                infosheetHørkram = workbookHørkram.Sheets[1];
-                rangeHørkram = worksheetHørkram.UsedRange;
+                workbookSource = excelProgram.Workbooks.Open(pathHørkram);
+                worksheetSource = workbookSource.Sheets[2];
+                infosheetSource = workbookSource.Sheets[1];
+                rangeSource = worksheetSource.UsedRange;
+                rangeInfo = infosheetSource.UsedRange;
 
                 int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
 
-                int rowCountHørkram = rangeHørkram.Rows.Count;
-                int colCountHørkram = rangeHørkram.Columns.Count;
+                int rowCountSource = rangeSource.Rows.Count;
+                int colCountSource = rangeSource.Columns.Count;
 
-                // Imports the date from the Hørkram worksheet
-                DateTime dateHørkram = DateTime.Parse(infosheetHørkram.Cells[5, 4].Text);
+                // Imports the cell data from the Grønt Grossisten sheet as an array of Objects
+                object[,] arraySource = rangeSource.get_Value();
+                object[,] arrayInfo = rangeInfo.get_Value();
 
-                // Imports the cell data from the Hørkram sheet as an array of Objects
-                Object[,] arrayHørkram = rangeHørkram.get_Value();
-
-                // Creates a List of String arrays for every rowOld in the Hørkram worksheet.
+                // Creates a List of String arrays for every rowOld in the Grønt Grossisten worksheet.
                 // Amount of rows as a List to allow for deletion of irrelevant entries.
-                List<String[]> listHørkram = new List<String[]>();
+                List<Row> listConverted = ConvertHørkram(arraySource, rowCountSource,arrayInfo);
 
-                // For every row in the imported Hørkram Object array, copy its value to the corresponding String in the List of String arrays
-                for (int row = 0; row < rowCountHørkram; row++)
-                {
-                    listHørkram.Add(new string[14]);
-                    for (int col = 0; col < colCountHørkram; col++)
-                    {
-                        try // "Try" because the cell's value can be Null
-                        {
-                            listHørkram[row].SetValue(arrayHørkram[row + 1, col + 1].ToString(), col);
-                        }
-                        catch (NullReferenceException) // "Catch" in case the cell's value is Null
-                        {
-                            listHørkram[row].SetValue("", col);
-                        }
-                    }
-                }
+                rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listConverted.Count));
 
-                // Deletion of irrelevant entries from the List of String arrays
-                listHørkram.RemoveRange(0, 2); // Header entries in rowOld 1 and 2
-                listHørkram.RemoveAll(s => s[4].Contains("Non food") // Entries for non-food items
-                || s[4].Contains("Hjælpevarenumre")
-                || s[4].Contains("Engangsmateriale")
-                || s[4].Contains("storkøkkentilbehør"));
+                object[,] arrayMerged = rangeMerged.get_Value(XlRangeValueDataType.xlRangeValueDefault);
 
-                rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listHørkram.Count));
+                arrayMerged = ConvertList(listConverted, arrayMerged);
 
-                object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
-
-                // Sets the values in the Hørkram Object Array
-                for (int row = 0; row < listHørkram.Count; row++)
-                {
-                    arrayMerged[row + 1, 1] = dateHørkram.Year; // År
-                    arrayMerged[row + 1, 2] = (dateHørkram.Month) / 3; // Kvartal
-                    arrayMerged[row + 1, 3] = listHørkram[row].GetValue(1); // Hospital
-                    arrayMerged[row + 1, 4] = listHørkram[row].GetValue(4); // Råvarekategori
-                    arrayMerged[row + 1, 5] = "Hørkram"; // Leverandør
-                    arrayMerged[row + 1, 6] = listHørkram[row].GetValue(5); // Råvare
-                    if (listHørkram[row].GetValue(6) as String == "J") // konv/øko
-                    {
-                        arrayMerged[row + 1, 7] = "Øko";
-                    }
-                    if (listHørkram[row].GetValue(6) as String == "N")
-                    {
-                        arrayMerged[row + 1, 7] = "Konv";
-                    }
-                    arrayMerged[row + 1, 8] = listHørkram[row].GetValue(3); // Varianter/opr
-                    arrayMerged[row + 1, 9] = float.Parse(listHørkram[row].GetValue(10) as String) / float.Parse(listHørkram[row].GetValue(9) as String); // Pris pr enhed
-                    arrayMerged[row + 1, 10] = listHørkram[row].GetValue(10); // Pris i alt
-                    arrayMerged[row + 1, 11] = listHørkram[row].GetValue(11); // Kg
-                    arrayMerged[row + 1, 12] = listHørkram[row].GetValue(13); // Kilopris
-                    arrayMerged[row + 1, 13] = listHørkram[row].GetValue(7); // Oprindelse
-                }
-
-                rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                rangeMerged.set_Value(XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
                 rangeMerged = worksheetMerged.UsedRange;
 
                 //Format the cells.
-                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listHørkram.Count)).Font.Name = "Calibri";
-                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listHørkram.Count)).Font.Size = 11;
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Name = "Calibri";
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Size = 11;
 
                 //AutoFit columns A:V.
                 rangeMerged = worksheetMerged.get_Range("A1", "M1");
@@ -242,11 +195,11 @@ namespace AutomisationHospitalData
                 excelProgram.UserControl = true;
 
                 // Releasing the Excel interop objects
-                workbookHørkram.Close(false);
-                MRCO(workbookHørkram);
-                MRCO(worksheetHørkram);
-                MRCO(infosheetHørkram);
-                MRCO(rangeHørkram);
+                workbookSource.Close(false);
+                MRCO(workbookSource);
+                MRCO(worksheetSource);
+                MRCO(infosheetSource);
+                MRCO(rangeSource);
             }
             catch (Exception theException)
             {
@@ -885,7 +838,6 @@ namespace AutomisationHospitalData
 
                 rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listConverted.Count));
 
-                Debug.WriteLine("Next");
                 object[,] arrayMerged = rangeMerged.get_Value(XlRangeValueDataType.xlRangeValueDefault);
 
                 arrayMerged = ConvertList(listConverted, arrayMerged);
@@ -959,10 +911,6 @@ namespace AutomisationHospitalData
             {
                 return categories[1];
             }
-        }
-        private bool IsNumeric(string input)
-        {
-            return float.TryParse(input, out _);
         }
         private string GetQuarter(string input)
         {
@@ -1505,6 +1453,69 @@ namespace AutomisationHospitalData
                             oprindelse: ""
                             );
                         output.Add(newEntry);
+                    }
+                }
+                catch { }
+            }
+            return output;
+        }
+        internal List<Row> ConvertHørkram(object[,] inputMatrix, int rowCount, object[,] infoMatrix)
+        {;
+            DateTime dateTime = DateTime.Parse(infoMatrix[5,4].ToString());
+
+            string year = dateTime.Year + "";
+            string month = dateTime.Month + "";
+            string quarter = "K" + GetQuarter(month);
+            string ecology;
+
+            int headerrows = 3;
+
+            List<Row> output = new List<Row>();
+
+            for (int rowInput = headerrows; rowInput <= rowCount; rowInput++)
+            {
+                try
+                {
+                    float priceTotal = float.Parse(inputMatrix[rowInput, 11].ToString());
+                    float amount = float.Parse(inputMatrix[rowInput, 12].ToString());
+
+                    if (priceTotal > 0 & amount > 0)
+                    {
+                        string variant = inputMatrix[rowInput, 4].ToString();
+                        string hospital = inputMatrix[rowInput, 2].ToString().Split(',')[0];
+                        string resource = inputMatrix[rowInput, 6].ToString();
+                        string resourceCategory = inputMatrix[rowInput, 5].ToString();
+                        string origin = inputMatrix[rowInput, 8].ToString();
+
+                        if (!(resourceCategory.Contains("folier") |
+                            resourceCategory.Contains("køkkentilbehør") |
+                            resourceCategory.Contains("Non food")
+                            ))
+                        {
+                            float weight = float.Parse(inputMatrix[rowInput, 13].ToString());
+
+                            ecology = "Konv";
+                            if (inputMatrix[rowInput, 7].ToString().Contains("J"))
+                            {
+                                ecology = "Øko";
+                            }
+
+                            Row newEntry = new Row(
+                                år: year,
+                                kvartal: quarter,
+                                hospital: hospital,
+                                råvarekategori: resourceCategory,
+                                leverandør: "Hørkram",
+                                råvare: resource,
+                                øko: ecology,
+                                variant: variant,
+                                prisEnhed: priceTotal / amount + "",
+                                prisTotal: priceTotal + "",
+                                kg: weight + "",
+                                oprindelse: ""
+                                );
+                            output.Add(newEntry);
+                        }
                     }
                 }
                 catch { }
