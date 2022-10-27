@@ -179,10 +179,10 @@ namespace AutomisationHospitalData
         private void CBPBageriButton_Click(object sender, EventArgs e)
         {
 
-            Excel._Workbook workbookCBP;
-            Excel._Worksheet worksheetCBP;
-            Excel._Worksheet infosheetCBP;
-            Excel.Range rangeCBP;
+            _Workbook workbookCBP;
+            _Worksheet worksheetCBP;
+            _Worksheet infosheetCBP;
+            Range rangeCBP;
 
             try
             {
@@ -203,11 +203,11 @@ namespace AutomisationHospitalData
                 DateTime dateCBP = DateTime.Parse(stringDate.Split(' ')[3]);
 
                 // Imports the cell data from the CBP sheet as an array of Objects
-                Object[,] arrayCBP = rangeCBP.get_Value();
+                object[,] arrayCBP = rangeCBP.get_Value();
 
                 // Creates a List of String arrays for every row in the CBP worksheet.
                 // Amount of rows as a List to allow for deletion of irrelevant entries.
-                List<String[]> listCBP = new List<String[]>();
+                List<string[]> listCBP = new List<string[]>();
 
                 // For every row in the imported CBP Object array, copy its value to the corresponding String in the List of String arrays
                 for (int row = 0; row < rowCountCBP; row++)
@@ -231,7 +231,7 @@ namespace AutomisationHospitalData
 
                 rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listCBP.Count));
 
-                object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
+                object[,] arrayMerged = rangeMerged.get_Value(XlRangeValueDataType.xlRangeValueDefault);
 
                 // Sets the values in the CBP Object Array
                 for (int row = 0; row < listCBP.Count; row++)
@@ -242,11 +242,11 @@ namespace AutomisationHospitalData
                     arrayMerged[row + 1, 4] = ""; // Råvarekategori
                     arrayMerged[row + 1, 5] = "CBP Bageri"; // Leverandør
                     arrayMerged[row + 1, 6] = ""; // Råvare
-                    if (listCBP[row].GetValue(10) as String == "Økologi") // konv/øko
+                    if (listCBP[row].GetValue(10) as string == "Økologi") // konv/øko
                     {
                         arrayMerged[row + 1, 7] = "Øko";
                     }
-                    if (listCBP[row].GetValue(10) as String == "Ej Økologi")
+                    if (listCBP[row].GetValue(10) as string == "Ej Økologi")
                     {
                         arrayMerged[row + 1, 7] = "Konv";
                     }
@@ -258,7 +258,7 @@ namespace AutomisationHospitalData
                     arrayMerged[row + 1, 13] = ""; // Oprindelse
                 }
 
-                rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                rangeMerged.set_Value(XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
                 rangeMerged = worksheetMerged.UsedRange;
 
                 //Format the cells.
@@ -283,11 +283,11 @@ namespace AutomisationHospitalData
             }
             catch (Exception theException)
             {
-                String errorMessage;
+                string errorMessage;
                 errorMessage = "Error: ";
-                errorMessage = String.Concat(errorMessage, theException.Message);
-                errorMessage = String.Concat(errorMessage, " Line: ");
-                errorMessage = String.Concat(errorMessage, theException.Source);
+                errorMessage = string.Concat(errorMessage, theException.Message);
+                errorMessage = string.Concat(errorMessage, " Line: ");
+                errorMessage = string.Concat(errorMessage, theException.Source);
 
                 MessageBox.Show(errorMessage, "Error");
             }
@@ -1261,9 +1261,9 @@ namespace AutomisationHospitalData
 
         private string[] GetRåvare(string company, string variant)
         {
-            List<String[]> listCompany = listLibrary.Where(x => x[1] == company).ToList();
+            List<string[]> listCompany = listLibrary.Where(x => x[1] == company).ToList();
 
-            List<String[]> listVariant = listCompany.Where(x => x[4] == variant).ToList();
+            List<string[]> listVariant = listCompany.Where(x => x[4] == variant).ToList();
 
             string[] categories = new string[2];
 
@@ -1319,6 +1319,180 @@ namespace AutomisationHospitalData
         }
 
         // Transformations from input Array to standardised List of Rows
+        internal List<Row> ConvertAC(object[,] inputMatrix, int rowCount)
+        {
+            string year = "2021";
+            string quarter = "K2";
+            string ecology;
+
+            int headerrows = 2;
+
+            List<Row> output = new List<Row>();
+
+            for (int rowInput = headerrows; rowInput < rowCount; rowInput++)
+            {
+                ecology = "Konv";
+                if (inputMatrix[rowInput, 4].ToString().Contains("ØKO"))
+                {
+                    ecology = "Øko";
+                }
+
+                string oprindelse = inputMatrix[rowInput, 4].ToString().Replace(" ", "").Split('(').Last();
+
+                Row newEntry = new Row(
+                    år: year,
+                    kvartal: quarter,
+                    hospital: inputMatrix[rowInput, 2].ToString(),
+                    råvarekategori: GetRåvare("AC", inputMatrix[rowInput, 4].ToString(), true),
+                    leverandør: "AC",
+                    råvare: GetRåvare("AC", inputMatrix[rowInput, 4].ToString(), false),
+                    øko: ecology,
+                    variant: inputMatrix[rowInput, 4].ToString(),
+                    prisEnhed: inputMatrix[rowInput, 8].ToString(),
+                    prisTotal: inputMatrix[rowInput, 7].ToString(),
+                    kg: inputMatrix[rowInput, 6].ToString(),
+                    oprindelse: oprindelse
+                    );
+                output.Add(newEntry);
+
+            }
+            return output;
+        }
+        internal List<Row> ConvertBC(object[,] inputMatrix, int rowCount, object[,] hospitalMatrix)
+        {
+            DateTime dateTime = DateTime.Parse(inputMatrix[2,2].ToString().Split(new string[] { ".." }, StringSplitOptions.None).Last());
+
+            string year = dateTime.Year + "";
+            string month = dateTime.Month + "";
+            string quarter = "K" + GetQuarter(month);
+            string ecology;
+            string weight;
+            string currentHospital = "";
+
+            bool categoryEnd = false;
+
+            int headerrows = 6;
+            int rowOutput = 0;
+
+            List<Row> output = new List<Row>();
+            List<string> hospitalList = new List<string>();
+
+            foreach(object hospital in hospitalMatrix.GetColumn(0))
+            {
+                hospitalList.Add(hospital.ToString());
+            }
+
+            for (int rowInput = headerrows; rowInput < rowCount; rowInput++)
+            {
+                Debug.WriteLine(rowInput);
+                categoryEnd = false;
+                try
+                {
+                    if (inputMatrix[rowInput, 2].ToString().Length > 0)
+                    {
+                        if (hospitalList.Contains(inputMatrix[rowInput, 2].ToString()))
+                        {
+                            int hospitalIndex = hospitalList.FindIndex(a => a == inputMatrix[rowInput, 2].ToString());
+                            currentHospital = hospitalMatrix[hospitalIndex+1, 2].ToString();
+                        }
+                    }
+                }
+                catch
+                {
+                }
+                while (!categoryEnd)
+                {
+                    try
+                    {
+                        ecology = "Konv";
+                        try
+                        {
+                            weight = inputMatrix[rowInput, 9].ToString();
+                            ecology = "Øko";
+                        }
+                        catch
+                        {
+                            try
+                            {
+                                weight = inputMatrix[rowInput, 10].ToString();
+                            }
+                            catch
+                            {
+                                weight = inputMatrix[rowInput, 11].ToString();
+                            }
+                        }
+                        Row newEntry = new Row(
+                            år: year,
+                            kvartal: quarter,
+                            hospital: currentHospital,
+                            råvarekategori: inputMatrix[rowInput, 19].ToString(),
+                            leverandør: "BC",
+                            råvare: inputMatrix[rowInput, 20].ToString(),
+                            øko: ecology,
+                            variant: inputMatrix[rowInput, 2].ToString(),
+                            prisEnhed: inputMatrix[rowInput, 8].ToString(),
+                            prisTotal: inputMatrix[rowInput, 7].ToString(),
+                            kg: weight,
+                            oprindelse: inputMatrix[rowInput, 17].ToString()
+                            );
+                        output.Add(newEntry);
+                        rowOutput++;
+                        Debug.WriteLine(rowInput);
+                        rowInput++;
+                    }
+                    catch
+                    {
+                        categoryEnd = true;
+                    }
+                }
+            }
+
+            return output;
+        }
+        internal List<Row> ConvertCBPBageri(object[,] inputMatrix, int rowCount, object[,] infoMatrix)
+        {
+            string quarter = "K" + infoMatrix[1,2].ToString().Substring(0, 1);
+            string ecology;
+
+            int headerrows = 2;
+
+            List<Row> output = new List<Row>();
+
+            for(int rowInput = headerrows; rowInput < rowCount; rowInput++)
+            {
+                ecology = "Øko";
+                try
+                {
+                    if (inputMatrix[rowInput, 10].ToString().Contains("Ej"))
+                    {
+                        ecology = "Konv";
+                    }
+
+                    string variant = inputMatrix[rowInput, 2].ToString().Split(new string[] { " ~ " }, StringSplitOptions.None).Last();
+
+                    Row newEntry = new Row(
+                        år: inputMatrix[rowInput, 2].ToString(),
+                        kvartal: quarter,
+                        hospital: inputMatrix[rowInput, 1].ToString().Split(new string[] { " ~ " }, StringSplitOptions.None).Last(),
+                        råvarekategori: GetRåvare("CBP", variant, true),
+                        leverandør: "CBP Bageri",
+                        råvare: GetRåvare("CBP", variant, false),
+                        øko: ecology,
+                        variant: variant,
+                        prisEnhed: "",
+                        prisTotal: inputMatrix[rowInput, 4].ToString(),
+                        kg: inputMatrix[rowInput, 3].ToString(),
+                        oprindelse: "DAN"
+                        );
+                    output.Add(newEntry);
+                }
+                catch
+                {
+
+                }
+            }
+            return output;
+        }
         internal List<Row> ConvertDeViKas(object[,] inputMatrix, bool splitWeight, int rowCount)
         {
             string year;
@@ -1336,7 +1510,7 @@ namespace AutomisationHospitalData
                 year = inputMatrix[1, 1].ToString().Split(' ').Last();
                 try
                 {
-                    month = inputMatrix[4, 4].ToString().Split('/','-','.').Last();
+                    month = inputMatrix[4, 4].ToString().Split('/', '-', '.').Last();
                     quarter = "K" + GetQuarter(month);
                 }
                 catch
@@ -1358,7 +1532,7 @@ namespace AutomisationHospitalData
                     {
                         int amount = int.Parse(inputMatrix[rowInput, 4].ToString());
 
-                        if(amount > 0)
+                        if (amount > 0)
                         {
                             string ecology = "Konv";
                             string weight = "";
@@ -1437,135 +1611,6 @@ namespace AutomisationHospitalData
                     }
                 }
             }
-            return output;
-        }
-        internal List<Row> ConvertAC(object[,] inputMatrix, int rowCount)
-        {
-            string year = "2021";
-            string month;
-            string quarter = "K2";
-            string ecology = "Konv";
-
-            int headerrows = 2;
-
-            List<Row> output = new List<Row>();
-
-            for (int rowInput = headerrows; rowInput < rowCount; rowInput++)
-            {
-                if (inputMatrix[rowInput, 4].ToString().Contains("ØKO"))
-                {
-                    ecology = "Øko";
-                }
-
-                string oprindelse = inputMatrix[rowInput, 4].ToString().Replace(" ", "").Split('(').Last();
-
-                Row newEntry = new Row(
-                    år: year,
-                    kvartal: quarter,
-                    hospital: inputMatrix[rowInput, 2].ToString(),
-                    råvarekategori: GetRåvare("AC", inputMatrix[rowInput, 4].ToString(), true),
-                    leverandør: "AC",
-                    råvare: GetRåvare("AC", inputMatrix[rowInput, 4].ToString(), false),
-                    øko: ecology,
-                    variant: inputMatrix[rowInput, 4].ToString(),
-                    prisEnhed: inputMatrix[rowInput, 8].ToString(),
-                    prisTotal: inputMatrix[rowInput, 7].ToString(),
-                    kg: inputMatrix[rowInput, 6].ToString(),
-                    oprindelse: oprindelse
-                    );
-                output.Add(newEntry);
-
-            }
-            return output;
-        }
-        internal List<Row> ConvertBC(object[,] inputMatrix, int rowCount, object[,] hospitalMatrix)
-        {
-            DateTime dateTime = DateTime.Parse(inputMatrix[2,2].ToString().Split(new string[] { ".." }, StringSplitOptions.None).Last());
-
-            string year = dateTime.Year + "";
-            string month = dateTime.Month + "";
-            string quarter = "K" + GetQuarter(month);
-            string ecology = "Konv";
-            string weight;
-            string currentHospital = "";
-
-            bool categoryEnd = false;
-
-            int headerrows = 6;
-            int rowOutput = 0;
-
-            List<Row> output = new List<Row>();
-            List<string> hospitalList = new List<string>();
-
-            foreach(object hospital in hospitalMatrix.GetColumn(0))
-            {
-                hospitalList.Add(hospital.ToString());
-            }
-
-            for (int rowInput = headerrows; rowInput < rowCount; rowInput++)
-            {
-                Debug.WriteLine(rowInput);
-                categoryEnd = false;
-                try
-                {
-                    if (inputMatrix[rowInput, 2].ToString().Length > 0)
-                    {
-                        if (hospitalList.Contains(inputMatrix[rowInput, 2].ToString()))
-                        {
-                            int hospitalIndex = hospitalList.FindIndex(a => a == inputMatrix[rowInput, 2].ToString());
-                            currentHospital = hospitalMatrix[hospitalIndex+1, 2].ToString();
-                        }
-                    }
-                }
-                catch
-                {
-                }
-                while (!categoryEnd)
-                {
-                    try
-                    {
-                        try
-                        {
-                            weight = inputMatrix[rowInput, 9].ToString();
-                            ecology = "Øko";
-                        }
-                        catch
-                        {
-                            try
-                            {
-                                weight = inputMatrix[rowInput, 10].ToString();
-                            }
-                            catch
-                            {
-                                weight = inputMatrix[rowInput, 11].ToString();
-                            }
-                        }
-                        Row newEntry = new Row(
-                            år: year,
-                            kvartal: quarter,
-                            hospital: currentHospital,
-                            råvarekategori: inputMatrix[rowInput, 19].ToString(),
-                            leverandør: "BC",
-                            råvare: inputMatrix[rowInput, 20].ToString(),
-                            øko: ecology,
-                            variant: inputMatrix[rowInput, 2].ToString(),
-                            prisEnhed: inputMatrix[rowInput, 8].ToString(),
-                            prisTotal: inputMatrix[rowInput, 7].ToString(),
-                            kg: weight,
-                            oprindelse: inputMatrix[rowInput, 17].ToString()
-                            );
-                        output.Add(newEntry);
-                        rowOutput++;
-                        Debug.WriteLine(rowInput);
-                        rowInput++;
-                    }
-                    catch
-                    {
-                        categoryEnd = true;
-                    }
-                }
-            }
-
             return output;
         }
 
