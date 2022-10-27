@@ -21,12 +21,12 @@ namespace AutomisationHospitalData
     {
         // Objects for the merged worksheet
         Excel.Application excelProgram;
-        Excel._Workbook workbookMerged;
-        Excel._Worksheet worksheetMerged;
-        Excel.Range rangeMerged;
+        _Workbook workbookMerged;
+        _Worksheet worksheetMerged;
+        Range rangeMerged;
 
         // List of String arrays for the category library
-        List<String[]> listLibrary = new List<String[]>();
+        List<string[]> listLibrary = new List<string[]>();
 
         // File dialogues
         private OpenFileDialog openBibliotekPathDialog = new OpenFileDialog();
@@ -44,10 +44,10 @@ namespace AutomisationHospitalData
         string pathBibliotek = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\Kategoribibliotek 2.xlsx";
 
         // paths for companies supplying folders of excel sheets
-        List<String> pathAC = new List<String>();
-        List<String> pathDagrofa = new List<String>();
-        List<String> pathFrisksnit = new List<String>();
-        List<String> pathDeViKas = new List<String>();
+        List<string> pathAC = new List<string>();
+        List<string> pathDagrofa = new List<string>();
+        List<string> pathFrisksnit = new List<string>();
+        List<string> pathDeViKas = new List<string>();
 
         // paths for companies supplying individual excel sheets
         string pathBC = @"C:\Users\KOM\Documents\Academy opgaver\Automatisering af hospitalsdata\Data til del 1\BC.xlsx";
