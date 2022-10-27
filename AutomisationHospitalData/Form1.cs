@@ -150,136 +150,6 @@ namespace AutomisationHospitalData
         }
 
         // Code for Emmerys files
-        private void EmmerysButton_Click(object sender, EventArgs e)
-        {
-
-            Excel._Workbook workbookEmmerys;
-            Excel.Range rangeEmmerys;
-
-            try
-            {
-                workbookEmmerys = excelProgram.Workbooks.Open(pathEmmerys);
-
-                bool skipSheet = true;
-
-                foreach (Excel.Worksheet worksheetEmmerys in workbookEmmerys.Sheets)
-                {
-                    if (!skipSheet)
-                    {
-                        rangeEmmerys = worksheetEmmerys.UsedRange;
-
-                        int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
-
-                        int rowCountEmmerys = rangeEmmerys.Rows.Count;
-                        int colCountEmmerys = rangeEmmerys.Columns.Count;
-
-                        int headerRows = 10;
-
-                        String infostringEmmerys = worksheetEmmerys.Cells[2, 2].Text;
-                        String[] dateEmmerysString = infostringEmmerys.Split(new string[] { ".." }, StringSplitOptions.None);
-                        DateTime dateEmmerys = DateTime.Parse(dateEmmerysString[1]);
-
-                        // Imports the cell data from the Emmerys sheet as an array of Objects
-                        Object[,] arrayEmmerys = rangeEmmerys.get_Value();
-
-                        string currentHospital = worksheetEmmerys.Cells[1, 2].Text;
-
-                        // Creates a List of String arrays for every rowOld in the BC worksheet.
-                        // Amount of rows as a List to allow for deletion of irrelevant entries.
-                        List<String[]> listEmmerys = new List<String[]>();
-
-                        // For every row in the imported Hørkram Object array, copy its value to the corresponding String in the List of String arrays
-                        int rowNew = 0;
-                        for (int rowEmmerys = headerRows; rowEmmerys < rowCountEmmerys; rowEmmerys++)
-                        {
-                            if (!arrayEmmerys[rowEmmerys, 1].ToString().Contains("Produktnavn"))
-                            {
-                                listEmmerys.Add(new string[14]);
-                                for (int col = 0; col < colCountEmmerys; col++)
-                                {
-                                    Debug.WriteLine(col);
-                                    try // "Try" because the cell's value can be Null
-                                    {
-                                        listEmmerys[rowNew].SetValue(arrayEmmerys[rowEmmerys, col + 1].ToString(), col);
-                                    }
-                                    catch (NullReferenceException) // "Catch" in case the cell's value is Null
-                                    {
-                                        listEmmerys[rowNew].SetValue("", col);
-                                    }
-                                }
-                                rowNew++;
-                            }
-                        }
-
-                        rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listEmmerys.Count));
-
-                        object[,] arrayMerged = rangeMerged.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
-
-                        // Sets the values in the Emmerys Object Array
-                        for (int row = 0; row < listEmmerys.Count; row++)
-                        {
-                            arrayMerged[row + 1, 1] = dateEmmerys.Year; // År
-                            arrayMerged[row + 1, 2] = (dateEmmerys.Month) / 3; // Kvartal
-                            arrayMerged[row + 1, 3] = currentHospital; // Hospital
-
-                            string[] råvare = GetRåvare("Emmerys", listEmmerys[row].GetValue(0).ToString());
-
-                            arrayMerged[row + 1, 4] = råvare[0]; // Råvarekategori
-                            arrayMerged[row + 1, 5] = "Emmerys"; // Leverandør
-                            arrayMerged[row + 1, 6] = råvare[1]; // Råvare
-                            if (listEmmerys[row].GetValue(1) as String == "ØKO") // konv/øko
-                            {
-                                arrayMerged[row + 1, 7] = "Øko";
-                            }
-                            if (listEmmerys[row].GetValue(1) as String == "Konventionel")
-                            {
-                                arrayMerged[row + 1, 7] = "Konv";
-                            }
-                            arrayMerged[row + 1, 8] = listEmmerys[row].GetValue(0); // Varianter/opr
-                            arrayMerged[row + 1, 9] = listEmmerys[row].GetValue(2); // Pris pr enhed
-                            arrayMerged[row + 1, 10] = listEmmerys[row].GetValue(4); // Pris i alt
-                            arrayMerged[row + 1, 11] = listEmmerys[row].GetValue(6); // Kg
-                            arrayMerged[row + 1, 12] = float.Parse(listEmmerys[row].GetValue(4).ToString()) / float.Parse(listEmmerys[row].GetValue(6).ToString()); // Kilopris
-                            arrayMerged[row + 1, 13] = "DAN"; // Oprindelse
-                        }
-
-                        rangeMerged.set_Value(Excel.XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
-                        rangeMerged = worksheetMerged.UsedRange;
-
-                        //Format the cells.
-                        worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listEmmerys.Count)).Font.Name = "Calibri";
-                        worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listEmmerys.Count)).Font.Size = 11;
-
-                        // Releasing the Excel interop objects for the worksheet
-                        MRCO(rangeEmmerys);
-                    }
-                    skipSheet = false;
-                    MRCO(worksheetEmmerys);
-                }
-                //AutoFit columns A:V.
-                rangeMerged = worksheetMerged.get_Range("A1", "M1");
-                rangeMerged.EntireColumn.AutoFit();
-
-                //Make sure Excel is visible and give the user control
-                //of Microsoft Excel's lifetime.
-                excelProgram.Visible = true;
-                excelProgram.UserControl = true;
-
-                // Releasing the Excel interop objects for workbook
-                workbookEmmerys.Close(false);
-                MRCO(workbookEmmerys);
-            }
-            catch (Exception theException)
-            {
-                String errorMessage;
-                errorMessage = "Error: ";
-                errorMessage = String.Concat(errorMessage, theException.Message);
-                errorMessage = String.Concat(errorMessage, " Line: ");
-                errorMessage = String.Concat(errorMessage, theException.Source);
-
-                MessageBox.Show(errorMessage, "Error");
-            }
-        }
 
         // Code for Frisksnit files
         private void FrisksnitButton_Click(object sender, EventArgs e)
@@ -1114,6 +984,79 @@ namespace AutomisationHospitalData
                 //of Microsoft Excel's lifetime.
                 excelProgram.Visible = true;
                 excelProgram.UserControl = true;
+            }
+            catch (Exception theException)
+            {
+                string errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = string.Concat(errorMessage, theException.Message);
+                errorMessage = string.Concat(errorMessage, " Line: ");
+                errorMessage = string.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void EmmerysButton_Click(object sender, EventArgs e)
+        {
+
+            _Workbook workbookSource;
+            Range rangeSource;
+
+            try
+            {
+                workbookSource = excelProgram.Workbooks.Open(pathEmmerys);
+
+                bool skipSheet = true;
+
+                foreach (Worksheet worksheetSource in workbookSource.Sheets)
+                {
+                    if (!skipSheet)
+                    {
+                        rangeSource = worksheetSource.UsedRange;
+
+                        int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
+
+                        int rowCountSource = rangeSource.Rows.Count;
+                        int colCountSource = rangeSource.Columns.Count;
+
+                        // Imports the cell data from the Emmerys sheet as an array of Objects
+                        object[,] arraySource = rangeSource.get_Value();
+
+                        // Creates a List of String arrays for every rowOld in the BC worksheet.
+                        // Amount of rows as a List to allow for deletion of irrelevant entries.
+                        List<Row> listConverted = ConvertEmmerys(arraySource, rowCountSource);
+
+                        rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listConverted.Count));
+
+                        object[,] arrayMerged = rangeMerged.get_Value(XlRangeValueDataType.xlRangeValueDefault);
+
+                        arrayMerged = ConvertList(listConverted, arrayMerged);
+
+                        rangeMerged.set_Value(XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                        rangeMerged = worksheetMerged.UsedRange;
+
+                        //Format the cells.
+                        worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Name = "Calibri";
+                        worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Size = 11;
+
+                        // Releasing the Excel interop objects for the worksheet
+                        MRCO(rangeSource);
+                    }
+                    skipSheet = false;
+                    MRCO(worksheetSource);
+                }
+                //AutoFit columns A:V.
+                rangeMerged = worksheetMerged.get_Range("A1", "M1");
+                rangeMerged.EntireColumn.AutoFit();
+
+                //Make sure Excel is visible and give the user control
+                //of Microsoft Excel's lifetime.
+                excelProgram.Visible = true;
+                excelProgram.UserControl = true;
+
+                // Releasing the Excel interop objects for workbook
+                workbookSource.Close(false);
+                MRCO(workbookSource);
             }
             catch (Exception theException)
             {
