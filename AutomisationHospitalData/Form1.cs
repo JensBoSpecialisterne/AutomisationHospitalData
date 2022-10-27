@@ -149,8 +149,6 @@ namespace AutomisationHospitalData
             MRCO(rangeLibrary);
         }
 
-        // Code for Emmerys files
-
         // Code for Frisksnit files
         private void FrisksnitButton_Click(object sender, EventArgs e)
         {
@@ -1079,28 +1077,6 @@ namespace AutomisationHospitalData
                 comObject = null;
             }
         }
-
-        private string[] GetRåvare(string company, string variant)
-        {
-            List<string[]> listCompany = listLibrary.Where(x => x[1] == company).ToList();
-
-            List<string[]> listVariant = listCompany.Where(x => x[4] == variant).ToList();
-
-            string[] categories = new string[2];
-
-            if (listVariant.Count > 0)
-            {
-                categories[0] = listVariant[0].GetValue(0).ToString(); // Råvarekategori
-                categories[1] = listVariant[0].GetValue(2).ToString(); // Råvare
-            }
-            else
-            {
-                categories[0] = "";
-                categories[1] = "";
-            }
-
-            return categories;
-        }
         private string GetRåvare(string company, string variant, bool getcategory)
         {
             List<String[]> listCompany = listLibrary.Where(x => x[1] == company).ToList();
@@ -1128,12 +1104,10 @@ namespace AutomisationHospitalData
                 return categories[1];
             }
         }
-
         private bool IsNumeric(string input)
         {
             return float.TryParse(input, out _);
         }
-
         private string GetQuarter(string input)
         {
             return (int.Parse(input) + 2) / 3 + "";
@@ -1574,6 +1548,53 @@ namespace AutomisationHospitalData
                     prisTotal: inputMatrix[rowInput, 5].ToString(),
                     kg: inputMatrix[rowInput, 7].ToString(),
                     oprindelse: "DAN"
+                    );
+                output.Add(newEntry);
+
+            }
+            return output;
+        }
+        internal List<Row> ConvertFrisksnit(object[,] inputMatrix, int rowCount)
+        {
+            string[] dateArray = inputMatrix[4, 1].ToString().Split(new string[] { " - " }, StringSplitOptions.None);
+            DateTime dateTime = DateTime.Parse(dateArray[dateArray.Length-2]);
+
+            string year = dateTime.Year + "";
+            string month = dateTime.Month + "";
+            string quarter = "K" + GetQuarter(month);
+            string ecology;
+            string hospital = inputMatrix[3,1].ToString();
+
+            int headerrows = 6;
+
+            List<Row> output = new List<Row>();
+
+            for (int rowInput = headerrows; rowInput <= rowCount; rowInput++)
+            {
+                string variant = inputMatrix[rowInput, 3].ToString();
+                float priceTotal = float.Parse(inputMatrix[rowInput, 6].ToString());
+                float weight = float.Parse(inputMatrix[rowInput, 5].ToString());
+                float amount = float.Parse(inputMatrix[rowInput, 4].ToString());
+
+                ecology = "Konv";
+                if (inputMatrix[rowInput, 3].ToString().Contains("Økologisk"))
+                {
+                    ecology = "Øko";
+                }
+
+                Row newEntry = new Row(
+                    år: year,
+                    kvartal: quarter,
+                    hospital: hospital,
+                    råvarekategori: GetRåvare("AC", variant, true),
+                    leverandør: "AC",
+                    råvare: GetRåvare("AC", variant, false),
+                    øko: ecology,
+                    variant: variant,
+                    prisEnhed: priceTotal/amount + "",
+                    prisTotal: priceTotal + "",
+                    kg: weight + "",
+                    oprindelse: ""
                     );
                 output.Add(newEntry);
 
