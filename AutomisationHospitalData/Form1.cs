@@ -142,122 +142,7 @@ namespace AutomisationHospitalData
             MRCO(rangeLibrary);
         }
 
-        // Code for AC files
-        private void ButtonACPath_Click(object sender, EventArgs e)
-        {
-            this.openACPathDialog.Multiselect = true;
-            this.openACPathDialog.Title = "Select AC files";
-
-            if (openACPathDialog.ShowDialog() == DialogResult.OK)
-            {
-                pathAC = openACPathDialog.FileNames.ToList();
-                ButtonACPath.Text = openACPathDialog.FileName;
-            }
-        }
-
-        // Code for BC files
-        private void ButtonBCPath_Click(object sender, EventArgs e)
-        {
-            this.openBCPathDialog.Title = "Select BC File";
-            if (openBCPathDialog.ShowDialog() == DialogResult.OK)
-            {
-                pathBC = openBCPathDialog.FileName;
-                ButtonBCPath.Text = openBCPathDialog.FileName;
-            }
-        }
-
-        // Code for CBP Bageri files
-        private void ButtonCBPBageriPath_Click(object sender, EventArgs e)
-        {
-            this.openCBPBageriPathDialog.Title = "Select CBP Bageri File";
-            if (openCBPBageriPathDialog.ShowDialog() == DialogResult.OK)
-            {
-                pathCBPBageri = openCBPBageriPathDialog.FileName;
-                ButtonCBPBageriPath.Text = openCBPBageriPathDialog.FileName;
-            }
-        }
-        private void CBPBageriButton_Click(object sender, EventArgs e)
-        {
-
-            _Workbook workbookSource;
-            _Worksheet worksheetSource;
-            _Worksheet infosheetSource;
-            Range rangeSource;
-            Range rangeInfo;
-
-            try
-            {
-                workbookSource = excelProgram.Workbooks.Open(pathCBPBageri);
-                worksheetSource = workbookSource.Sheets[2];
-                infosheetSource = workbookSource.Sheets[1];
-                rangeSource = worksheetSource.UsedRange;
-                rangeInfo = infosheetSource.UsedRange;
-
-                int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
-
-                int rowCountSource = rangeSource.Rows.Count;
-                int colCountSource = rangeSource.Columns.Count;
-
-                // Imports the cell data from the Hørkram sheet as an array of Objects
-                object[,] arraySource = rangeSource.get_Value();
-                object[,] arrayInfo = rangeInfo.get_Value();
-
-                // Creates a List of String arrays for every rowOld in the BC worksheet.
-                // Amount of rows as a List to allow for deletion of irrelevant entries.
-                List<Row> listConverted = ConvertCBPBageri(arraySource, rowCountSource, arrayInfo);
-
-                rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (listConverted.Count + usedRowsMerged));
-                object[,] arrayMerged = rangeMerged.get_Value(XlRangeValueDataType.xlRangeValueDefault);
-
-                arrayMerged = ConvertList(listConverted, arrayMerged);
-
-                rangeMerged.set_Value(XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
-                rangeMerged = worksheetMerged.UsedRange;
-
-                //Format the cells.
-                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Name = "Calibri";
-                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Size = 11;
-
-                //AutoFit columns A:V.
-                rangeMerged = worksheetMerged.get_Range("A1", "M1");
-                rangeMerged.EntireColumn.AutoFit();
-
-
-                //Make sure Excel is visible and give the user control
-                //of Microsoft Excel's lifetime.
-                excelProgram.Visible = true;
-                excelProgram.UserControl = true;
-
-                // Releasing the Excel interop objects
-                workbookSource.Close(false);
-                MRCO(workbookSource);
-                MRCO(worksheetSource);
-                MRCO(rangeSource);
-            }
-            catch (Exception theException)
-            {
-                string errorMessage;
-                errorMessage = "Error: ";
-                errorMessage = string.Concat(errorMessage, theException.Message);
-                errorMessage = string.Concat(errorMessage, " Line: ");
-                errorMessage = string.Concat(errorMessage, theException.Source);
-
-                MessageBox.Show(errorMessage, "Error");
-            }
-        }
-
         // Code for Dagrofa files
-        private void ButtonDagrofaPath_Click(object sender, EventArgs e)
-        {
-            this.openDagrofaPathDialog.Multiselect = true;
-            this.openDagrofaPathDialog.Title = "Select Dagrofa files";
-
-            if (openDagrofaPathDialog.ShowDialog() == DialogResult.OK)
-            {
-                pathDagrofa = openDagrofaPathDialog.FileNames.ToList();
-                ButtonDagrofaPath.Text = openDagrofaPathDialog.FileName;
-            }
-        }
         private void DagrofaButton_Click(object sender, EventArgs e)
         {
 
@@ -394,15 +279,6 @@ namespace AutomisationHospitalData
         }
 
         // Code for Emmerys files
-        private void ButtonEmmerysPath_Click(object sender, EventArgs e)
-        {
-            this.openEmmerysPathDialog.Title = "Select Emmerys File";
-            if (openEmmerysPathDialog.ShowDialog() == DialogResult.OK)
-            {
-                pathEmmerys = openEmmerysPathDialog.FileName;
-                ButtonEmmerysPath.Text = openEmmerysPathDialog.FileName;
-            }
-        }
         private void EmmerysButton_Click(object sender, EventArgs e)
         {
 
@@ -535,17 +411,6 @@ namespace AutomisationHospitalData
         }
 
         // Code for Frisksnit files
-        private void ButtonFrisksnitPath_Click(object sender, EventArgs e)
-        {
-            this.openFrisksnitPathDialog.Multiselect = true;
-            this.openFrisksnitPathDialog.Title = "Select Frisksnit files";
-
-            if (openFrisksnitPathDialog.ShowDialog() == DialogResult.OK)
-            {
-                pathFrisksnit = openFrisksnitPathDialog.FileNames.ToList();
-                ButtonFrisksnitPath.Text = openFrisksnitPathDialog.FileName;
-            }
-        }
         private void FrisksnitButton_Click(object sender, EventArgs e)
         {
 
@@ -689,15 +554,6 @@ namespace AutomisationHospitalData
         }
 
         // Code for Grønt Grossisten files
-        private void ButtonGrøntGrossistenPath_Click(object sender, EventArgs e)
-        {
-            this.openGrøntGrossistenPathDialog.Title = "Select Grønt Grossisten file";
-            if (openGrøntGrossistenPathDialog.ShowDialog() == DialogResult.OK)
-            {
-                pathGrøntGrossisten = openGrøntGrossistenPathDialog.FileName;
-                ButtonGrøntGrossistenPath.Text = openGrøntGrossistenPathDialog.FileName;
-            }
-        }
         private void GrøntgrossistenButton_Click(object sender, EventArgs e)
         {
 
@@ -824,15 +680,6 @@ namespace AutomisationHospitalData
         }
 
         // Code for Hørkram files
-        private void ButtonHørkramPath_Click(object sender, EventArgs e)
-        {
-            this.openHørkramPathDialog.Title = "Select Hørkram file";
-            if (openHørkramPathDialog.ShowDialog() == DialogResult.OK)
-            {
-                pathHørkram = openHørkramPathDialog.FileName;
-                ButtonHørkramPath.Text = openHørkramPathDialog.FileName;
-            }
-        }
         private void HørkramButton_Click(object sender, EventArgs e)
         {
 
@@ -952,6 +799,46 @@ namespace AutomisationHospitalData
         }
 
         // Path buttons code
+        private void ButtonACPath_Click(object sender, EventArgs e)
+        {
+            this.openACPathDialog.Multiselect = true;
+            this.openACPathDialog.Title = "Select AC files";
+
+            if (openACPathDialog.ShowDialog() == DialogResult.OK)
+            {
+                pathAC = openACPathDialog.FileNames.ToList();
+                ButtonACPath.Text = openACPathDialog.FileName;
+            }
+        }
+        private void ButtonBCPath_Click(object sender, EventArgs e)
+        {
+            this.openBCPathDialog.Title = "Select BC File";
+            if (openBCPathDialog.ShowDialog() == DialogResult.OK)
+            {
+                pathBC = openBCPathDialog.FileName;
+                ButtonBCPath.Text = openBCPathDialog.FileName;
+            }
+        }
+        private void ButtonCBPBageriPath_Click(object sender, EventArgs e)
+        {
+            this.openCBPBageriPathDialog.Title = "Select CBP Bageri File";
+            if (openCBPBageriPathDialog.ShowDialog() == DialogResult.OK)
+            {
+                pathCBPBageri = openCBPBageriPathDialog.FileName;
+                ButtonCBPBageriPath.Text = openCBPBageriPathDialog.FileName;
+            }
+        }
+        private void ButtonDagrofaPath_Click(object sender, EventArgs e)
+        {
+            this.openDagrofaPathDialog.Multiselect = true;
+            this.openDagrofaPathDialog.Title = "Select Dagrofa files";
+
+            if (openDagrofaPathDialog.ShowDialog() == DialogResult.OK)
+            {
+                pathDagrofa = openDagrofaPathDialog.FileNames.ToList();
+                ButtonDagrofaPath.Text = openDagrofaPathDialog.FileName;
+            }
+        }
         private void ButtonDeViKasPath_Click(object sender, EventArgs e)
         {
             this.openPathDialog.Multiselect = true;
@@ -961,6 +848,33 @@ namespace AutomisationHospitalData
             {
                 pathDeViKas = openPathDialog.FileNames.ToList();
                 ButtonDeViKasPath.Text = openPathDialog.FileName;
+            }
+        }
+        private void ButtonEmmerysPath_Click(object sender, EventArgs e)
+        {
+            this.openEmmerysPathDialog.Title = "Select Emmerys File";
+            if (openEmmerysPathDialog.ShowDialog() == DialogResult.OK)
+            {
+                pathEmmerys = openEmmerysPathDialog.FileName;
+                ButtonEmmerysPath.Text = openEmmerysPathDialog.FileName;
+            }
+        }
+        private void ButtonGrøntGrossistenPath_Click(object sender, EventArgs e)
+        {
+            this.openGrøntGrossistenPathDialog.Title = "Select Grønt Grossisten file";
+            if (openGrøntGrossistenPathDialog.ShowDialog() == DialogResult.OK)
+            {
+                pathGrøntGrossisten = openGrøntGrossistenPathDialog.FileName;
+                ButtonGrøntGrossistenPath.Text = openGrøntGrossistenPathDialog.FileName;
+            }
+        }
+        private void ButtonHørkramPath_Click(object sender, EventArgs e)
+        {
+            this.openHørkramPathDialog.Title = "Select Hørkram file";
+            if (openHørkramPathDialog.ShowDialog() == DialogResult.OK)
+            {
+                pathHørkram = openHørkramPathDialog.FileName;
+                ButtonHørkramPath.Text = openHørkramPathDialog.FileName;
             }
         }
 
@@ -1121,6 +1035,75 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
+        private void CBPBageriButton_Click(object sender, EventArgs e)
+        {
+
+            _Workbook workbookSource;
+            _Worksheet worksheetSource;
+            _Worksheet infosheetSource;
+            Range rangeSource;
+            Range rangeInfo;
+
+            try
+            {
+                workbookSource = excelProgram.Workbooks.Open(pathCBPBageri);
+                worksheetSource = workbookSource.Sheets[2];
+                infosheetSource = workbookSource.Sheets[1];
+                rangeSource = worksheetSource.UsedRange;
+                rangeInfo = infosheetSource.UsedRange;
+
+                int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
+
+                int rowCountSource = rangeSource.Rows.Count;
+                int colCountSource = rangeSource.Columns.Count;
+
+                // Imports the cell data from the Hørkram sheet as an array of Objects
+                object[,] arraySource = rangeSource.get_Value();
+                object[,] arrayInfo = rangeInfo.get_Value();
+
+                // Creates a List of String arrays for every rowOld in the BC worksheet.
+                // Amount of rows as a List to allow for deletion of irrelevant entries.
+                List<Row> listConverted = ConvertCBPBageri(arraySource, rowCountSource, arrayInfo);
+
+                rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (listConverted.Count + usedRowsMerged));
+                object[,] arrayMerged = rangeMerged.get_Value(XlRangeValueDataType.xlRangeValueDefault);
+
+                arrayMerged = ConvertList(listConverted, arrayMerged);
+
+                rangeMerged.set_Value(XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                rangeMerged = worksheetMerged.UsedRange;
+
+                //Format the cells.
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Name = "Calibri";
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Size = 11;
+
+                //AutoFit columns A:V.
+                rangeMerged = worksheetMerged.get_Range("A1", "M1");
+                rangeMerged.EntireColumn.AutoFit();
+
+
+                //Make sure Excel is visible and give the user control
+                //of Microsoft Excel's lifetime.
+                excelProgram.Visible = true;
+                excelProgram.UserControl = true;
+
+                // Releasing the Excel interop objects
+                workbookSource.Close(false);
+                MRCO(workbookSource);
+                MRCO(worksheetSource);
+                MRCO(rangeSource);
+            }
+            catch (Exception theException)
+            {
+                string errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = string.Concat(errorMessage, theException.Message);
+                errorMessage = string.Concat(errorMessage, " Line: ");
+                errorMessage = string.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
         private void DeViKasButton_Click(object sender, EventArgs e)
         {
             _Workbook workbookSource;
@@ -1192,6 +1175,17 @@ namespace AutomisationHospitalData
                 errorMessage = string.Concat(errorMessage, theException.Source);
 
                 MessageBox.Show(errorMessage, "Error");
+            }
+        }
+        private void ButtonFrisksnitPath_Click(object sender, EventArgs e)
+        {
+            this.openFrisksnitPathDialog.Multiselect = true;
+            this.openFrisksnitPathDialog.Title = "Select Frisksnit files";
+
+            if (openFrisksnitPathDialog.ShowDialog() == DialogResult.OK)
+            {
+                pathFrisksnit = openFrisksnitPathDialog.FileNames.ToList();
+                ButtonFrisksnitPath.Text = openFrisksnitPathDialog.FileName;
             }
         }
 
