@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
+using System.Text.RegularExpressions;
 
 namespace AutomisationHospitalData
 {
@@ -25,6 +21,11 @@ namespace AutomisationHospitalData
 
         public Row(string år = "", string kvartal = "", string hospital = "", string råvarekategori = "", string leverandør = "", string råvare = "", string øko = "", string variant = "", string prisEnhed = "", string prisTotal = "", string kg = "", string oprindelse = "")
         {
+            if (float.Parse(prisTotal) <= 0)
+                throw new ArgumentException("Price cannot be zero or lower");
+
+            oprindelse = (Regex.Replace(oprindelse, @"[\d-]", string.Empty) + "   ").Substring(0, 3);
+
             this.år = år;
             this.kvartal = kvartal;
             this.hospital = hospital;

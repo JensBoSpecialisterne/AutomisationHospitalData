@@ -139,80 +139,6 @@ namespace AutomisationHospitalData
             MRCO(rangeLibrary);
         }
 
-        // Code for Grønt Grossisten files
-
-        // Code for Hørkram files
-        private void HørkramButton_Click(object sender, EventArgs e)
-        {
-
-            _Workbook workbookSource;
-            _Worksheet worksheetSource;
-            _Worksheet infosheetSource;
-            Range rangeSource;
-            Range rangeInfo;
-
-            try
-            {
-                workbookSource = excelProgram.Workbooks.Open(pathHørkram);
-                worksheetSource = workbookSource.Sheets[2];
-                infosheetSource = workbookSource.Sheets[1];
-                rangeSource = worksheetSource.UsedRange;
-                rangeInfo = infosheetSource.UsedRange;
-
-                int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
-
-                int rowCountSource = rangeSource.Rows.Count;
-                int colCountSource = rangeSource.Columns.Count;
-
-                // Imports the cell data from the Grønt Grossisten sheet as an array of Objects
-                object[,] arraySource = rangeSource.get_Value();
-                object[,] arrayInfo = rangeInfo.get_Value();
-
-                // Creates a List of String arrays for every rowOld in the Grønt Grossisten worksheet.
-                // Amount of rows as a List to allow for deletion of irrelevant entries.
-                List<Row> listConverted = ConvertHørkram(arraySource, rowCountSource,arrayInfo);
-
-                rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listConverted.Count));
-
-                object[,] arrayMerged = rangeMerged.get_Value(XlRangeValueDataType.xlRangeValueDefault);
-
-                arrayMerged = ConvertList(listConverted, arrayMerged);
-
-                rangeMerged.set_Value(XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
-                rangeMerged = worksheetMerged.UsedRange;
-
-                //Format the cells.
-                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Name = "Calibri";
-                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Size = 11;
-
-                //AutoFit columns A:V.
-                rangeMerged = worksheetMerged.get_Range("A1", "M1");
-                rangeMerged.EntireColumn.AutoFit();
-
-                //Make sure Excel is visible and give the user control
-                //of Microsoft Excel's lifetime.
-                excelProgram.Visible = true;
-                excelProgram.UserControl = true;
-
-                // Releasing the Excel interop objects
-                workbookSource.Close(false);
-                MRCO(workbookSource);
-                MRCO(worksheetSource);
-                MRCO(infosheetSource);
-                MRCO(rangeSource);
-            }
-            catch (Exception theException)
-            {
-                String errorMessage;
-                errorMessage = "Error: ";
-                errorMessage = String.Concat(errorMessage, theException.Message);
-                errorMessage = String.Concat(errorMessage, " Line: ");
-                errorMessage = String.Concat(errorMessage, theException.Source);
-
-                MessageBox.Show(errorMessage, "Error");
-            }
-        }
-
         // Path buttons code
         private void ButtonACPath_Click(object sender, EventArgs e)
         {
@@ -875,6 +801,76 @@ namespace AutomisationHospitalData
                 MessageBox.Show(errorMessage, "Error");
             }
         }
+        private void HørkramButton_Click(object sender, EventArgs e)
+        {
+
+            _Workbook workbookSource;
+            _Worksheet worksheetSource;
+            _Worksheet infosheetSource;
+            Range rangeSource;
+            Range rangeInfo;
+
+            try
+            {
+                workbookSource = excelProgram.Workbooks.Open(pathHørkram);
+                worksheetSource = workbookSource.Sheets[2];
+                infosheetSource = workbookSource.Sheets[1];
+                rangeSource = worksheetSource.UsedRange;
+                rangeInfo = infosheetSource.UsedRange;
+
+                int usedRowsMerged = worksheetMerged.UsedRange.Rows.Count;
+
+                int rowCountSource = rangeSource.Rows.Count;
+                int colCountSource = rangeSource.Columns.Count;
+
+                // Imports the cell data from the Grønt Grossisten sheet as an array of Objects
+                object[,] arraySource = rangeSource.get_Value();
+                object[,] arrayInfo = rangeInfo.get_Value();
+
+                // Creates a List of String arrays for every rowOld in the Grønt Grossisten worksheet.
+                // Amount of rows as a List to allow for deletion of irrelevant entries.
+                List<Row> listConverted = ConvertHørkram(arraySource, rowCountSource, arrayInfo);
+
+                rangeMerged = worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "M" + (usedRowsMerged + listConverted.Count));
+
+                object[,] arrayMerged = rangeMerged.get_Value(XlRangeValueDataType.xlRangeValueDefault);
+
+                arrayMerged = ConvertList(listConverted, arrayMerged);
+
+                rangeMerged.set_Value(XlRangeValueDataType.xlRangeValueDefault, arrayMerged);
+                rangeMerged = worksheetMerged.UsedRange;
+
+                //Format the cells.
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Name = "Calibri";
+                worksheetMerged.get_Range("A" + (usedRowsMerged + 1), "V" + (usedRowsMerged + listConverted.Count)).Font.Size = 11;
+
+                //AutoFit columns A:V.
+                rangeMerged = worksheetMerged.get_Range("A1", "M1");
+                rangeMerged.EntireColumn.AutoFit();
+
+                //Make sure Excel is visible and give the user control
+                //of Microsoft Excel's lifetime.
+                excelProgram.Visible = true;
+                excelProgram.UserControl = true;
+
+                // Releasing the Excel interop objects
+                workbookSource.Close(false);
+                MRCO(workbookSource);
+                MRCO(worksheetSource);
+                MRCO(infosheetSource);
+                MRCO(rangeSource);
+            }
+            catch (Exception theException)
+            {
+                String errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = String.Concat(errorMessage, theException.Message);
+                errorMessage = String.Concat(errorMessage, " Line: ");
+                errorMessage = String.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
+        }
 
         // Support code
         public void MRCO(object comObject) // Based on code from breezetree.com/blog/
@@ -1477,9 +1473,10 @@ namespace AutomisationHospitalData
                 try
                 {
                     float priceTotal = float.Parse(inputMatrix[rowInput, 11].ToString());
-                    float amount = float.Parse(inputMatrix[rowInput, 12].ToString());
+                    float amount = float.Parse(inputMatrix[rowInput, 10].ToString());
+                    float priceUnit = float.Parse(inputMatrix[rowInput, 14].ToString());
 
-                    if (priceTotal > 0 & amount > 0)
+                    if (priceTotal > 0)
                     {
                         string variant = inputMatrix[rowInput, 4].ToString();
                         string hospital = inputMatrix[rowInput, 2].ToString().Split(',')[0];
@@ -1509,10 +1506,10 @@ namespace AutomisationHospitalData
                                 råvare: resource,
                                 øko: ecology,
                                 variant: variant,
-                                prisEnhed: priceTotal / amount + "",
+                                prisEnhed: priceUnit + "",
                                 prisTotal: priceTotal + "",
                                 kg: weight + "",
-                                oprindelse: ""
+                                oprindelse: inputMatrix[rowInput, 8].ToString()
                                 );
                             output.Add(newEntry);
                         }
